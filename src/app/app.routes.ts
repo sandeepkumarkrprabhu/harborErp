@@ -44,7 +44,7 @@ export const routes: Routes = [
 
       { path: 'dashboard', data: { title: 'Dashboard' }, loadComponent: () => import('./features/dashboard/dashboard').then(m => m.Dashboard) },
 
-      { path: 'projects', data: { title: 'Projects' }, loadComponent: () => import('./features/projects/projects').then(m => m.Projects) },
+      { path: 'projects', data: { title: 'Projects' }, loadComponent: () => import('./features/projects/projects').then(m => m.ProjectList) },
 
       { path: 'history', data: { title: 'History' }, loadComponent: () => import('./features/history/history').then(m => m.History) },
 

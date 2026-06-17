@@ -8,24 +8,13 @@
   </div>
 
   <!-- Search -->
-  <div class="flex flex-1 items-center px-6">
-    <input
-      type="text"
-      [(ngModel)]="searchText"
-      (keyup.enter)="onSearch()"
-      placeholder="Search projects, tasks, users..."
-      class="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none"
-    />
+   <div class="flex flex-1 items-center px-6">
+      <app-search placeholder="Search projects, tasks, users..." (clicked)="onSearch()"></app-search>
   </div>
 
   <!-- Actions -->
   <div class="flex w-64 items-center justify-end gap-2 px-4">
-    <button
-      (click)="onQuickAction()"
-      class="rounded-lg bg-[#D88E7B] px-4 py-2 text-sm text-white hover:bg-[#C97862]"
-    >
-      Quick Actions
-    </button>
-  </div>
+    
+      <app-button caption="Quick Actions" (clicked)="onQuickAction()"></app-button>
 
 </div>

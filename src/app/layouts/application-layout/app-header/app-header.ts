@@ -1,10 +1,12 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { harborButton } from '../../../features/shared/button/button'
+import { Search } from '../../../features/shared/search/search';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, harborButton, Search],
   templateUrl: './app-header.html',
   styleUrl: './app-header.css',
 })

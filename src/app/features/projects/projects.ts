@@ -1,17 +1,27 @@
 import { Component } from '@angular/core';
-import { ProjectModel } from './models/ProjectModel';
+import { ProjectCard } from '../shared/project-card/project-card';
+import { harborButton } from '../shared/button/button';
+import { PageTitle } from '../shared/page-title/page-title';
+import { Search } from '../shared/search/search';
+
+import { Project } from '../shared/Models/Project';
 
 @Component({
   selector: 'app-projects',
   standalone: true,
+  imports: [ProjectCard, harborButton, PageTitle, Search],
   templateUrl: './projects.html',
   styleUrl: './projects.css'
 })
-export class Projects {
+export class ProjectList {
 
   selectedFilter = 'All';
 
-  projects: ProjectModel[] = [
+  onNewProject(): void {
+    console.log('+ New Project clicked');
+  }
+
+  projectRecords: Project[] = [
     {
       id: 1,
       name: 'harbor-api',
@@ -21,7 +31,8 @@ export class Projects {
       healthy: 3,
       unhealthy: 0,
       lastDeployment: '1 day ago',
-      owner: 'Sangeeta'
+      owner: 'Sangeeta',
+      sourceUrl: 'org/harbor-api'
     },
     {
       id: 2,
@@ -32,7 +43,8 @@ export class Projects {
       healthy: 2,
       unhealthy: 1,
       lastDeployment: '18 hours ago',
-      owner: 'Priya'
+      owner: 'Priya',
+      sourceUrl: 'org/harbor-frontend'
     },
     {
       id: 3,
@@ -43,7 +55,8 @@ export class Projects {
       healthy: 2,
       unhealthy: 0,
       lastDeployment: '15 days ago',
-      owner: 'Chris M'
+      owner: 'Chris M',
+      sourceUrl: 'org/terraform-ngw-vpc'
     },
     {
       id: 4,
@@ -54,7 +67,8 @@ export class Projects {
       healthy: 3,
       unhealthy: 0,
       lastDeployment: '3 days ago',
-      owner: 'Alex K'
+      owner: 'Alex K',
+      sourceUrl: 'org/auth-service'
     },
     {
       id: 5,
@@ -65,7 +79,8 @@ export class Projects {
       healthy: 1,
       unhealthy: 1,
       lastDeployment: '5 days ago',
-      owner: 'Chris N'
+      owner: 'Chris N',
+      sourceUrl: 'org/notification-worker'
     },
     {
       id: 6,
@@ -76,7 +91,8 @@ export class Projects {
       healthy: 3,
       unhealthy: 0,
       lastDeployment: '3 days ago',
-      owner: 'Emma C'
+      owner: 'Emma C',
+      sourceUrl: 'org/data-pipeline'
     }
   ];
 

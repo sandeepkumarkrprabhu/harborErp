@@ -3,27 +3,16 @@
     <!-- Header -->
     <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
 
-        <div>
-            <h1 class="text-3xl font-bold text-gray-900">
-                Projects
-            </h1>
-        </div>
+        <app-page-title title="Projects"></app-page-title>
 
-        <button class="rounded-lg bg-[#D88E7B] px-4 py-2 text-sm text-white hover:bg-blue-700">
-
-            + New Project
-
-        </button>
+        <app-harborButton caption="+ New Project" (clicked)="onNewProject()"></app-harborButton>
 
     </div>
 
     <!-- Toolbar -->
-    <div class="flex flex-col gap-3 lg:flex-row lg:items-center">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white border border-black/5 rounded-md p-3 mb-5 select-none">
 
-        <input
-            type="text"
-            placeholder="Search projects..."
-            class="w-full lg:w-72 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-orange-200">
+        <app-search placeholder="Search projects..." (clicked)="onNewProject()"></app-search>
 
         <div class="flex flex-wrap gap-2">
 
@@ -50,90 +39,9 @@
     <!-- Project Cards -->
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-5">
 
-        @for(project of projects; track project.id){
-
-            <div class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition">
-
-                <div class="p-4">
-
-                    <div class="flex justify-between items-start">
-
-                        <div>
-
-                            <h3 class="font-semibold text-gray-900">
-                                {{ project.name }}
-                            </h3>
-
-                            <p class="text-xs text-gray-500 mt-1">
-                                {{ project.description }}
-                            </p>
-
-                        </div>
-
-                        <span
-                            class="px-2 py-1 rounded text-[10px] bg-gray-100 text-gray-600">
-
-                            {{ project.environment }}
-
-                        </span>
-
-                    </div>
-
-                    <!-- Health -->
-
-                    <div class="mt-5">
-
-                        <div class="flex gap-3 text-xs">
-
-                            <span class="text-green-600">
-                                {{ project.healthy }} healthy
-                            </span>
-
-                            @if(project.unhealthy > 0){
-
-                                <span class="text-red-500">
-                                    {{ project.unhealthy }} unhealthy
-                                </span>
-
-                            }
-
-                        </div>
-
-                        <div class="mt-2 h-1.5 bg-gray-200 rounded-full">
-
-                            <div
-                                class="h-1.5 rounded-full"
-                                [style.width.%]="project.health"
-                                [class]="project.health === 100
-                                    ? 'bg-green-500'
-                                    : 'bg-orange-400'">
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <div
-                    class="px-4 py-3 border-t border-gray-100 flex justify-between items-center text-xs">
-
-                    <span class="text-gray-500">
-                        Last: {{ project.lastDeployment }} · {{ project.owner }}
-                    </span>
-
-                    <button
-                        class="text-orange-500 hover:text-orange-600 font-medium">
-
-                        View
-                        <i class="pi pi-arrow-right ml-1"></i>
-
-                    </button>
-
-                </div>
-
-            </div>
-
+        @for(project of projectRecords; track project.id)
+        {
+            <app-project-card [project]="project"></app-project-card>
         }
 
     </div>

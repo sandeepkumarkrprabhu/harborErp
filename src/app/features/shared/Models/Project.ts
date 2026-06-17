@@ -1,4 +1,4 @@
-export interface ProjectModel {
+export interface Project {
   id: number;
   name: string;
   description: string;
@@ -8,4 +8,5 @@ export interface ProjectModel {
   unhealthy: number;
   lastDeployment: string;
   owner: string;
+  sourceUrl:string;
 }

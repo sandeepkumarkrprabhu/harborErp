@@ -11,46 +11,7 @@
 
       @for (project of projects; track project.id) {
 
-        <div
-          class="flex items-start gap-3 border border-gray-200 rounded-[3.49px] p-3 hover:shadow-md transition-all duration-200 cursor-pointer">
-
-          <img
-            [src]="project.imageUrl"
-            [alt]="project.name"
-            class="w-14 h-full rounded-md object-cover flex-shrink-0">
-
-          <div class="flex-1 min-w-0">
-
-            <h3
-              class="text-sm font-semibold"
-              [style.color]="project.color">
-              {{ project.name }}
-            </h3>
-
-            <p class="text-xs text-gray-500 mt-1">
-              {{ project.description }}
-            </p>
-
-            <p class="w-[110px] h-[15px] rounded-[2px] bg-[#F0F0F0] text-xs px-2 mt-2">
-              4 environments
-            </p>
-
-            <div class="mt-3 pt-2 border-t border-gray-100">
-              <p class="text-[11px] text-gray-400">
-                {{ project.lastDeployment }}
-              </p>
-              <p class="text-[10px] text-orange-400">
-                {{ project.deployedOrgName }}
-              </p>
-            </div>
-
-          </div>
-
-          <div class="self-center">
-            <i class="pi pi-chevron-right text-xs text-gray-300"></i>
-          </div>
-
-        </div>
+        <app-project-card [project]="project"></app-project-card>
 
       }
 
