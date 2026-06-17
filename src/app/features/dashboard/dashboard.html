@@ -1,0 +1,58 @@
+<div class="space-y-6">
+
+    <!-- Dashboard Header -->
+    <div>
+
+        <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+
+            <div>
+                <h1 class="text-[22px] font-medium tracking-tight text-[#1a1a1a]">
+                    Dashboard Overview
+                </h1>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+
+        @for (card of cards; track card.title) {
+
+            <app-dashboard-summary-card
+                [card]="card">
+            </app-dashboard-summary-card>
+
+        }
+
+    </div>
+
+    <!-- Main Dashboard Content -->
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+
+        <!-- Left Section -->
+        <div class="xl:col-span-2 space-y-6">
+
+            <!-- Recent Projects -->
+            <app-recent-projects>
+            </app-recent-projects>
+
+            <!-- Deployment Chart -->
+            <app-dashboard-chart>
+            </app-dashboard-chart>
+
+        </div>
+
+        <!-- Right Section -->
+        <div class="space-y-6">
+
+            <!-- Recent Activity -->
+            <app-dashboard-activity>
+            </app-dashboard-activity>
+
+        </div>
+
+    </div>
+
+</div>

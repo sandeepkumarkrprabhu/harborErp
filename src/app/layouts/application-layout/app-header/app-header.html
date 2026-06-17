@@ -1,0 +1,31 @@
+<div class="h-12 border-b border-black/5 bg-white flex items-center justify-between px-5 sticky top-0 z-40">
+
+  <!-- Left: Toggle + Title -->
+  <div class="flex w-48 items-center px-6 h-full bg-[#fdfcf9]">
+    <h1 class="text-sm font-medium">
+      {{ pageTitle }}
+    </h1>
+  </div>
+
+  <!-- Search -->
+  <div class="flex flex-1 items-center px-6">
+    <input
+      type="text"
+      [(ngModel)]="searchText"
+      (keyup.enter)="onSearch()"
+      placeholder="Search projects, tasks, users..."
+      class="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none"
+    />
+  </div>
+
+  <!-- Actions -->
+  <div class="flex w-64 items-center justify-end gap-2 px-4">
+    <button
+      (click)="onQuickAction()"
+      class="rounded-lg bg-[#D88E7B] px-4 py-2 text-sm text-white hover:bg-[#C97862]"
+    >
+      Quick Actions
+    </button>
+  </div>
+
+</div>

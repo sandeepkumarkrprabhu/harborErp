@@ -1,0 +1,17 @@
+<div
+  class="flex items-center"
+  [class.justify-center]="isCollapsed"
+  [class.gap-3]="!isCollapsed" >
+  <!-- Avatar -->
+  <div class="flex h-7 w-7 items-center justify-center rounded-full bg-[#D88E7B] text-sm font-semibold text-white shadow-sm">
+    ADM
+  </div>
+
+  @if (!isCollapsed) {
+        <div class="flex flex-col items-start">
+          <div class="text-sm font-medium">Harbor Admin</div> 
+          <div class="text-xs text-slate-400">admin@harbor.com</div>
+        </div>
+    }
+
+</div>

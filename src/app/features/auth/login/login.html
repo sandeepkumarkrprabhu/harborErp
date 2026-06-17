@@ -1,0 +1,75 @@
+<div class="w-full max-w-md rounded-md p-8">
+
+  <!-- Logo -->
+  <div class="text-center mb-6">
+    <div class="flex justify-center items-center gap-2">
+
+        <!-- ✅ Logo -->
+        <img
+            src="assets/logo.svg"
+            alt="Harbor Logo"
+            class="w-[208] h-[46] object-contain"
+        />
+
+        </div>
+
+    <h2 class="text-2xl font-semibold mt-4">Secure Access</h2>
+    <p class="text-gray-500 text-sm mt-1">
+      Unlock your workspace using your PIN or password.
+    </p>
+  </div>
+
+  <!-- Tabs -->
+  <div class="bg-[#fdfcf9] border border-[rgba(60,50,40,0.12)] rounded-md p-1 flex mb-6">
+
+    <!-- Quick PIN -->
+    <button
+      (click)="setMode('pin')"
+      class="flex-1 flex items-center justify-center gap-2 py-2 text-sm rounded-md transition"
+      [ngClass]="mode() === 'pin'
+        ? 'bg-[#D88E7B] text-white shadow-sm'
+        : 'text-gray-500 hover:text-gray-700'"
+    >
+      <span>🔑</span>
+      Quick PIN
+    </button>
+
+    <!-- Password -->
+    <button
+      (click)="setMode('password')"
+      class="flex-1 flex items-center justify-center gap-2 py-2 text-sm rounded-md transition"
+      [ngClass]="mode() === 'password'
+        ? 'bg-[#D88E7B] text-white shadow-sm'
+        : 'text-gray-500 hover:text-gray-700'"
+    >
+      <span>🔒</span>
+      Password
+    </button>
+  </div>
+
+  <!-- ✅ Dynamic Form Content -->
+  <div class="transition-all duration-300">
+
+    @if (mode() === 'pin') {
+      <app-pin-input></app-pin-input>
+    } @else {
+      <app-password-input></app-password-input>
+    }
+
+  </div>
+
+  <button class="group relative inline-flex items-center justify-center gap-2 overflow-hidden font-semibold tracking-[0.02em] transition-all duration-200 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 select-none cursor-pointer 
+      bg-[#D88E7B] text-white
+      hover:bg-[#D88E7B]-hover
+      shadow-sm shadow-[#D88E7B]/10 hover:shadow-md hover:shadow-[#D88E7B]/15
+     px-5 py-2.5 text-sm rounded-md w-full w-full h-12 text-base font-semibold cursor-pointer" 
+     type="submit" tabindex="0" style="transform: none;">
+     <div class="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500">
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(208,136,115,0.25),transparent_60%)]"></div>
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(142,122,111,0.2),transparent_60%)]"></div>
+    </div>
+    <span class="relative z-10 flex items-center gap-2">
+      <span>Unlock Workspace</span>
+    </span>
+  </button>
+</div>

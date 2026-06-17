@@ -1,0 +1,201 @@
+<div class="min-h-screen bg-slate-50 p-6">
+
+  <!-- Header -->
+  <div class="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+
+    <div>
+      <h1 class="text-3xl font-bold text-slate-800">
+        Team Members
+      </h1>
+
+      <p class="mt-1 text-sm text-slate-500">
+        Manage users and permissions
+      </p>
+    </div>
+
+    <button
+      class="rounded-lg bg-[#D88E7B] px-4 py-2 text-sm font-medium text-white transition-all duration-200 hover:bg-[#C97862] hover:shadow-md">
+      Add Member
+    </button>
+
+  </div>
+
+  <!-- Invite Card -->
+  <div class="mb-6 rounded-xl border border-[#E8C3B9] bg-[#FFF7F5] p-5">
+
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+
+      <div>
+        <h3 class="font-semibold text-slate-800">
+          Invite Team Members
+        </h3>
+
+        <p class="text-sm text-[#D88E7B]">
+          Send invitation via email
+        </p>
+      </div>
+
+      <div class="flex flex-col gap-3 sm:flex-row">
+
+        <input
+          type="email"
+          placeholder="member@email.com"
+          class="w-full sm:w-72 rounded-lg border border-slate-300 px-4 py-2 outline-none transition focus:border-[#D88E7B] focus:ring-2 focus:ring-[#D88E7B]/30" />
+
+        <button
+          class="rounded-lg bg-[#D88E7B] px-4 py-2 text-sm font-medium text-white transition-all duration-200 hover:bg-[#C97862] hover:shadow-md">
+          Send Invite
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Search & Filters -->
+  <div class="mb-4 flex flex-col gap-3 md:flex-row">
+
+    <input
+      type="text"
+      placeholder="Search members..."
+      class="rounded-lg border border-slate-300 px-4 py-2 md:w-80 outline-none transition focus:border-[#D88E7B] focus:ring-2 focus:ring-[#D88E7B]/30" />
+
+    <select
+      class="rounded-lg border border-slate-300 px-4 py-2 outline-none transition focus:border-[#D88E7B] focus:ring-2 focus:ring-[#D88E7B]/30">
+      <option>All Roles</option>
+      <option>Admin</option>
+      <option>Engineer</option>
+    </select>
+
+  </div>
+
+  <!-- Table -->
+  <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+
+    <div class="overflow-x-auto">
+
+      <table class="min-w-full">
+
+        <thead class="bg-slate-100">
+          <tr>
+            <th class="px-4 py-3 text-left text-sm font-semibold text-slate-600">
+              Member
+            </th>
+
+            <th class="px-4 py-3 text-left text-sm font-semibold text-slate-600">
+              Email
+            </th>
+
+            <th class="px-4 py-3 text-left text-sm font-semibold text-slate-600">
+              Role
+            </th>
+
+            <th class="px-4 py-3 text-left text-sm font-semibold text-slate-600">
+              Projects
+            </th>
+
+            <th class="px-4 py-3 text-left text-sm font-semibold text-slate-600">
+              Last Active
+            </th>
+
+            <th class="px-4 py-3 text-left text-sm font-semibold text-slate-600">
+              Status
+            </th>
+
+            <th class="px-4 py-3 text-center text-sm font-semibold text-slate-600">
+              Actions
+            </th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          @for (user of users(); track user.id) {
+
+          <tr class="border-t border-slate-100 transition hover:bg-slate-50">
+
+            <td class="px-4 py-4">
+
+              <div class="flex items-center gap-3">
+
+                <div
+                  class="flex h-10 w-10 items-center justify-center rounded-full bg-[#F7E2DC] font-semibold text-[#D88E7B]">
+
+                  {{ user.name.charAt(0) }}
+
+                </div>
+
+                <span class="font-medium text-slate-700">
+                  {{ user.name }}
+                </span>
+
+              </div>
+
+            </td>
+
+            <td class="px-4 py-4 text-slate-600">
+              {{ user.email }}
+            </td>
+
+            <td class="px-4 py-4">
+
+              <span
+                class="rounded-md bg-[#F7E2DC] px-2 py-1 text-xs font-medium text-[#D88E7B]">
+
+                {{ user.role }}
+
+              </span>
+
+            </td>
+
+            <td class="px-4 py-4 text-slate-600">
+              {{ user.projects }}
+            </td>
+
+            <td class="px-4 py-4 text-slate-600">
+              {{ user.lastActive }}
+            </td>
+
+            <td class="px-4 py-4">
+
+              <span
+                class="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">
+
+                {{ user.status }}
+
+              </span>
+
+            </td>
+
+            <td class="px-4 py-4">
+
+              <div class="flex justify-center gap-2">
+
+                <button
+                  class="rounded-md border border-slate-300 px-3 py-1 text-sm transition hover:bg-slate-100">
+                  Edit
+                </button>
+
+                <button
+                  class="rounded-md border border-red-200 px-3 py-1 text-sm text-red-600 transition hover:bg-red-50">
+                  Delete
+                </button>
+
+              </div>
+
+            </td>
+
+          </tr>
+
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</div>

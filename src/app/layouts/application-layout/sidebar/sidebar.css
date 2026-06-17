@@ -1,0 +1,42 @@
+/* Sidebar specific styles (tailwind handles most) */
+:host {
+	display: block;
+	height: 100%;
+	min-height: 0;
+}
+.rotate-180 {
+	transform: rotate(180deg);
+}
+
+.animate-fade-in {
+	animation: fadeIn 250ms ease-in;
+}
+
+@keyframes fadeIn {
+	from { opacity: 0; transform: translateY(-2px); }
+	to { opacity: 1; transform: translateY(0); }
+}
+
+.lucide-icon.text-white {
+	background-color: currentColor;
+}
+
+.sidebar-badge {
+	min-width: 1.25rem;
+	height: 1.25rem;
+	line-height: 1.15rem;
+}
+
+.menu-active {
+	background: rgba(208,136,115,0.08);
+}
+
+/* Dropdown positioning helpers */
+.menu-up {
+	bottom: calc(100% + 0.5rem);
+}
+
+.menu-down {
+	top: calc(100% + 0.5rem);
+}
+

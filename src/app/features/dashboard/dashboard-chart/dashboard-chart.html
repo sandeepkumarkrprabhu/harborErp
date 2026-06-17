@@ -1,0 +1,19 @@
+<div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+
+  <!-- Header -->
+  <div class="px-4 py-3 bg-[#FFF4F4] border-b border-gray-200">
+    <h2 class="text-sm font-semibold text-gray-700">
+      Projects with Most Deployments
+    </h2>
+  </div>
+
+  <!-- Chart -->
+  <div class="h-64 p-4">
+    <p-chart
+      type="bar"
+      [data]="chartData"
+      [options]="chartOptions">
+    </p-chart>
+  </div>
+
+</div>

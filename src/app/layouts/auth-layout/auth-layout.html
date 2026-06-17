@@ -1,0 +1,21 @@
+<div class="flex h-screen">
+  <!-- Left side: background image -->
+  <div class="hidden lg:flex w-2/5 relative p-2">
+    <div class="w-full h-full overflow-hidden rounded-sm">
+      <img
+        src="assets/loginbg.svg"
+        alt="Login background"
+        class="object-cover w-full h-full"
+      />
+    </div>
+  </div>
+
+
+  <!-- Right side: login form -->
+  <div class="flex w-full lg:w-3/5 items-center justify-center bg-white">
+    <div class="w-full max-w-md">
+      <!-- Router outlet for login component -->
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

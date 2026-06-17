@@ -1,0 +1,72 @@
+<div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+
+  <div class="px-4 py-3 bg-[#FFF4F4] border-b border-gray-200">
+    <h2 class="text-sm font-semibold text-gray-700">
+      Recent Activity
+    </h2>
+  </div>
+
+  <div class="max-h-[570px] overflow-y-auto">
+
+    @for (activity of activities; track activity.id) {
+
+      <div
+        class="flex items-start gap-3 p-3 border-b border-gray-100 hover:bg-gray-520 transition">
+
+        <div
+          class="w-8 h-8 rounded-md bg-[#D88E7B] flex items-center justify-center text-red-400">
+
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+
+            <path
+              d="M5 3L12 8L5 13V3Z"
+              fill="none"
+              stroke="white"
+              stroke-width="1.5"
+              stroke-linejoin="round" />
+
+          </svg>
+
+        </div>
+
+        <div class="flex-1 min-w-0">
+
+          <div class="flex items-center gap-2">
+
+            <span class="text-sm font-medium text-gray-800 truncate">
+              {{ activity.application }}
+            </span>
+
+            <span
+              class="px-2 py-0.5 rounded-full text-[10px] font-medium"
+              [class]="getEnvironmentClass(activity.environment)">
+              {{ activity.environment }}
+            </span>
+
+          </div>
+
+          <p class="text-xs text-gray-500 mt-1">
+            deployed by
+            <span class="font-medium">
+              {{ activity.deployedBy }}
+            </span>
+          </p>
+
+          <p class="text-[11px] text-gray-400 mt-1">
+            {{ activity.timestamp }}
+          </p>
+
+        </div>
+
+      </div>
+
+    }
+
+  </div>
+
+</div>
