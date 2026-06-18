@@ -5,18 +5,20 @@ import { User } from './models/User';
 import { PageTitle } from '../shared/page-title/page-title';
 import { harborButton } from '../shared/button/button';
 import { Table } from '../shared/table/table';
+import { Search } from '../shared/search/search';
 import type { TableAction, TableColumn } from '../shared/Models/Table';
-import { Edit3, Trash2, UserPlus } from 'lucide-angular';
+import { Pencil, Trash2, UserPlus, Forward } from 'lucide-angular';
 
 @Component({
   selector: 'app-users',
   standalone: true,
-  imports: [CommonModule, FormsModule, PageTitle, harborButton, Table],
+  imports: [CommonModule, FormsModule, PageTitle, harborButton, Search, Table],
   templateUrl: './users.html',
   styleUrl: './users.css',
 })
 export class Users {
   readonly UserPlus = UserPlus;
+  readonly Forward = Forward;
   selectedProject = 'All Projects';
   selectedEnvironment = 'All Environments';
   selectedDate = '';
@@ -88,7 +90,7 @@ export class Users {
   actions: TableAction<User>[] = [
     {
       label: 'Edit',
-      icon: Edit3,
+      icon: Pencil,
       class: 'border-slate-300 text-slate-700 hover:bg-slate-100',
       handler: (row) => this.onEdit(row),
     },
@@ -110,5 +112,13 @@ export class Users {
 
   onRemove(row: User): void {
     console.log('Remove user', row);
+  }
+
+  onSendInvite(): void {
+    console.log('Send Invite');
+  }
+  
+  onInviteSend(): void{
+    console.log("New user invite send");
   }
 }

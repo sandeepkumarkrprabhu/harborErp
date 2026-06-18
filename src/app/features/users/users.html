@@ -12,16 +12,17 @@
     <!-- Toolbar -->
     <div class="grid w-full grid-cols-1 gap-4 bg-[#fdfcf9] border border-black/5 rounded-md p-3 mb-5 select-none md:grid-cols-[auto_1fr_auto] md:items-end md:px-2">
 
-      <div class="flex gap-2 md:col-start-3">
-        <input 
-          type="text" 
-          placeholder="Email address" 
-          class="px-3 py-2 border border-black/10 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <button class="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 transition">
-          Send Invite
-        </button>
+      <!-- Second column: search -->
+      <div class="min-w-0 w-full md:flex md:justify-end">
+        <app-search 
+          placeholder="colleague@project.com..." 
+          (clicked)="onSendInvite()">
+        </app-search>
+        
+        <app-harborButton [icon]="Forward" caption="send Invite" (clicked)="onInviteSend()"></app-harborButton>
+
       </div>
+
     </div>
 
     <!-- Data Table -->
