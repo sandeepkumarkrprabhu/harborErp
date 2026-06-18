@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 
-import { DashboardSummaryCard } from './dashboard-summary/dashboard-summary';
+import { DashboardSummaryCard } from './summary/summary';
 import { RecentProjects } from './recent-projects/recent-projects';
-import { DashboardActivity } from './dashboard-activity/dashboard-activity';
-import { DashboardChart } from './dashboard-chart/dashboard-chart';
+import { DashboardActivity } from './activity/activity';
+import { DashboardChart } from './chart/chart';
 import { DashboardSummaryModel } from './models/dashboard-card.model';
 
 import { PageTitle } from '../shared/page-title/page-title';
