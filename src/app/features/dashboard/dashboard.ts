@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 
-import { DashboardSummaryCard } from './summary/summary';
+import { SummaryCard } from './summary/summary';
 import { RecentProjects } from './recent-projects/recent-projects';
-import { DashboardActivity } from './activity/activity';
-import { DashboardChart } from './chart/chart';
-import { DashboardSummaryModel } from './models/dashboard-card.model';
+import { Activity } from './activity/activity';
+import { Chart } from './chart/chart';
+import { DashboardSummaryModel } from './models/card.model';
 
 import { PageTitle } from '../shared/page-title/page-title';
 
@@ -12,10 +12,10 @@ import { PageTitle } from '../shared/page-title/page-title';
   selector: 'app-dashboard',
   standalone: true,
   imports: [
-    DashboardSummaryCard,
+    SummaryCard,
     RecentProjects,
-    DashboardActivity,
-    DashboardChart,
+    Activity,
+    Chart,
     PageTitle
   ],
   templateUrl: './dashboard.html',

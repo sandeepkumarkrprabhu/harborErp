@@ -5,10 +5,10 @@ import { RecentActivity } from '../models/RecentActivity';
   selector: 'app-dashboard-activity',
   standalone: true,
   imports: [],
-  templateUrl: './dashboard-activity.html',
-  styleUrl: './dashboard-activity.css',
+  templateUrl: './activity.html',
+  styleUrl: './activity.css',
 })
-export class DashboardActivity {
+export class Activity {
 
   activities: RecentActivity[] = [
     {

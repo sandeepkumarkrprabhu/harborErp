@@ -6,10 +6,10 @@ import { ProjectDeploymentStat } from '../models/ProjectDeploymentStat';
   selector: 'app-dashboard-chart',
   standalone: true,
   imports: [UIChart],
-  templateUrl: './dashboard-chart.html',
-  styleUrl: './dashboard-chart.css',
+  templateUrl: './chart.html',
+  styleUrl: './chart.css',
 })
-export class DashboardChart implements OnInit {
+export class Chart implements OnInit {
 
   chartData: any;
   chartOptions: any;
