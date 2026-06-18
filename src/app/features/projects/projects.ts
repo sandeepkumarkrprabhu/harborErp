@@ -4,6 +4,7 @@ import { harborButton } from '../shared/button/button';
 import { PageTitle } from '../shared/page-title/page-title';
 import { Search } from '../shared/search/search';
 import { Selection } from '../shared/selection/selection';
+import { PlusCircle } from 'lucide-angular';
 
 import { Project } from '../shared/Models/Project';
 
@@ -15,6 +16,7 @@ import { Project } from '../shared/Models/Project';
   styleUrl: './projects.css'
 })
 export class ProjectList {
+  readonly PlusCircle = PlusCircle;
 
   selectedFilter = 'All';
 

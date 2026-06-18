@@ -33,7 +33,7 @@ export class Dashboard {
       successColor: '#22C55E',
 
       failure: '3 Unhealthy',
-      failureColor: '#EF4444',
+      failureColor: '#e65100',
 
       successPercentage: 80,
       failurePercentage: 20,
@@ -46,7 +46,7 @@ export class Dashboard {
       icon: 'pi pi-cloud-upload',
 
       inProgress: 'In progress right now',
-      inProgressColor: '#F59E0B',
+      inProgressColor: '#e65100',
 
       inProgressPercentage: 100,
 

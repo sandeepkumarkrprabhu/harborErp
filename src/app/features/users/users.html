@@ -1,11 +1,11 @@
-<div class="px-1">
+<div class="px-6">
 
     <!-- Header -->
     <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
 
         <app-page-title title="Users" description="5 Users. 0 Pending"></app-page-title>
 
-        <app-harborButton caption="Add New Member" (clicked)="onAddNewMember()"></app-harborButton>
+        <app-harborButton [icon]="UserPlus" caption="Add New Member" (clicked)="onAddNewMember()"></app-harborButton>
 
     </div>
 

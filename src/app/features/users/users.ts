@@ -6,7 +6,7 @@ import { PageTitle } from '../shared/page-title/page-title';
 import { harborButton } from '../shared/button/button';
 import { Table } from '../shared/table/table';
 import type { TableAction, TableColumn } from '../shared/Models/Table';
-import { Edit3, Trash2 } from 'lucide-angular';
+import { Edit3, Trash2, UserPlus } from 'lucide-angular';
 
 @Component({
   selector: 'app-users',
@@ -16,6 +16,7 @@ import { Edit3, Trash2 } from 'lucide-angular';
   styleUrl: './users.css',
 })
 export class Users {
+  readonly UserPlus = UserPlus;
   selectedProject = 'All Projects';
   selectedEnvironment = 'All Environments';
   selectedDate = '';
@@ -77,11 +78,11 @@ export class Users {
   }
 
   columns: TableColumn<User>[] = [
-    { key: 'name', label: 'Member', width: '22%', cell: row => row.name, avatar: true },
-    { key: 'email', label: 'Email', width: '28%', cell: row => row.email },
+    { key: 'name', label: 'Member', width: '18%', cell: row => row.name, avatar: true },
+    { key: 'email', label: 'Email', width: '25%', cell: row => row.email },
     { key: 'role', label: 'Role', width: '12%', cell: row => row.role },
     { key: 'projects', label: 'Projects', width: '16%', cell: row => row.projects },
-    { key: 'lastActive', label: 'Last Active', width: '16%', align: 'center', cell: row => row.lastActive },
+    { key: 'lastActive', label: 'Last Active', width: '10%', align: 'center', cell: row => row.lastActive },
   ];
 
   actions: TableAction<User>[] = [
