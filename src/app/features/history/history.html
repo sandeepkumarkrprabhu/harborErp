@@ -1,258 +1,69 @@
-<div class="min-h-screen bg-slate-50 p-6">
+<div class="px-1">
 
-  <!-- Header -->
-  <div class="mb-5 flex items-start justify-between">
+    <!-- Header -->
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
 
-    <div>
-      <h1 class="text-2xl font-bold text-slate-800">
-        Deployment History
-      </h1>
+        <app-page-title title="Deployment History" description="Browse deployment records, filter by project, environment, and date."></app-page-title>
 
-      <p class="mt-1 text-sm text-slate-500">
-        All deployments across all projects and environments
-      </p>
-    </div>
-
-    <button
-      class="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
-      Export CSV
-    </button>
-
-  </div>
-
-  <!-- Status Tabs -->
-  <div class="mb-4 flex flex-wrap gap-2">
-
-    <button
-      class="rounded-md border border-[#D88E7B] bg-[#FFF4F1] px-4 py-2 text-xs font-medium text-[#D88E7B]">
-      All
-    </button>
-
-    <button
-      class="rounded-md border border-slate-200 bg-white px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50">
-      Success
-    </button>
-
-    <button
-      class="rounded-md border border-slate-200 bg-white px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50">
-      Failed
-    </button>
-
-    <button
-      class="rounded-md border border-slate-200 bg-white px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50">
-      Running
-    </button>
-
-  </div>
-
-  <!-- Filters -->
-  <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
-
-    <div class="flex flex-wrap gap-2">
-
-      <select
-        class="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm focus:border-[#D88E7B] focus:outline-none">
-        <option>All Projects</option>
-      </select>
-
-      <select
-        class="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm focus:border-[#D88E7B] focus:outline-none">
-        <option>All Environments</option>
-      </select>
+        <app-harborButton caption="Export CSV" (clicked)="onExport()"></app-harborButton>
 
     </div>
 
-    <input
-      type="date"
-      class="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm focus:border-[#D88E7B] focus:outline-none" />
+    <!-- Toolbar -->
+    <div class="grid w-full grid-cols-1 gap-4 bg-white border border-black/5 rounded-md p-3 mb-5 select-none md:grid-cols-[auto_1fr_auto] md:items-end md:px-2">
 
-  </div>
+      <!-- First column: status filter -->
+      <div class="min-w-0">
+        <div class="relative inline-flex w-full rounded-md border border-[rgba(60,50,40,0.12)] bg-[#fdfcf9] p-[4px] select-none">
+          <app-selection 
+            [options]="['All', 'Success', 'Failed', 'Running']" 
+            [(selected)]="selectedFilter">
+          </app-selection>
+        </div>
+      </div>
 
-  <!-- Table -->
-  <div class="overflow-hidden rounded-lg border border-slate-200 bg-white">
+      <!-- Second column: search -->
+      <div class="min-w-0 w-full md:flex md:justify-end">
+        <app-search 
+          placeholder="Search deployments..." 
+          (clicked)="onSearch()">
+        </app-search>
+      </div>
 
-    <div class="overflow-x-auto">
+      <!-- Third column: dropdown filters + date -->
+      <div class="flex flex-col gap-3 w-full min-w-0 md:flex-row md:items-center md:gap-3">
+        <select
+          class="w-full h-10 rounded-lg border border-slate-100 px-3 py-1.5 text-sm outline-none transition focus:border-[#D88E7B] focus:ring-2 focus:ring-[#D88E7B]/30 md:w-[auto]"
+          [(ngModel)]="selectedProject"
+        >
+          <option *ngFor="let project of projectOptions" [value]="project">{{ project }}</option>
+        </select>
 
-      <table class="min-w-full text-sm">
+        <select
+          class="w-full h-10 rounded-lg border border-slate-100 px-3 py-1.5 text-sm outline-none transition focus:border-[#D88E7B] focus:ring-2 focus:ring-[#D88E7B]/30 md:w-[auto]"
+          [(ngModel)]="selectedEnvironment"
+        >
+          <option *ngFor="let environment of environmentOptions" [value]="environment">{{ environment }}</option>
+        </select>
 
-        <thead class="bg-slate-50">
-
-          <tr class="text-slate-500">
-
-            <th class="px-4 py-3 text-left font-medium">#</th>
-            <th class="px-4 py-3 text-left font-medium">Project</th>
-            <th class="px-4 py-3 text-left font-medium">Environment</th>
-            <th class="px-4 py-3 text-left font-medium">Status</th>
-            <th class="px-4 py-3 text-left font-medium">Triggered By</th>
-            <th class="px-4 py-3 text-left font-medium">Duration</th>
-            <th class="px-4 py-3 text-left font-medium">Timestamp</th>
-            <th class="px-4 py-3 text-left font-medium">PR / Commit</th>
-            <th class="px-4 py-3 text-left font-medium">Branch</th>
-            <th class="px-4 py-3 text-center font-medium">Action</th>
-
-          </tr>
-
-        </thead>
-
-        <tbody>
-
-          @for (deployment of deployments(); track deployment.id) {
-
-          <tr class="border-t border-slate-100 hover:bg-slate-50">
-
-            <!-- ID -->
-            <td class="px-4 py-3 font-medium text-[#D88E7B]">
-              #{{ deployment.id }}
-            </td>
-
-            <!-- Project -->
-            <td class="px-4 py-3 font-medium text-slate-700">
-              {{ deployment.project }}
-            </td>
-
-            <!-- Environment -->
-            <td class="px-4 py-3">
-
-              @switch (deployment.environment) {
-
-                @case ('production') {
-                  <span class="rounded bg-red-100 px-2 py-1 text-xs text-red-600">
-                    Production
-                  </span>
-                }
-
-                @case ('staging') {
-                  <span class="rounded bg-blue-100 px-2 py-1 text-xs text-blue-600">
-                    Staging
-                  </span>
-                }
-
-                @case ('qa') {
-                  <span class="rounded bg-purple-100 px-2 py-1 text-xs text-purple-600">
-                    QA
-                  </span>
-                }
-
-                @default {
-                  <span class="rounded bg-slate-100 px-2 py-1 text-xs text-slate-600">
-                    Dev
-                  </span>
-                }
-              }
-
-            </td>
-
-            <!-- Status -->
-            <td class="px-4 py-3">
-
-              @switch (deployment.status) {
-
-                @case ('success') {
-                  <span class="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">
-                    Success
-                  </span>
-                }
-
-                @case ('failed') {
-                  <span class="rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-700">
-                    Failed
-                  </span>
-                }
-
-                @case ('pending') {
-                  <span class="rounded-full bg-yellow-100 px-3 py-1 text-xs font-medium text-yellow-700">
-                    Pending
-                  </span>
-                }
-
-                @default {
-                  <span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700">
-                    Running
-                  </span>
-                }
-              }
-
-            </td>
-
-            <!-- User -->
-            <td class="px-4 py-3 text-slate-600">
-              {{ deployment.user }}
-            </td>
-
-            <!-- Duration -->
-            <td class="px-4 py-3 text-slate-600">
-              {{ deployment.duration }}
-            </td>
-
-            <!-- Timestamp -->
-            <td class="px-4 py-3 text-slate-600">
-              {{ deployment.timestamp }}
-            </td>
-
-            <!-- Commit -->
-            <td class="px-4 py-3">
-              <span class="rounded bg-slate-100 px-2 py-1 text-xs text-slate-600">
-                {{ deployment.commit }}
-              </span>
-            </td>
-
-            <!-- Branch -->
-            <td class="px-4 py-3">
-              <span class="rounded bg-slate-100 px-2 py-1 text-xs text-slate-600">
-                {{ deployment.branch }}
-              </span>
-            </td>
-
-            <!-- Action -->
-            <td class="px-4 py-3 text-center">
-
-              <button
-                class="rounded border border-slate-300 px-3 py-1 text-xs font-medium text-slate-600 transition hover:bg-slate-50">
-                View
-              </button>
-
-            </td>
-
-          </tr>
-
-          }
-
-        </tbody>
-
-      </table>
+        <input
+          type="date"
+          class="w-full h-10 rounded-lg border border-slate-100 px-3 py-1.5 text-sm outline-none transition focus:border-[#D88E7B] focus:ring-2 focus:ring-[#D88E7B]/30 md:w-[130px]"
+          [(ngModel)]="selectedDate"
+          aria-label="Select date"
+        />
+      </div>
 
     </div>
 
-    <!-- Pagination -->
-    <div class="flex items-center justify-end gap-2 border-t border-slate-100 px-4 py-3">
-
-      <button
-        class="text-xs text-slate-500 hover:text-slate-700">
-        Prev
-      </button>
-
-      <button
-        class="h-7 w-7 rounded bg-[#D88E7B] text-xs text-white">
-        1
-      </button>
-
-      <button
-        class="h-7 w-7 rounded border border-slate-200 text-xs">
-        2
-      </button>
-
-      <button
-        class="h-7 w-7 rounded border border-slate-200 text-xs">
-        3
-      </button>
-
-      <button
-        class="text-xs text-slate-500 hover:text-slate-700">
-        Next
-      </button>
-
+    <!-- Data Table -->
+    <div class="mt-2 h-auto">
+      <app-table
+        [data]="filteredDeployments"
+        [columns]="columns"
+        [actions]="actions"
+        emptyMessage="No deployment history available."
+      >
+      </app-table>
     </div>
-
-  </div>
-
 </div>

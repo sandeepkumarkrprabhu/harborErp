@@ -4,6 +4,6 @@ export interface User {
   email: string;
   role: string;
   projects: string;
-  status: string;
   lastActive: string;
+  status: string;
 }

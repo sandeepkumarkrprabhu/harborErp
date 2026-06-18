@@ -10,6 +10,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class Search {
   @Input() placeholder = '';
+  @Input() widthClass = 'w-full max-w-[260px]';
   @Output() clicked = new EventEmitter<MouseEvent>();
   
   searchText: string = '';

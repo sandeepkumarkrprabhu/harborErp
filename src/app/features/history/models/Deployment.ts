@@ -7,5 +7,6 @@ export interface Deployment {
   duration: string;
   timestamp: string;
   commit: string;
+  PRCommit:string;
   branch: string;
 }

@@ -3,13 +3,14 @@ import { ProjectCard } from '../shared/project-card/project-card';
 import { harborButton } from '../shared/button/button';
 import { PageTitle } from '../shared/page-title/page-title';
 import { Search } from '../shared/search/search';
+import { Selection } from '../shared/selection/selection';
 
 import { Project } from '../shared/Models/Project';
 
 @Component({
   selector: 'app-projects',
   standalone: true,
-  imports: [ProjectCard, harborButton, PageTitle, Search],
+  imports: [ProjectCard, harborButton, PageTitle, Search, Selection],
   templateUrl: './projects.html',
   styleUrl: './projects.css'
 })

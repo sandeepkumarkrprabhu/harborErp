@@ -1,40 +1,37 @@
-<div class="space-y-6">
+<div class="px-1">
 
     <!-- Header -->
     <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
 
-        <app-page-title title="Projects"></app-page-title>
+        <app-page-title title="Projects" description="Create, view and manage projects."></app-page-title>
 
         <app-harborButton caption="+ New Project" (clicked)="onNewProject()"></app-harborButton>
 
     </div>
 
     <!-- Toolbar -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white border border-black/5 rounded-md p-3 mb-5 select-none">
+    <div class="flex flex-col md:flex-row justify-between items-center gap-4 bg-white border border-black/5 rounded-md p-3 mb-5 select-none">
+  
+    <!-- Left section: search -->
+    <div class="w-full md:w-1/4">
+        <app-search 
+        placeholder="Search projects..." 
+        (clicked)="onNewProject()">
+        </app-search>
+    </div>
 
-        <app-search placeholder="Search projects..." (clicked)="onNewProject()"></app-search>
-
-        <div class="flex flex-wrap gap-2">
-
-            <button class="px-3 py-1 text-xs rounded-md bg-orange-100 text-orange-700 border border-orange-200">
-                All (6)
-            </button>
-
-            <button class="px-3 py-1 text-xs rounded-md border border-gray-200">
-                Active (5)
-            </button>
-
-            <button class="px-3 py-1 text-xs rounded-md border border-gray-200">
-                Degraded (1)
-            </button>
-
-            <button class="px-3 py-1 text-xs rounded-md border border-gray-200">
-                Archived
-            </button>
-
+    <!-- Right section: filter -->
+    <div class="w-full md:w-auto ml-auto">
+        <div class="relative inline-flex rounded-md border border-[rgba(60,50,40,0.12)] bg-[#fdfcf9] p-[4px] select-none">
+        <app-selection 
+            [options]="['All (6)', 'Active (5)', 'Degraded (1)', 'Archived']" 
+            [(selected)]="selectedFilter">
+        </app-selection>
         </div>
+    </div>
 
     </div>
+
 
     <!-- Project Cards -->
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-5">
