@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NgxChartsModule } from '@swimlane/ngx-charts';
 
 import { MetricTile } from '../../shared/components/metric-tile/metric-tile';
 import { ActivityList } from '../../shared/components/activity-list/activity-list';
@@ -11,7 +10,7 @@ import { Deployment } from '../../Models/Deployment';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, NgxChartsModule, MetricTile, ActivityList, ProjectCard],
+  imports: [CommonModule, MetricTile, ActivityList, ProjectCard],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css']
 })
