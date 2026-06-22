@@ -1,0 +1,17 @@
+<div class="flex justify-between items-center">
+  <!-- Sorting buttons -->
+  <div class="flex gap-2 justify-end">
+    @for (opt of options; track opt.value) {
+      <button
+        class="flex items-center justify-center gap-1.5 rounded-[5px] px-4 py-2 text-xs font-semibold transition-colors duration-200 cursor-pointer text-[#6b5e52] hover:text-[#1a1a1a]"
+        [ngClass]="{
+          'bg-primary text-white': active === opt.value,
+          'cursor-pointer text-[rgb(107,94,82)] hover:text-[#1a1a1a]': active !== opt.value
+        }"
+        (click)="onFilterSelect(opt.value)"
+      >
+        {{ opt.label }} ({{ opt.count }})
+      </button>
+    }
+  </div>
+</div>

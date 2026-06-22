@@ -1,48 +1,59 @@
-<div class="px-6">
+<div>
+  <div class="mb-5 flex justify-between items-center select-none">
+    <h1 class="text-[22px] font-medium tracking-tight text-[#1a1a1a]">Dashboard Overview</h1>
+  </div>
 
-    <!-- Dashboard Header -->
-    <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between py-1">
+  <!-- Metrics -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+    @for (tile of metricTiles; track tile.title) {
+      <app-metric-tile [title]="tile.title" [value]="tile.value" [details]="tile.details">
+      </app-metric-tile>
+    }
+  </div>
 
-        <app-page-title title="Dashboard Overview" description="Summary of recent activity, deployments, and key metrics."></app-page-title>
+  <!-- Main content split -->
+  <div class="grid grid-cols-1 md:grid-cols-[65%_33%] gap-8">
+    <!-- Left column -->
+    <div>
+      <!-- Recent Projects -->
+      <div class="bg-white mb-4 border border-gray-200 rounded-lg shadow-sm">
+        <h2 class="text-lg font-small bg-secondary text-black px-4 py-2 rounded">
+          Recent Projects
+        </h2>
 
-    </div>
-
-    <!-- Summary Cards -->
-    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4 py-6">
-
-        @for (card of cards; track card.title) {
-
-            <app-summary-card
-                [card]="card">
-            </app-summary-card>
-
-        }
-
-    </div>
-
-    <!-- Main Dashboard Content -->
-    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-
-        <!-- Left Section -->
-        <div class="xl:col-span-2 space-y-6">
-
-            <!-- Recent Projects -->
-            <app-recent-projects></app-recent-projects>
-
-            <!-- Deployment Chart -->
-            <app-dashboard-chart></app-dashboard-chart>
-
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-4">
+          @for (project of projects; track project.name) {
+            <app-project-card [project]="project"></app-project-card>
+          }
         </div>
+      </div>
 
-        <!-- Right Section -->
-        <div class="space-y-6">
-
-            <!-- Recent Activity -->
-            <app-dashboard-activity>
-            </app-dashboard-activity>
-
+      <!-- Projects with Most Deployments (Chart) -->
+      <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
+        <h2 class="text-lg font-small mb-4 bg-secondary text-black px-4 py-2 rounded">
+          Projects with Most Deployments
+        </h2>
+        <div class="bg-white rounded-lg shadow p-6">
+          <div class="w-full h-64">
+            <!-- <ngx-charts-bar-vertical
+              [results]="deploymentChartData"
+              [xAxis]="true"
+              [yAxis]="true"
+              [legend]="false"
+              [showDataLabel]="true"  
+              scheme="vivid"> 
+            </ngx-charts-bar-vertical> -->
+          </div>
         </div>
-
+      </div>
     </div>
-    
+
+    <!-- Right column -->
+    <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
+      <h2 class="text-lg font-small mb-4 bg-secondary text-black rounded px-4 py-2">
+        Recent Activity
+      </h2>
+      <app-activity-list [activities]="activities"></app-activity-list>
+    </div>
+  </div>
 </div>

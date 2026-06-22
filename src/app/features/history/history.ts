@@ -1,195 +1,170 @@
-import { Component, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Deployment } from './models/Deployment';
-import { PageTitle } from '../shared/page-title/page-title';
-import { harborButton } from '../shared/button/button';
-import { Search } from '../shared/search/search';
-import { Selection } from '../shared/selection/selection';
-import { Table } from '../shared/table/table';
-import type { TableAction, TableColumn } from '../shared/Models/Table';
+import { Component } from '@angular/core';
+import { SortBar } from '../../shared/components/sort-bar/sort-bar';
+import { FilterOption } from '../../Models/FilterOption';
+import { Eye, Download, SearchIcon } from 'lucide-angular';
+import { InputField } from '../../shared/components/input-field/input-field';
+import { DataTable } from '../../shared/components/data-table/data-table';
+import { TableConfig } from '../../Models/Table';
+import { Dropdown } from '../../shared/components/dropdown/dropdown';
 
 @Component({
   selector: 'app-history',
   standalone: true,
-  imports: [CommonModule, FormsModule, harborButton, PageTitle, Search, Selection, Table],
+  imports: [SortBar, InputField, Dropdown, DataTable],
   templateUrl: './history.html',
-  styleUrl: './history.css',
+  styleUrls: ['./history.css'],
 })
 export class History {
-  
-  selectedFilter = 'All';
-  selectedProject = 'All Projects';
-  selectedEnvironment = 'All Environments';
-  selectedDate = '';
 
-  projectOptions = ['All Projects', 'harbor-web', 'harbor-api', 'ocean-service', 'river-api'];
-  environmentOptions = ['All Environments', 'production', 'staging', 'qa', 'dev'];
-  
-  onExport(): void {
-    console.log('Export clicked');
-  }
+  readonly DownloadIcon = Download;
+  readonly SearchIcon = SearchIcon;
+  readonly Eye = Eye;
+  activeFilter: string = 'all';
+  searchTerm: string = '';   // ✅ new search term
 
-  onSearch(): void {
-    console.log('Search deployment clicked', {
-      project: this.selectedProject,
-      environment: this.selectedEnvironment,
-      date: this.selectedDate,
-      filter: this.selectedFilter,
-    });
-  }
+  // Track selected filters
+  selectedEnvironment: string = '';
+  selectedProject: string = '';
+  selectedDate: string = '';
 
-  // Optional search term (not wired to UI input yet)
-  searchTerm = '';
-
-  get filteredDeployments(): Deployment[] {
-    const list = this.deployments();
-    const filterStatus = this.selectedFilter?.toLowerCase() || 'all';
-    const project = this.selectedProject || '';
-    const env = this.selectedEnvironment || '';
-    const date = this.selectedDate || '';
-    const search = this.searchTerm?.toLowerCase() || '';
-
-    return list.filter(d => {
-      // status
-      if (filterStatus && filterStatus !== 'all') {
-        if (d.status.toLowerCase() !== filterStatus) {
-          return false;
-        }
-      }
-
-      // project
-      if (project && project !== 'All Projects') {
-        if (d.project !== project) return false;
-      }
-
-      // environment
-      if (env && env !== 'All Environments') {
-        if (d.environment !== env) return false;
-      }
-
-      // date (compare ISO date part)
-      if (date) {
-        const dt = new Date(d.timestamp);
-        if (isNaN(dt.getTime())) return false;
-        const iso = dt.toISOString().slice(0, 10);
-        if (iso !== date) return false;
-      }
-
-      // search (optional) - check project, user, branch, commit
-      if (search) {
-        const hay = [d.project, d.user, d.branch, d.commit, d.PRCommit].filter(Boolean).join(' ').toLowerCase();
-        if (!hay.includes(search)) return false;
-      }
-
-      return true;
-    });
-  }
-
-  deployments = signal<Deployment[]>([
-    {
-      id: 119,
-      project: 'harbor-web',
-      environment: 'production',
-      status: 'running',
-      user: 'Sam T.',
-      duration: '1m 22s',
-      timestamp: 'Jun 24, 2026 1:05 PM',
-      commit: 'abc123',
-      PRCommit: 'abc123',
-      branch: 'feature/login',
-    },
-    {
-      id: 118,
-      project: 'harbor-api',
-      environment: 'production',
-      status: 'success',
-      user: 'Alex K.',
-      duration: '4m 12s',
-      timestamp: 'Jun 24, 2026 12:05 PM',
-      commit: 'def456',
-      PRCommit: 'def456',
-      branch: 'main',
-    },
-    {
-      id: 117,
-      project: 'ocean-service',
-      environment: 'production',
-      status: 'failed',
-      user: 'James R.',
-      duration: '2m 15s',
-      timestamp: 'Jun 24, 2026 11:45 AM',
-      commit: 'ghi789',
-      PRCommit: 'ghi789',
-      branch: 'release/v2',
-    },
-    {
-      id: 116,
-      project: 'river-api',
-      environment: 'staging',
-      status: 'running',
-      user: 'Chris L.',
-      duration: '58s',
-      timestamp: 'Jun 24, 2026 10:55 AM',
-      commit: 'jkl321',
-      PRCommit: 'jkl321',
-      branch: 'feature/payment',
-    },
-    {
-      id: 115,
-      project: 'desert-service',
-      environment: 'dev',
-      status: 'pending',
-      user: 'Taylor A.',
-      duration: '—',
-      timestamp: 'Jun 24, 2026 10:15 AM',
-      commit: 'mno654',
-      PRCommit: 'mno654',
-      branch: 'feature/security',
-    },
-    {
-      id: 114,
-      project: 'forest-api',
-      environment: 'qa',
-      status: 'success',
-      user: 'Morgan T.',
-      duration: '3m 40s',
-      timestamp: 'Jun 24, 2026 09:40 AM',
-      commit: 'pqr987',
-      PRCommit: 'pqr987',
-      branch: 'release/v3',
-    },
-  ]);
-
-  columns: TableColumn<Deployment>[] = [
-    { key: 'id', label: '#', width: '10%', cell: row => row.id },
-    { key: 'project', label: 'Project', width: '14%', cell: row => row.project },
-    { key: 'environment', label: 'Environment', width: '10%', align: 'center', cell: row => row.environment },
-    { key: 'status', label: 'Status', width: '8%', align: 'center', cell: row => row.status },
-    { key: 'user', label: 'Triggered By', width: '14%', cell: row => row.user },
-    { key: 'PRCommit', label: 'PR/Commit', width: '8%', cell: row => (row.PRCommit || '').substring(0, 7) },
-    { key: 'duration', label: 'Duration', width: '6%', align: 'center', cell: row => row.duration },
-    { key: 'timestamp', label: 'Timestamp', width: '20%', cell: row => row.timestamp },
-    { key: 'branch', label: 'Branch', width: '10%', cell: row => row.branch },
+  // Full deployments list
+  deployments = [
+    { slNo: 1, project: 'harbor-api', environment: 'Production', status: 'Succees', triggeredBy: 'Alex K.', duration: '2m 15s', timestamp: '2026-06-20T08:45:00', prCommit: 'a1b2c3d', branch: 'main' },
+    { slNo: 2, project: 'harbor-frontend', environment: 'Staging', status: 'In Progress', triggeredBy: 'Priya R.', duration: '1m 05s', timestamp: '2026-06-20T09:10:00', prCommit: 'd4e5f6g', branch: 'develop' },
+    { slNo: 3, project: 'auth-service', environment: 'Development', status: 'Failed', triggeredBy: 'Sam T.', duration: '3m 40s', timestamp: '2026-06-19T22:30:00', prCommit: 'h7i8j9k', branch: 'feature/auth-refactor' },
+    { slNo: 4, project: 'notification-worker', environment: 'Production', status: 'Succees', triggeredBy: 'Zara M.', duration: '2m 00s', timestamp: '2026-06-20T07:55:00', prCommit: 'l0m1n2o', branch: 'main' },
+    { slNo: 5, project: 'payment-gateway', environment: 'Production', status: 'Succees', triggeredBy: 'John D.', duration: '4m 20s', timestamp: '2026-06-19T18:15:00', prCommit: 'p9q8r7s', branch: 'release/v2.1' },
+    { slNo: 6, project: 'inventory-service', environment: 'QA', status: 'In Progress', triggeredBy: 'Meera L.', duration: '2m 45s', timestamp: '2026-06-20T10:05:00', prCommit: 't1u2v3w', branch: 'feature/stock-alerts' },
+    { slNo: 7, project: 'user-profile', environment: 'Development', status: 'Failed', triggeredBy: 'Carlos M.', duration: '5m 10s', timestamp: '2026-06-19T21:00:00', prCommit: 'x4y5z6a', branch: 'feature/avatar-upload' },
+    { slNo: 8, project: 'reporting-dashboard', environment: 'Staging', status: 'Succees', triggeredBy: 'Nina P.', duration: '3m 30s', timestamp: '2026-06-20T06:40:00', prCommit: 'b7c8d9e', branch: 'develop' },
+    { slNo: 9, project: 'email-service', environment: 'Production', status: 'In Progress', triggeredBy: 'Omar Q.', duration: '2m 50s', timestamp: '2026-06-20T11:20:00', prCommit: 'f1g2h3i', branch: 'main' },
+    { slNo: 10, project: 'analytics-engine', environment: 'QA', status: 'Failed', triggeredBy: 'Sophia W.', duration: '6m 00s', timestamp: '2026-06-19T20:10:00', prCommit: 'j7k8l9m', branch: 'feature/data-pipeline' },
+    { slNo: 11, project: 'chat-service', environment: 'Production', status: 'Succees', triggeredBy: 'Rajesh B.', duration: '3m 05s', timestamp: '2026-06-20T05:25:00', prCommit: 'n0o1p2q', branch: 'main' },
+    { slNo: 12, project: 'file-storage', environment: 'Development', status: 'In Progress', triggeredBy: 'Emily C.', duration: '4m 45s', timestamp: '2026-06-20T09:55:00', prCommit: 'r3s4t5u', branch: 'feature/cloud-sync' }
   ];
 
-  actions: TableAction<Deployment>[] = [
-    {
-      label: 'View',
-      class: 'border-slate-300 text-slate-700 hover:bg-slate-100',
-      handler: (row) => this.onView(row),
-    },
-  ];
+  // Filtered + searched deployments
+  get filteredDeployments() {
+    let list = this.deployments;
 
-  onView(row: Deployment): void {
-    console.log('View deployment', row);
+    // Apply status filter
+    switch (this.activeFilter) {
+      case 'success': list = list.filter(d => d.status === 'Succees'); break;
+      case 'failed': list = list.filter(d => d.status === 'Failed'); break;
+      case 'running': list = list.filter(d => d.status === 'In Progress'); break;
+      case 'archived': list = []; break;
+    }
+
+    // Apply search filter
+    if (this.searchTerm) {
+      const term = this.searchTerm.toLowerCase();
+      list = list.filter(d =>
+        Object.values(d).some(val => String(val).toLowerCase().includes(term))
+      );
+    }
+
+    // Apply project filter
+    if (this.selectedProject) {
+      list = list.filter(d => d.project === this.selectedProject);
+    }
+
+    // Apply date filter (match by date only, ignoring time)
+    if (this.selectedDate) {
+      const selected = new Date(this.selectedDate).toDateString();
+      list = list.filter(d => new Date(d.timestamp).toDateString() === selected);
+    }
+
+    // Apply environment filter
+    if (this.selectedEnvironment) {
+      list = list.filter(d => d.environment === this.selectedEnvironment);
+    }
+
+    return list;
   }
 
-  onRetry(row: Deployment): void {
-    console.log('Retry deployment', row);
+  // Table config
+  get tableConfig(): TableConfig {
+    return {
+      columns: [
+        { header: '#', field: 'slNo' },
+        { header: 'Project', field: 'project', bold: true },
+        { header: 'Environment', field: 'environment', badge: true, badgeColorMap: {
+            'Production': 'text-[#d08873]',
+            'Staging': 'text-black-700',
+            'QA': 'text-[#e65100]'
+          }},
+        { header: 'Status', field: 'status', badge: true, badgeColorMap: {
+            'Succees': 'bg-green-100 text-green-700',
+            'In Progress': 'bg-yellow-100 text-yellow-700 italic',
+            'Failed': 'bg-red-100 text-red-700'
+          }},
+        { header: 'Triggered By', field: 'triggeredBy', italic: true },
+        { header: 'Duration', field: 'duration' },
+        { header: 'Timestamp', field: 'timestamp' },
+        { header: 'PR/Commit', field: 'prCommit', badge: true },
+        { header: 'Branch', field: 'branch', badge: true, italic: true, colorClass: 'text-blue-700' }
+      ],
+      data: this.filteredDeployments,
+      actions: [
+        { label: 'View', icon: Eye, color: 'bg-white-100 text-gray-600 border border-black/5 select-none', action: 'view' }
+      ]
+    };
   }
 
-  onCancel(row: Deployment): void {
-    console.log('Cancel deployment', row);
+  /** Dynamic filter options with counts */
+  get filterOptions(): FilterOption[] {
+    return [
+      { label: 'All', count: this.deployments.length, value: 'all' },
+      { label: 'Success', count: this.deployments.filter(d => d.status === 'Succeeded').length, value: 'success' },
+      { label: 'Failed', count: this.deployments.filter(d => d.status === 'Failed').length, value: 'failed' },
+      { label: 'Running', count: this.deployments.filter(d => d.status === 'In Progress').length, value: 'running' },
+    ];
+  }
+
+  /** Handle filter change */
+  onFilterChange(value: string) {
+    this.activeFilter = value;
+  }
+
+  /** Handle search change */
+  onSearchChange(value: string) {
+    this.searchTerm = value;
+  }
+
+  /** Handle table actions */
+  handleTableAction(event: { action: string; row: any }) {
+    if (event.action === 'view') {
+      console.log('View deployment:', event.row);
+    }
+  }
+
+  /** Export deployment data to CSV */
+  onExportCSV() {
+    const rows = this.filteredDeployments;
+    if (!rows.length) {
+      console.warn('No data to export.');
+      return;
+    }
+    // CSV export logic here...
+  }
+
+  onEnvironmentChange(env: string) {
+    this.selectedEnvironment = env;
+  }
+
+  onProjectChange(project: string) {
+    this.selectedProject = project;
+  }
+
+  onDateChange(date: string) {
+    this.selectedDate = date;
+  }
+
+  get environments(): string[] {
+    return Array.from(new Set(this.deployments.map(d => d.environment)));
+  }
+
+  get projects(): string[] {
+    return Array.from(new Set(this.deployments.map(d => d.project)));
   }
 }

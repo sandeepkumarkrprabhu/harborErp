@@ -1,71 +1,40 @@
 import { Routes } from '@angular/router';
+import { MainLayout } from './layout/main-layout/main-layout';
 
 export const routes: Routes = [
-
-  // -------------------------
-  // Default redirect
-  // -------------------------
   {
     path: '',
-    redirectTo: 'login',
-    pathMatch: 'full',
-  },
-
-  // -------------------------
-  // AUTH AREA (Login Layout)
-  // -------------------------
-  {
-    path: '', // keep empty for clean URL (login)
-    loadComponent: () =>
-      import('./layouts/auth-layout/auth-layout').then(
-        (m) => m.AuthLayout
-      ),
+    component: MainLayout,
     children: [
       {
-        path: 'login',
-        loadComponent: () =>
-          import('./features/auth/login/login').then(
-            (m) => m.Login
-          ),
+        path: 'dashboard',
+        loadComponent: () => import('./features/dashboard/dashboard').then(m => m.Dashboard)
       },
-    ],
-  },
-
-  // -------------------------
-  // APP AREA (Main Layout)
-  // -------------------------
-  {
-    path: 'app',   // ✅ important fix
-    loadComponent: () =>
-      import('./layouts/application-layout/application-layout').then(
-        (m) => m.ApplicationLayout
-      ),
-    children: [
-
-      { path: 'dashboard', data: { title: 'Dashboard' }, loadComponent: () => import('./features/dashboard/dashboard').then(m => m.Dashboard) },
-
-      { path: 'projects', data: { title: 'Projects' }, loadComponent: () => import('./features/projects/projects').then(m => m.ProjectList) },
-
-      { path: 'history', data: { title: 'History' }, loadComponent: () => import('./features/history/history').then(m => m.History) },
-
-      { path: 'users', data: { title: 'Users' }, loadComponent: () => import('./features/users/users').then(m => m.Users) },
-
-      { path: 'settings', data: { title: 'Settings' }, loadComponent: () => import('./features/settings/settings').then(m => m.Settings) },
-
-      // ✅ default inside app
+      {
+        path: 'projects',
+        loadComponent: () => import('./features/projects/projects').then(m => m.Projects)
+      },
+      {
+        path: 'history',
+        loadComponent: () => import('./features/history/history').then(m => m.History)
+      },
+      {
+        path: 'settings',
+        loadComponent: () => import('./features/settings/settings').then(m => m.Settings)
+      },
+      {
+        path: 'users',
+        loadComponent: () => import('./features/users/users').then(m => m.Users)
+      },
       {
         path: '',
         redirectTo: 'dashboard',
-        pathMatch: 'full',
+        pathMatch: 'full'
       }
-    ],
+    ]
   },
-
-  // -------------------------
-  // Catch-all
-  // -------------------------
   {
-    path: '**',
-    redirectTo: 'login',
-  },
+    path: 'login',
+    loadComponent: () => import('./features/auth/login/login').then(m => m.Login)
+  }
 ];

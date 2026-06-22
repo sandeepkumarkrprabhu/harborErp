@@ -1,46 +1,65 @@
-<div class="px-6">
+<div>
+  <div class="mb-5 flex justify-between items-center select-none">
+    <!-- Left: Title -->
+    <h1 class="text-[22px] font-medium tracking-tight text-[#1a1a1a]">Projects</h1>
 
-    <!-- Header -->
-    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between pb-4">
-
-        <app-page-title title="Projects" description="Create, view and manage projects."></app-page-title>
-
-        <app-harborButton [icon]="PlusCircle" caption="New Project" (clicked)="onNewProject()"></app-harborButton>
-
-    </div>
-
-    <!-- Toolbar -->
-    <div class="flex flex-col md:flex-row justify-between items-center gap-4 bg-white border border-black/5 rounded-md p-3 mb-5 select-none">
-  
-    <!-- Left section: search -->
-    <div class="w-full md:w-1/4">
-        <app-search 
-        placeholder="Search projects..." 
-        (clicked)="onNewProject()">
-        </app-search>
-    </div>
-
-    <!-- Right section: filter -->
-    <div class="w-full md:w-auto ml-auto">
-        <div class="relative inline-flex rounded-md border border-[rgba(60,50,40,0.12)] bg-[#fdfcf9] p-[4px] select-none">
-        <app-selection 
-            [options]="['All (6)', 'Active (5)', 'Degraded (1)', 'Archived']" 
-            [(selected)]="selectedFilter">
-        </app-selection>
+    <!-- Right: Add Project button -->
+    <button
+      class="px-2 py-1 bg-primary text-white text-sm font-medium rounded-md hover:bg-primary/90 transition"
+      (click)="openCreateProject()"
+    >
+      + New Project
+    </button>
+    <!-- Modal -->
+    @if (showCreateProject) {
+      <div class="fixed inset-0 flex items-center justify-center w-auto h-screen">
+        <div
+          class="relative bg-white rounded-md border border-black/5 shadow-xl w-full max-w-5xl flex flex-col md:flex-row overflow-hidden max-h-[90vh] md:h-[620px]"
+        >
+          <!-- Content wrapper -->
+          <div class="flex flex-1 max-h-full overflow-y-auto">
+            <!-- Content -->
+            <app-create-project class="flex-1"></app-create-project>
+          </div>
         </div>
+      </div>
+    }
+  </div>
+
+  <!-- Filter + Sort bar -->
+  <div
+    class="flex flex-col bg-white md:flex-row md:items-center justify-between gap-2 border border-black/5 rounded-md p-1 mb-3 select-none"
+  >
+    <!-- Left: Search -->
+    <div class="m-4 w-[30%] rounded-md">
+      <app-input-field
+        label=""
+        type="text"
+        [leftIcon]="SearchIcon"
+        placeholder="Search projects...."
+        [required]="false"
+        formControlName="globalSearch"
+      >
+      </app-input-field>
     </div>
 
+    <!-- Right: Sort -->
+    <div class="p-2 m-2 border border-gray-200 rounded-lg shadow-sm">
+      <app-sort-bar
+        [options]="filterOptions"
+        [active]="activeFilter"
+        (filterChange)="onFilterChange($event)"
+      >
+      </app-sort-bar>
     </div>
+  </div>
 
-
-    <!-- Project Cards -->
-    <div class="grid grid-cols-1 xl:grid-cols-3 gap-5">
-
-        @for(project of projectRecords; track project.id)
-        {
-            <app-project-card [project]="project"></app-project-card>
-        }
-
+  <!-- Project list -->
+  <div class="mb-4 border border-gray-200 rounded-lg shadow-sm">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
+      @for (project of projects; track project.name) {
+        <app-project-card [project]="project"></app-project-card>
+      }
     </div>
-
+  </div>
 </div>

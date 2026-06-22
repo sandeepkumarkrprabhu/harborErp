@@ -1,0 +1,13 @@
+<button
+  [attr.type]="type"
+  [disabled]="disabled"
+  [style.width]="width || (fullWidth ? '100%' : '')"
+  [style.height]="height || ''"
+  [style.backgroundColor]="variant === 'primary' ? '#D88E7B' : 
+                            variant === 'secondary' ? '#D88E7B61' : 
+                            '#f3f4f6'"
+  [style.color]="variant === 'primary' ? '#ffffff' : '#374151'"
+  class="flex items-center justify-center font-medium py-2 px-4 transition"
+>
+  <ng-content></ng-content>
+</button>

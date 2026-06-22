@@ -1,0 +1,38 @@
+<div class="grid grid-cols-1 gap-3 p-2">
+  @for (activity of activities; track activity.name) {
+    <div class="flex items-center bg-white rounded-lg shadow p-4 hover:shadow-md transition">
+      <!-- Badge with right arrow -->
+      <div class="flex-shrink-0">
+        <span
+          class="inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold"
+          [ngClass]="{
+            'bg-orange-100 text-orange-600': activity.status === 'deploying',
+            'bg-green-100 text-green-600': activity.status === 'deployed' || activity.status === 'active',
+            'bg-gray-100 text-gray-600': activity.status === 'idle',
+            'bg-red-100 text-red-600': activity.status === 'error'
+          }"
+        >
+          ▶
+        </span>
+      </div>
+
+      <!-- Details -->
+      <div class="ml-4 flex-1">
+        <p class="text-sm font-medium text-gray-800">{{ activity.name }}</p>
+        <p class="text-xs">
+          <span
+            [ngClass]="{
+              'text-orange-600': activity.status === 'deploying',
+              'text-green-600': activity.status === 'deployed' || activity.status === 'active',
+              'text-gray-600': activity.status === 'idle',
+              'text-red-600': activity.status === 'error'
+            }"
+          >
+            ● {{ activity.status }}
+          </span>
+          – {{ activity.by }}
+        </p>
+      </div>
+    </div>
+  }
+</div>

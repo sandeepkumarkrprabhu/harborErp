@@ -1,0 +1,65 @@
+<div class="space-y-6">
+    @for (table of tables; track table) {
+    <div class="overflow-x-auto border border-black/5 rounded-md mb-1 select-none">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    @for (col of table.columns; track col.header) {
+                    <th class="px-4 py-2 text-left text-xs font-semibold bg-[#fdfcf9] text-gray-600 tracking-wider">
+                        {{ col.header }}
+                    </th>
+                    }
+                    @if (table.actions.length > 0) {
+                    <th class="px-4 py-2 text-left text-xs font-semibold bg-[#fdfcf9] text-gray-600">
+                        Actions
+                    </th>
+                    }
+                </tr>
+            </thead>
+
+            <tbody class="bg-white divide-y divide-gray-200">
+                @for (row of table.data; track row) {
+                <tr class="hover:bg-gray-50 transition">
+                    @for (col of table.columns; track col.field) {
+                    <td [ngClass]="[
+                    'px-4', 'py-2', 'text-sm', 'text-gray-700',
+                    col.bold ? 'font-bold' : '',
+                    col.italic ? 'italic' : '',
+                    col.cursor === 'pointer' ? 'cursor-pointer' : '',
+                    col.colorClass || ''
+                  ]">
+
+                        <!-- Generic badge rendering -->
+                        @if (col.badge) {
+                        <span class="px-2 py-1 rounded-full text-xs font-semibold"
+                            [ngClass]="col.badgeColorMap ? col.badgeColorMap[row[col.field]] : 'bg-gray-100 text-gray-700'">
+                            {{ row[col.field] }}
+                        </span>
+                        }
+                        @else {
+                        {{ row[col.field] }}
+                        }
+                    </td>
+                    }
+
+                    @if (table.actions.length > 0) {
+                    <td class="px-4 py-2 flex gap-2">
+                        @for (act of table.actions; track act.action) {
+                        <button (click)="onAction(act.action, row)" class="px-2 py-1 rounded text-xs font-medium transition cursor-pointer
+                             hover:scale-105 focus:ring-2 focus:ring-blue-500"
+                            [ngClass]="act.color || 'bg-blue-100 text-blue-600'">
+                            @if (act.icon) {
+                            <!-- <lucide-icon [img]="act.icon" [size]="14"></lucide-icon> -->
+                            }
+                            {{ act.label }}
+                        </button>
+                        }
+                    </td>
+                    }
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    }
+</div>

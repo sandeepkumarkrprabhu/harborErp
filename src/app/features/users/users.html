@@ -1,38 +1,62 @@
-<div class="px-6">
+<div>
+  <!-- Header -->
+  <div class="mb-5 flex justify-between items-center select-none">
+    <!-- Left: Title -->
+    <h1 class="text-[22px] font-medium tracking-tight text-[#1a1a1a]">Team Members</h1>
 
-    <!-- Header -->
-    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+    <!-- Right: Export button -->
+    <button
+      class="flex items-center gap-2 px-3 py-1 rounded-md border bg-white transition border-gray-200 font-semibold text-sm text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+      (click)="onAddNewMember()"
+    >
+      <!-- <lucide-icon [img]="Download" [size]="16"></lucide-icon> -->
+      Add New Member
+    </button>
+  </div>
 
-        <app-page-title title="Users" description="5 Users. 0 Pending"></app-page-title>
-
-        <app-harborButton [icon]="UserPlus" caption="Add New User" (clicked)="onAddNewMember()"></app-harborButton>
-
+  <!-- Filter + Search + Sort bar -->
+  <div
+    class="flex flex-col bg-secondary/15 md:flex-row md:items-center justify-between gap-2 border border-[#d08873]/15 rounded-md p-4 mb-3 select-none"
+  >
+    <!-- Left: Filter bar -->
+    <!-- <div class="p-2 bg-[#fdfcf9] border border-gray-200 rounded-sm shadow-sm"> -->
+    <div class="flex flex-col">
+      <h3 class="text-sm font-semibold text-[#1a1a1a]">Invite a new team member to view</h3>
+      <p class="text-xs text-[#6b5e52] mt-0.5">
+        They'll receive an email to set up their account and PIN.
+      </p>
     </div>
+    <!-- <app-sort-bar [options]="filterOptions" [active]="activeFilter" (filterChange)="onFilterChange($event)">
+            </app-sort-bar> -->
 
-    <!-- Toolbar -->
-    <div class="grid w-full grid-cols-1 gap-4 bg-[#fdfcf9] border border-black/5 rounded-md p-3 mb-5 select-none md:grid-cols-[auto_1fr_auto] md:items-end md:px-2">
+    <!-- </div> -->
 
-      <!-- Second column: search -->
-      <div class="min-w-0 w-full md:flex md:justify-end">
-        <app-search 
-          placeholder="colleague@project.com..." 
-          (clicked)="onSendInvite()">
-        </app-search>
-        
-        <app-harborButton [icon]="Forward" caption="send Invite" (clicked)="onInviteSend()"></app-harborButton>
-
-      </div>
-
-    </div>
-
-    <!-- Data Table -->
-    <div class="mt-2 h-auto">
-      <app-table
-        [data]="filteredUsers"
-        [columns]="columns"
-        [actions]="actions"
-        emptyMessage="No team member found."
+    <!-- Right: Shared filter controls -->
+    <div class="flex justify-end gap-2">
+      <app-input-field
+        label=""
+        type="email"
+        [leftIcon]="Mail"
+        placeholder="colleage@project.com"
+        [required]="true"
+        formControlName="userInvite"
       >
-      </app-table>
+      </app-input-field>
+
+      <button
+        class="px-2 py-1 bg-primary text-white text-sm font-medium rounded-md hover:bg-primary/90 transition"
+        (click)="onSendInvite()"
+      >
+        send
+      </button>
     </div>
+  </div>
+
+  <!-- Users list -->
+  <div class="w-full bg-white border border-black/5 rounded-md overflow-hidden">
+    <div class="overflow-x-auto w-full">
+      <app-data-table [tables]="[usersTableConfig]" (actionClicked)="handleTableAction($event)">
+      </app-data-table>
+    </div>
+  </div>
 </div>

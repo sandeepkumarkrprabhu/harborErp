@@ -1,69 +1,59 @@
-<div class="px-6">
-
+<div>
     <!-- Header -->
-    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+    <div class="mb-5 flex justify-between items-center select-none">
+        <!-- Left: Title -->
+        <h1 class="text-[22px] font-medium tracking-tight text-[#1a1a1a]">
+            Deployment History
+        </h1>
 
-        <app-page-title title="Deployment History" description="Browse deployment records, filter by project, environment, and date."></app-page-title>
-
-        <app-harborButton caption="Export CSV" (clicked)="onExport()"></app-harborButton>
-
+        <!-- Right: Export button -->
+        <button class="flex items-center gap-2 px-3 py-1 rounded-md border bg-white transition 
+             border-gray-200 font-semibold text-sm text-gray-700 
+             hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+            (click)="onExportCSV()">
+            <!-- <lucide-icon [img]="Download" [size]="16"></lucide-icon> -->
+            Export CSV
+        </button>
     </div>
 
-    <!-- Toolbar -->
-    <div class="grid w-full grid-cols-1 gap-4 bg-white border border-black/5 rounded-md p-3 mb-5 select-none md:grid-cols-[auto_1fr_auto] md:items-end md:px-2">
+    <!-- Filter + Search + Sort bar -->
+    <div
+        class="flex flex-col bg-white md:flex-row md:items-center justify-between gap-2 border border-black/5 rounded-md p-2 mb-3 select-none">
 
-      <!-- First column: status filter -->
-      <div class="min-w-0">
-        <div class="relative inline-flex w-full rounded-md border border-[rgba(60,50,40,0.12)] bg-[#fdfcf9] p-[4px] select-none">
-          <app-selection 
-            [options]="['All', 'Success', 'Failed', 'Running']" 
-            [(selected)]="selectedFilter">
-          </app-selection>
+        <!-- Left: Filter bar -->
+        <div class="p-2 bg-[#fdfcf9] border border-gray-200 rounded-sm shadow-sm">
+            <app-sort-bar [options]="filterOptions" [active]="activeFilter" (filterChange)="onFilterChange($event)">
+            </app-sort-bar>
         </div>
-      </div>
 
-      <!-- Second column: search -->
-      <div class="min-w-0 w-full md:flex md:justify-end">
-        <app-search 
-          placeholder="Search deployments..." 
-          (clicked)="onSearch()">
-        </app-search>
-      </div>
+        <!-- Right: Shared filter controls -->
+        <div class="flex justify-end gap-2">
+            <app-input-field 
+                label="" 
+                type="text" 
+                [leftIcon]="SearchIcon" 
+                placeholder="Search deployments...." 
+                [required]="false"
+                formControlName="historySearch">
+            </app-input-field>
 
-      <!-- Third column: dropdown filters + date -->
-      <div class="flex flex-col gap-3 w-full min-w-0 md:flex-row md:items-center md:gap-3">
-        <select
-          class="w-full h-10 rounded-lg border border-slate-100 px-3 py-1.5 text-sm outline-none transition focus:border-[#D88E7B] focus:ring-2 focus:ring-[#D88E7B]/30 md:w-[auto]"
-          [(ngModel)]="selectedProject"
-        >
-          <option *ngFor="let project of projectOptions" [value]="project">{{ project }}</option>
-        </select>
+            <app-dropdown 
+                [options]="environments"
+                (selectionChange)="onEnvironmentChange($event)">
+            </app-dropdown>
 
-        <select
-          class="w-full h-10 rounded-lg border border-slate-100 px-3 py-1.5 text-sm outline-none transition focus:border-[#D88E7B] focus:ring-2 focus:ring-[#D88E7B]/30 md:w-[auto]"
-          [(ngModel)]="selectedEnvironment"
-        >
-          <option *ngFor="let environment of environmentOptions" [value]="environment">{{ environment }}</option>
-        </select>
-
-        <input
-          type="date"
-          class="w-full h-10 rounded-lg border border-slate-100 px-3 py-1.5 text-sm outline-none transition focus:border-[#D88E7B] focus:ring-2 focus:ring-[#D88E7B]/30 md:w-[130px]"
-          [(ngModel)]="selectedDate"
-          aria-label="Select date"
-        />
-      </div>
-
+            <app-dropdown 
+                [options]="projects"
+                (selectionChange)="onProjectChange($event)">
+            </app-dropdown>
+        </div>
     </div>
 
-    <!-- Data Table -->
-    <div class="mt-2 h-auto">
-      <app-table
-        [data]="filteredDeployments"
-        [columns]="columns"
-        [actions]="actions"
-        emptyMessage="No deployment history available."
-      >
-      </app-table>
+    <!-- Deployment list -->
+    <div class="w-full bg-white border border-black/5 rounded-md overflow-hidden">
+        <div class="overflow-x-auto w-full">
+            <app-data-table [tables]="[tableConfig]" (actionClicked)="handleTableAction($event)">
+            </app-data-table>
+        </div>
     </div>
 </div>

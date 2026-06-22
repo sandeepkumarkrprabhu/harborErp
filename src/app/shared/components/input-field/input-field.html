@@ -1,0 +1,73 @@
+<div class="flex flex-col gap-1 w-full">
+
+  <!-- Label -->
+  <label *ngIf="label" class="text-sm font-medium text-gray-700">
+    {{ label }}
+    <span *ngIf="required" class="text-red-500 ml-0.5">*</span>
+  </label>
+
+  <!-- Input wrapper -->
+  <div
+    class="flex items-center gap-2 px-3 py-2 rounded-lg border bg-[#fdfcf9] transition"
+    [ngClass]="{
+      'border-red-400 ring-2 ring-red-100': hasError,
+      'border-primary ring-2 ring-primary/20': isFocused && !hasError,
+      'border-gray-200': !isFocused && !hasError,
+      'bg-gray-50 opacity-60 cursor-not-allowed': disabled
+    }">
+
+    <!-- Left icon -->
+    <lucide-icon
+      *ngIf="leftIcon"
+      [img]="leftIcon"
+      [size]="18"
+      class="shrink-0 transition"
+      [ngClass]="{
+        'text-red-400': hasError,
+        'text-primary': isFocused && !hasError,
+        'text-gray-400': !isFocused && !hasError
+      }">
+    </lucide-icon>
+
+    <!-- Input -->
+    <input
+      [type]="inputType"
+      [value]="value"
+      [placeholder]="placeholder"
+      [disabled]="disabled"
+      (input)="onInput($event)"
+      (focus)="onFocus()"
+      (blur)="onBlur()"
+      class="flex-1 border-none outline-none bg-transparent text-sm text-gray-800 placeholder-gray-400 disabled:cursor-not-allowed"
+    />
+
+    <!-- Password toggle -->
+    <button
+      *ngIf="type === 'password'"
+      type="button"
+      (click)="togglePassword()"
+      class="shrink-0 text-gray-400 hover:text-gray-600 transition">
+      <lucide-icon [img]="showPassword ? EyeOff : Eye" [size]="18"></lucide-icon>
+    </button>
+
+    <!-- Right icon (non-password) -->
+    <lucide-icon
+      *ngIf="rightIcon && type !== 'password'"
+      [img]="rightIcon"
+      [size]="18"
+      class="shrink-0 text-gray-400">
+    </lucide-icon>
+
+  </div>
+
+  <!-- Error message -->
+  <p *ngIf="hasError" class="text-xs text-red-500 mt-0.5">
+    {{ resolvedErrorMessage }}
+  </p>
+
+  <!-- Helper text -->
+  <p *ngIf="helperText && !hasError" class="text-xs text-gray-400 mt-0.5">
+    {{ helperText }}
+  </p>
+
+</div>

@@ -1,89 +1,93 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
 
-import { SummaryCard } from './summary/summary';
-import { RecentProjects } from './recent-projects/recent-projects';
-import { Activity } from './activity/activity';
-import { Chart } from './chart/chart';
-import { DashboardSummaryModel } from './models/card.model';
-
-import { PageTitle } from '../shared/page-title/page-title';
+import { MetricTile } from '../../shared/components/metric-tile/metric-tile';
+import { ActivityList } from '../../shared/components/activity-list/activity-list';
+import { Project } from '../../Models/project';
+import { ProjectCard } from '../../shared/components/project-card/project-card';
+import { Deployment } from '../../Models/Deployment';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [
-    SummaryCard,
-    RecentProjects,
-    Activity,
-    Chart,
-    PageTitle
-  ],
+  imports: [CommonModule, NgxChartsModule, MetricTile, ActivityList, ProjectCard],
   templateUrl: './dashboard.html',
-  styleUrl: './dashboard.css',
+  styleUrls: ['./dashboard.css']
 })
-export class Dashboard {
+export class Dashboard implements OnInit {
 
-  cards: DashboardSummaryModel[] = [
-    {
-      title: 'Environments',
-      value: 15,
-      icon: 'pi pi-server',
-
-      success: '12 Healthy',
-      successColor: '#22C55E',
-
-      failure: '3 Unhealthy',
-      failureColor: '#e65100',
-
-      successPercentage: 80,
-      failurePercentage: 20,
-
-      subtitle: 'Across all projects'
+  // Source of truth
+  metrics = {
+    environments: {
+      total: 15,
+      healthy: 14,
+      unhealthy: 1,
+      details: [
+        { label: 'healthy', value: 14, textColor: 'text-green-600', barColor: 'bg-green-500' },
+        { label: 'unhealthy', value: 1, textColor: 'text-red-600', barColor: 'bg-red-500' }
+      ]
     },
-    {
-      title: 'Deployments',
-      value: 2,
-      icon: 'pi pi-cloud-upload',
-
-      inProgress: 'In progress right now',
-      inProgressColor: '#e65100',
-
-      inProgressPercentage: 100,
-
-      subtitle: 'Current deployments'
+    deployments: {
+      inProgress: 2,
+      details: [
+        { label: 'in progress', value: 2, textColor: 'text-orange-600', barColor: 'bg-orange-500' }
+      ]
     },
-    {
-      title: 'Last 24 Hours',
-      value: 11,
-      icon: 'pi pi-clock',
-
-      success: '10 Successful',
-      successColor: '#22C55E',
-
-      failure: '1 Failed',
-      failureColor: '#EF4444',
-
-      successPercentage: 91,
-      failurePercentage: 9,
-
-      subtitle: 'Recent activity'
+    last24h: {
+      total: 11,
+      succeeded: 10,
+      failed: 1,
+      details: [
+        { label: 'succeeded', value: 10, textColor: 'text-green-600', barColor: 'bg-green-500' },
+        { label: 'failed', value: 1, textColor: 'text-red-600', barColor: 'bg-red-500' }
+      ]
     },
-    {
-      title: 'Deployment Frequency',
-      value: 8,
-      icon: 'pi pi-chart-line',
-
-      success: 'Deploys today',
-      successColor: '#22C55E',
-
-      failure: '3% this week',
-      failureColor: '#EF4444',
-
-      successPercentage: 72,
-      failurePercentage: 28,
-
-      subtitle: 'Average deployment rate'
+    frequency: {
+      today: 8,
+      week: 34,
+      details: [
+        { label: 'today', value: 8, textColor: 'text-blue-600', barColor: 'bg-blue-500' },
+        { label: 'this week', value: 34, textColor: 'text-purple-600', barColor: 'bg-purple-500' }
+      ]
     }
+  };
+
+  // Array for looping in template
+  metricTiles: { title: string; value: number; details: any[] }[] = [];
+
+  projects: Project[] = [
+    { name: 'harbor-api', desc: 'Go backend service for Harbor portal', type: 'Microservice', source:'org/harbor-api', branch: 'main', envs: 4, healthy: 4, unhealthy: 0, updated: '2h ago', by: 'Alex K.', deployments: 12 },
+    { name: 'harbor-frontend', desc: 'Angular frontend application', type: 'Infrastructure', envs: 3, source:'org/harbor-frontend', branch: 'main', healthy: 2, unhealthy: 1, updated: '5h ago', by: 'Priya R.', deployments: 20 },
+    { name: 'auth-service', desc: 'OAuth2 & RBAC microservice', type: 'Microservice', envs: 3, source:'org/auth-service', branch: 'master', healthy: 3, unhealthy: 0, updated: '1d ago', by: 'Sam T.', deployments: 8 },
+    { name: 'notification-worker', desc: 'Slack & email notification worker', type: 'Infrastructure', envs: 4, source:'org/notification-worker', branch: 'prod', healthy: 4, unhealthy: 0, updated: '3h ago', by: 'Zara M.', deployments: 15 }
   ];
 
+  activities = [
+    { name: 'payment-service', status: 'deploying', by: 'Arjun' },
+    { name: 'user-authentication', status: 'active', by: 'Maya' },
+    { name: 'order-management', status: 'idle', by: 'Liam' },
+    { name: 'inventory-tracking', status: 'deployed', by: 'Zara' },
+    { name: 'notification-system', status: 'error', by: 'Ethan' }
+  ];
+
+  ngOnInit(): void {
+    this.metricTiles = [
+      { title: 'Environments', value: this.metrics.environments.total, details: this.metrics.environments.details },
+      { title: 'Deployments', value: this.metrics.deployments.inProgress, details: this.metrics.deployments.details },
+      { title: 'Last 24 hours', value: this.metrics.last24h.total, details: this.metrics.last24h.details },
+      { title: 'Deployment Frequency', value: this.metrics.frequency.today, details: this.metrics.frequency.details }
+    ];
+  }
+
+  get projectsMostDeployments(): Project[] {
+    return [...this.projects].sort((a, b) => b.deployments - a.deployments).slice(0, 5);
+  }
+
+  get deploymentChartData(): { name: string; value: number }[] {
+    return this.projectsMostDeployments.map((project: Project) => ({
+      name: project.name,
+      value: project.deployments
+    }));
+  }
 }

@@ -1,124 +1,189 @@
-import { Component, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { User } from './models/User';
-import { PageTitle } from '../shared/page-title/page-title';
-import { harborButton } from '../shared/button/button';
-import { Table } from '../shared/table/table';
-import { Search } from '../shared/search/search';
-import type { TableAction, TableColumn } from '../shared/Models/Table';
-import { Pencil, Trash2, UserPlus, Forward } from 'lucide-angular';
+import { Component } from '@angular/core';
+
+import { FilterOption } from '../../Models/FilterOption';
+import { DataTable } from '../../shared/components/data-table/data-table';
+import { TableConfig } from '../../Models/Table';
+import { InputField } from '../../shared/components/input-field/input-field';
+import { Pencil, Trash, Mail } from 'lucide-angular';
 
 @Component({
   selector: 'app-users',
-  standalone: true,
-  imports: [CommonModule, FormsModule, PageTitle, harborButton, Search, Table],
+  imports: [InputField, DataTable],
   templateUrl: './users.html',
   styleUrl: './users.css',
 })
 export class Users {
-  readonly UserPlus = UserPlus;
-  readonly Forward = Forward;
-  selectedProject = 'All Projects';
-  selectedEnvironment = 'All Environments';
-  selectedDate = '';
 
-  projectOptions = ['All Projects', 'harbor-web', 'harbor-api', 'ocean-service', 'river-api'];
-  environmentOptions = ['All Environments', 'production', 'staging', 'qa', 'dev'];
+  readonly Mail = Mail;
+  readonly Edit = Pencil;
+  readonly Delete = Trash;
 
-  users = signal<User[]>([
+  activeFilter: string = 'all';
+
+  users = [
     {
-      id: 1,
-      name: 'Maya Chen',
-      email: 'maya.chen@harborerp.com',
-      role: 'Product Owner',
-      projects: 'harbor-web',
-      status: 'Active',
-      lastActive: 'Now',
+      memberName: 'Alex K.',
+      email: 'alex.k@example.com',
+      role: 'Developer',
+      projects: ['harbor-api', 'notification-worker'],
+      lastActive: '2026-06-20T08:45:00',
+      status: 'Active'
     },
     {
-      id: 2,
-      name: 'Noah Patel',
-      email: 'noah.patel@harborerp.com',
+      memberName: 'Priya R.',
+      email: 'priya.r@example.com',
+      role: 'Frontend Engineer',
+      projects: ['harbor-frontend', 'reporting-dashboard'],
+      lastActive: '2026-06-20T09:10:00',
+      status: 'Active'
+    },
+    {
+      memberName: 'Sam T.',
+      email: 'sam.t@example.com',
       role: 'Backend Engineer',
-      projects: 'harbor-api',
-      status: 'Active',
-      lastActive: '10 mins ago',
+      projects: ['auth-service'],
+      lastActive: '2026-06-19T22:30:00',
+      status: 'Inactive'
     },
     {
-      id: 3,
-      name: 'Ayesha Khan',
-      email: 'ayesha.khan@harborerp.com',
-      role: 'QA Analyst',
-      projects: 'ocean-service',
-      status: 'Active',
-      lastActive: '1 hour ago',
+      memberName: 'Zara M.',
+      email: 'zara.m@example.com',
+      role: 'DevOps',
+      projects: ['notification-worker'],
+      lastActive: '2026-06-20T07:55:00',
+      status: 'Active'
     },
     {
-      id: 4,
-      name: 'Carlos Silva',
-      email: 'carlos.silva@harborerp.com',
-      role: 'DevOps Engineer',
-      projects: 'river-api',
-      status: 'Inactive',
-      lastActive: 'Yesterday',
+      memberName: 'John D.',
+      email: 'john.d@example.com',
+      role: 'Payments Specialist',
+      projects: ['payment-gateway'],
+      lastActive: '2026-06-19T18:15:00',
+      status: 'Active'
     },
     {
-      id: 5,
-      name: 'Lina Park',
-      email: 'lina.park@harborerp.com',
-      role: 'Support Lead',
-      projects: 'harbor-web',
-      status: 'Active',
-      lastActive: '2 hours ago',
+      memberName: 'Meera L.',
+      email: 'meera.l@example.com',
+      role: 'QA Engineer',
+      projects: ['inventory-service'],
+      lastActive: '2026-06-20T10:05:00',
+      status: 'Active'
     },
-  ]);
-
-  get filteredUsers(): User[] {
-    // Basic placeholder: returns full list; add filtering later if required
-    return this.users();
-  }
-
-  columns: TableColumn<User>[] = [
-    { key: 'name', label: 'Member', width: '18%', cell: row => row.name, avatar: true },
-    { key: 'email', label: 'Email', width: '25%', cell: row => row.email },
-    { key: 'role', label: 'Role', width: '12%', cell: row => row.role },
-    { key: 'projects', label: 'Projects', width: '16%', cell: row => row.projects },
-    { key: 'lastActive', label: 'Last Active', width: '10%', align: 'center', cell: row => row.lastActive },
+    {
+      memberName: 'Carlos M.',
+      email: 'carlos.m@example.com',
+      role: 'UI/UX Designer',
+      projects: ['user-profile'],
+      lastActive: '2026-06-19T21:00:00',
+      status: 'Inactive'
+    },
+    {
+      memberName: 'Nina P.',
+      email: 'nina.p@example.com',
+      role: 'Frontend Engineer',
+      projects: ['reporting-dashboard'],
+      lastActive: '2026-06-20T06:40:00',
+      status: 'Active'
+    },
+    {
+      memberName: 'Omar Q.',
+      email: 'omar.q@example.com',
+      role: 'Email Specialist',
+      projects: ['email-service'],
+      lastActive: '2026-06-20T11:20:00',
+      status: 'Active'
+    },
+    {
+      memberName: 'Sophia W.',
+      email: 'sophia.w@example.com',
+      role: 'Data Analyst',
+      projects: ['analytics-engine'],
+      lastActive: '2026-06-19T20:10:00',
+      status: 'Inactive'
+    },
+    {
+      memberName: 'Rajesh B.',
+      email: 'rajesh.b@example.com',
+      role: 'Chat Engineer',
+      projects: ['chat-service'],
+      lastActive: '2026-06-20T05:25:00',
+      status: 'Active'
+    },
+    {
+      memberName: 'Emily C.',
+      email: 'emily.c@example.com',
+      role: 'Cloud Engineer',
+      projects: ['file-storage'],
+      lastActive: '2026-06-20T09:55:00',
+      status: 'Active'
+    }
   ];
 
-  actions: TableAction<User>[] = [
-    {
-      label: 'Edit',
-      icon: Pencil,
-      class: 'border-slate-300 text-slate-700 hover:bg-slate-100',
-      handler: (row) => this.onEdit(row),
-    },
-    {
-      label: 'Delete',
-      icon: Trash2,
-      class: 'border-red-300 text-red-700 hover:bg-red-50',
-      handler: (row) => this.onRemove(row),
-    },
-  ];
-
-  onAddNewMember(): void {
-    console.log('Add new member');
+  /** Dynamic filter options with counts */
+  get filterOptions(): FilterOption[] {
+    return [
+      { label: 'All', count: this.users.length, value: 'all' },
+      { label: 'Active', count: this.users.filter(d => d.status === 'Active').length, value: 'active' },
+      { label: 'Pending', count: this.users.filter(d => d.status === 'Pending').length, value: 'pending' },
+      { label: 'In Active', count: this.users.filter(d => d.status === 'Inactive').length, value: 'inactive' },
+    ];
   }
 
-  onEdit(row: User): void {
-    console.log('Edit user', row);
+  // Filtered + searched deployments
+  get filteredDeployments() {
+    let list = this.users;
+
+    // Apply status filter
+    switch (this.activeFilter) {
+      case 'success': list = list.filter(d => d.status === 'Succees'); break;
+      case 'failed': list = list.filter(d => d.status === 'Failed'); break;
+      case 'running': list = list.filter(d => d.status === 'In Progress'); break;
+      case 'archived': list = []; break;
+    }
+
+    return list;
   }
 
-  onRemove(row: User): void {
-    console.log('Remove user', row);
+  // Table config
+  get usersTableConfig(): TableConfig {
+    return {
+      columns: [
+        { header: 'Member Name', field: 'memberName', bold: true },
+        { header: 'Email', field: 'email' },
+        { header: 'Role', field: 'role' },
+        { header: 'Projects', field: 'projects', badge: true }, 
+        { header: 'Last Active', field: 'lastActive' },
+        { header: 'Status', field: 'status', badge: true, badgeColorMap: {
+            'Active': 'bg-green-100 text-green-700',
+            'Inactive': 'bg-red-100 text-red-700'
+          }}
+      ],
+      data: this.users,
+      actions: [
+        { label: 'Edit', icon: this.Edit, color: 'bg-white-100 text-white-700 border border-black/5', action: 'edit' },
+        { label: 'Delete', icon: this.Delete, color: 'bg-red-100 text-red-700 border border-black/5', action: 'delete' }
+      ]
+    };
   }
 
-  onSendInvite(): void {
-    console.log('Send Invite');
+  //Send Invite to new email user
+  onAddNewMember() {
+    console.log("Add new member");
   }
-  
-  onInviteSend(): void{
-    console.log("New user invite send");
+
+  onSendInvite() {
+    console.log("Send Invite");
+  }
+
+  /** Handle filter change */
+  onFilterChange(value: string) {
+    this.activeFilter = value;
+  }
+
+  /** Handle table actions */
+  handleTableAction(event: { action: string; row: any }) {
+    if (event.action === 'view') {
+      console.log('View deployment:', event.row);
+    }
   }
 }

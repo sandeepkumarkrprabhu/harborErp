@@ -1,0 +1,20 @@
+<div class="bg-white rounded-lg shadow p-4">
+  <h2 class="text-sm text-gray-600">{{ title }}</h2>
+  <p class="text-xl font-bold text-gray-900">{{ value }}</p>
+
+  <!-- Labels side by side -->
+  <div class="flex items-center space-x-3 text-sm mb-2">
+    <span *ngFor="let d of details" [ngClass]="d.textColor || 'text-gray-700'">
+      {{ d.value }} {{ d.label }}
+    </span>
+  </div>
+
+  <!-- Thin progress bar -->
+  <div class="w-full bg-gray-200 rounded-full h-1 flex overflow-hidden">
+    <div *ngFor="let d of getPercentages()"
+         class="h-1"
+         [ngClass]="d.barColor || 'bg-gray-700'"
+         [style.width.%]="d.percent">
+    </div>
+  </div>
+</div>
