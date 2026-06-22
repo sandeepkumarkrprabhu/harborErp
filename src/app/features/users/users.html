@@ -55,6 +55,9 @@
   <!-- Users list -->
   <div class="w-full bg-white border border-black/5 rounded-md overflow-hidden">
     <div class="overflow-x-auto w-full">
+      <!-- <div class="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-white font-semibold text-sm">
+        A
+      </div> -->
       <app-data-table [tables]="[usersTableConfig]" (actionClicked)="handleTableAction($event)">
       </app-data-table>
     </div>

@@ -15,4 +15,10 @@ export class MainLayout {
   readonly SearchIcon = SearchIcon;
 
   @Input() pageTitle: string = 'Overview';
+
+  
+  /** Handle filter change from filter-bar */
+  OnQuickActions() {
+    console.log("Quick Actions Clicked");
+  }
 }
