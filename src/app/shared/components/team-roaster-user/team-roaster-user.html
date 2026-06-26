@@ -1,0 +1,19 @@
+<div
+  class="flex justify-between items-center m-2 p-2 rounded-md border border-black/5 bg-[#fdfcf9] hover:bg-[#f4f2ef]/50 transition-colors"
+>
+  <div class="flex items-center gap-2.5">
+    <div
+      class="h-8 w-8 rounded-full flex items-center justify-center text-white text-xs font-bold bg-[#beab9d]"
+    >
+      ER
+    </div>
+    <div class="flex flex-col">
+      <span class="text-xs font-bold text-[#1a1a1a]">{{ user.memberName }}</span
+      ><span class="text-[10px] text-[#8a7f75]">{{ user.email }}</span>
+    </div>
+  </div>
+  <span
+    class="bg-white border border-black/5 text-[#d08873] text-[9px] font-bold px-2 py-0.5 rounded-sm"
+    >{{ user.role }}</span
+  >
+</div>

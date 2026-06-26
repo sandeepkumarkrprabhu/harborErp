@@ -1,0 +1,69 @@
+<div class="max-w-7xl mx-auto w-full pb-12 animate-slide-up">
+  <div class="mb-5 flex justify-between items-center select-none animate-fade-in">
+    <!-- Left: Title -->
+    <div>
+      <h1 class="text-[22px] font-medium tracking-tight text-[#1a1a1a]">Team & Structure</h1>
+      <p class="text-sm text-[#6b5e52] mt-1">
+        Explore organization structures, member mappings, and project ownership.
+      </p>
+    </div>
+    <!-- Right: Add Project button -->
+    <button
+      class="px-2 py-1 bg-primary text-white text-sm font-medium rounded-md hover:bg-primary/90 transition"
+    >
+      + New Team
+    </button>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-[65%_33%] gap-8">
+    <!-- Left column -->
+    <div>
+      <div class="lg:col-span-7 flex flex-col gap-4">
+        @for (team of teams; track team.teamName) {
+          <app-team-card [team]="team" (selectTeam)="onTeamSelected($event)"></app-team-card>
+        }
+      </div>
+    </div>
+
+    <!-- Right column -->
+    <div
+      class="bg-white border border-black/5 rounded-md p-5 flex flex-col gap-6 shadow-sm min-h-[460px]"
+    >
+      @if (selectedTeam) {
+        <app-team-roaster-head [team]="selectedTeam"></app-team-roaster-head>
+      } @else {
+        <div class="text-gray-500 text-sm">Select a team to view roster</div>
+      }
+
+      <div>
+        <div
+          class="flex items-center gap-1.5 text-xs font-semibold text-[#8a7f75] uppercase tracking-wider"
+        >
+          @if (selectedTeam) {
+            <lucide-icon [name]="UserRound" class="h-5 w-5 text-white-700" aria-hidden="true">
+            </lucide-icon>
+            <span>TEAM ROASTER ({{ selectedTeam.teamRoaster.length }})</span>
+          }
+        </div>
+
+        @for (user of selectedTeam?.teamRoaster; track user.memberName) {
+          <app-team-roaster-user [user]="user"></app-team-roaster-user>
+        }
+      </div>
+      <div>
+        <div
+          class="flex items-center gap-1.5 text-xs font-semibold text-[#8a7f75] uppercase tracking-wider"
+        >
+          @if (selectedTeam) {
+            <lucide-icon [name]="UserRound" class="h-5 w-5 text-white-700" aria-hidden="true">
+            </lucide-icon>
+            <span>OWNED PROJECTS ({{ selectedTeam.projects.length }})</span>
+          }
+        </div>
+        @for (project of selectedTeam?.projects; track project.name) {
+          <app-team-owned-project [project]="project"></app-team-owned-project>
+        }
+      </div>
+    </div>
+  </div>
+</div>

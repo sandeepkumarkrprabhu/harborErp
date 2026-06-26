@@ -1,0 +1,13 @@
+<div class="flex items-center gap-3 pb-4 border-b border-black/5">
+  <div
+    class="h-10 w-10 rounded-md flex items-center justify-center text-white"
+    style="background-color: rgb(208, 136, 115)"
+  >
+    <lucide-icon [name]="team.icon" class="h-5 w-5 text-white-700" aria-hidden="true">
+    </lucide-icon>
+  </div>
+  <div class="flex flex-col">
+    <h2 class="text-base font-bold text-[#1a1a1a]">{{ team.teamName }}</h2>
+    <span class="text-xs text-[#8a7f75]">{{ team.description }}</span>
+  </div>
+</div>

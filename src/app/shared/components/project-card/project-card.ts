@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Project } from '../../../Models/project'; 
+import { getProjectStatus } from '../../../features/utils/string-utils';
 
 @Component({
   selector: 'app-project-card',
@@ -25,9 +26,6 @@ export class ProjectCard {
 
   /** Status color for the circle */
   get statusColor(): string {
-    if (this.project.healthy > 0 && this.project.unhealthy === 0) return 'bg-green-500';
-    if (this.project.healthy > 0 && this.project.unhealthy > 0) return 'bg-yellow-500';
-    if (this.project.unhealthy > 0 && this.project.healthy === 0) return 'bg-red-500';
-    return 'bg-gray-400';
+    return getProjectStatus(this.project.healthy, this.project.unhealthy);
   }
 }

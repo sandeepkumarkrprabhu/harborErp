@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { LucideAngularModule, LayoutDashboard, FolderKanban, History, Users, Settings, Bell, LogOut, Menu } from 'lucide-angular';
+import { LucideAngularModule, LayoutDashboard, FolderKanban, UsersRound, History, Users, Settings, Bell, LogOut, Menu } from 'lucide-angular';
 
 @Component({
   selector: 'app-sidebar',
@@ -23,7 +23,8 @@ export class Sidebar {
 
   navItems = [
     { label: 'Dashboard',     route: '/dashboard',      icon: LayoutDashboard },
-    { label: 'Projects',      route: '/projects',       icon: FolderKanban    },
+    { label: 'Projects', route: '/projects', icon: FolderKanban },
+    { label: 'Teams',      route: '/teams',       icon: UsersRound },
     { label: 'History',       route: '/history',        icon: History         },
     { label: 'Users',         route: '/users',          icon: Users           },
     { label: 'Settings',      route: '/settings',       icon: Settings        },
