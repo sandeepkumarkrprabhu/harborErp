@@ -8,12 +8,12 @@ import { SortBar } from '../../shared/components/sort-bar/sort-bar';
 import { ProjectCard } from '../../shared/components/project-card/project-card';
 import { InputField } from '../../shared/components/input-field/input-field';
 import { CreateProject } from './create-project/create-project';
-
+import { ProjectIdentity } from './project-identity/project-identity';
 
 @Component({
   selector: 'app-projects',
   standalone: true,
-  imports: [CommonModule, InputField, SortBar, ProjectCard, CreateProject],
+  imports: [CommonModule, InputField, SortBar, ProjectCard, CreateProject, ProjectIdentity],
   templateUrl: './projects.html',
   styleUrls: ['./projects.css'],
 })

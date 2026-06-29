@@ -1,0 +1,26 @@
+<div class="px-6 py-4 border-b border-black/5 flex justify-between items-center">
+  <h2 class="text-sm font-semibold text-[#1a1a1a]">{{ title }}</h2>
+
+  @if (showClose) {
+    <button
+      class="text-[#8a7f75] hover:text-[#1a1a1a] transition-colors cursor-pointer"
+      (click)="onClose()"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="lucide lucide-x"
+      >
+        <path d="M18 6 6 18"></path>
+        <path d="m6 6 12 12"></path>
+      </svg>
+    </button>
+  }
+</div>

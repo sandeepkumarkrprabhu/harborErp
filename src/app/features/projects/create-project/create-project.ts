@@ -1,6 +1,10 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { WizardSteps } from '../../../shared/components/wizard-steps/wizard-steps';
+import { WizardHeader } from '../../../shared/components/wizard-header/wizard-header';
+import { ProjectIdentity } from '../project-identity/project-identity';
+import { WizardFooter } from '../../../shared/components/wizard-footer/wizard-footer';
 
 enum ProjectSteps {
   Details = 1,
@@ -11,12 +15,13 @@ enum ProjectSteps {
 @Component({
   selector: 'app-create-project',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, WizardSteps, WizardHeader, WizardFooter, ProjectIdentity],
   templateUrl: './create-project.html',
   styleUrls: ['./create-project.css']
 })
 export class CreateProject {
 
+  showWizard = true;
   step = ProjectSteps.Details;
   projectForm: FormGroup;
 
@@ -41,6 +46,11 @@ export class CreateProject {
 
   goToStep(stepNumber: number) {
     this.step = stepNumber;
+  }
+
+  onCloseWizard() {
+    // Option 1: Hide the wizard modal
+    this.showWizard = false;
   }
 
   submit() {
