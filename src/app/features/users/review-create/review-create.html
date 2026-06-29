@@ -1,0 +1,37 @@
+<div class="flex flex-col gap-6 px-6 py-5 h-full">
+  <h2 class="text-lg font-semibold text-[#1a1a1a] border-b border-black/5 pb-2">
+    Review & Create
+  </h2>
+
+  <div class="bg-[#fdfcf9] border border-black/5 rounded-md p-4">
+    <h3 class="text-sm font-semibold text-[#1a1a1a] pb-2 border-b border-black/5">
+      User Identity
+    </h3>
+    <dl class="grid grid-cols-2 gap-x-6 gap-y-4 mt-3 text-sm">
+      <div>
+        <dt class="font-semibold text-[#8a7f75]">Member Name</dt>
+        <dd class="text-[#1a1a1a]">{{ data.memberName }}</dd>
+      </div>
+      <div>
+        <dt class="font-semibold text-[#8a7f75]">Email</dt>
+        <dd class="text-[#1a1a1a]">{{ data.email }}</dd>
+      </div>
+      <div>
+        <dt class="font-semibold text-[#8a7f75]">Role</dt>
+        <dd class="text-[#1a1a1a]">{{ data.role }}</dd>
+      </div>
+      <div>
+        <dt class="font-semibold text-[#8a7f75]">Status</dt>
+        <dd class="text-[#1a1a1a]">{{ data.status }}</dd>
+      </div>
+      <div class="col-span-2">
+        <dt class="font-semibold text-[#8a7f75]">Projects</dt>
+        <dd class="text-[#1a1a1a]">{{ projectAssignments }}</dd>
+      </div>
+      <div class="col-span-2">
+        <dt class="font-semibold text-[#8a7f75]">Notes</dt>
+        <dd class="text-[#1a1a1a]">{{ data.notes || 'None' }}</dd>
+      </div>
+    </dl>
+  </div>
+</div>

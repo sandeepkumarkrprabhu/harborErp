@@ -5,10 +5,11 @@ import { DataTable } from '../../shared/components/data-table/data-table';
 import { TableConfig } from '../../Models/Table';
 import { InputField } from '../../shared/components/input-field/input-field';
 import { Pencil, Trash, Mail } from 'lucide-angular';
+import { CreateUser } from './create-user/create-user';
 
 @Component({
   selector: 'app-users',
-  imports: [InputField, DataTable],
+  imports: [InputField, DataTable, CreateUser],
   templateUrl: './users.html',
   styleUrl: './users.css',
 })
@@ -18,6 +19,7 @@ export class Users {
   readonly Edit = Pencil;
   readonly Delete = Trash;
 
+  showCreateUser = false;
   activeFilter: string = 'all';
 
   users = [
@@ -168,7 +170,11 @@ export class Users {
 
   //Send Invite to new email user
   onAddNewMember() {
-    console.log("Add new member");
+    this.showCreateUser = true;
+  }
+
+  closeCreateUser() {
+    this.showCreateUser = false;
   }
 
   onSendInvite() {

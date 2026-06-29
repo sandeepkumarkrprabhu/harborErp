@@ -14,6 +14,10 @@
     </button>
   </div>
 
+  @if (showCreateUser) {
+    <app-create-user (closed)="closeCreateUser()"></app-create-user>
+  }
+
   <!-- Filter + Search + Sort bar -->
   <div
     class="flex flex-col bg-secondary/15 md:flex-row md:items-center justify-between gap-2 border border-[#d08873]/15 rounded-md p-4 mb-3 select-none"

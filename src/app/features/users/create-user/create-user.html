@@ -1,1 +1,36 @@
-<p>create-user works!</p>
+@if (showWizard) {
+  <div
+    class="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-2xs p-4"
+  >
+    <div
+      class="bg-white rounded-md border border-black/5 shadow-xl w-full max-w-5xl flex flex-col md:flex-row overflow-hidden max-h-[90vh] md:h-[620px]"
+    >
+      <!-- Sidebar -->
+      <app-wizard-steps [steps]="steps" [currentStep]="step"></app-wizard-steps>
+
+      <!-- Main Content -->
+      <div class="flex-1 flex flex-col min-h-0 bg-white">
+        <app-wizard-header [title]="'Create User'" (close)="onCloseWizard()"> </app-wizard-header>
+
+        @if (step == 1) {
+          <app-user-identity
+            [data]="userData"
+            [errors]="userIdentityErrors"
+            [showErrors]="shouldShowErrors(1)"
+          ></app-user-identity>
+        }
+        @if (step == 2) {
+          <app-review-create [data]="userData"></app-review-create>
+        }
+        <app-wizard-footer
+          [currentStep]="step"
+          [steps]="steps"
+          (next)="nextStep()"
+          (prev)="prevStep()"
+          (submit)="submit()"
+        >
+        </app-wizard-footer>
+      </div>
+    </div>
+  </div>
+}
