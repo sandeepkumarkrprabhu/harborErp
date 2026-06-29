@@ -1,30 +1,25 @@
 <div class="px-6 py-4 border-t border-black/5 bg-[#fdfcf9] flex justify-between items-center">
-  <!-- Previous button -->
+  <!-- Back -->
   <button
     (click)="prev.emit()"
     [disabled]="currentStep <= 1"
-    class="px-4 py-2 text-sm rounded-md transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+    class="flex items-center gap-2 px-4 py-2 text-sm rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
   >
-    Previous
+    <lucide-icon name="skip-back" class="w-4 h-4"></lucide-icon>
+    Back
   </button>
 
-  <div class="flex-1"></div>
-
-  <!-- Next button -->
+  <!-- Next / Submit -->
   <button
-    (click)="next.emit()"
-    [disabled]="currentStep >= totalSteps"
-    class="px-5 py-2.5 text-sm rounded-md transition-colors bg-primary text-white hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed"
+    (click)="isLastStep ? submit.emit() : next.emit()"
+    class="flex items-center gap-2 px-5 py-2.5 text-sm rounded-md text-white transition-colors {{
+      isLastStep ? 'bg-green-600 hover:bg-green-700' : 'bg-primary hover:bg-primary-hover'
+    }}"
   >
-    Next
-  </button>
-
-  <!-- Submit button -->
-  <button
-    (click)="submit.emit()"
-    [disabled]="currentStep !== totalSteps"
-    class="px-5 py-2.5 text-sm rounded-md transition-colors bg-green-600 text-white hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
-  >
-    Submit
+    {{ isLastStep ? 'Submit' : nextLabel }}
+    <lucide-icon
+      [name]="isLastStep ? 'check-circle' : 'chevron-right'"
+      class="w-4 h-4"
+    ></lucide-icon>
   </button>
 </div>

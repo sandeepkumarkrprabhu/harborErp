@@ -1,4 +1,4 @@
-<div class="w-full md:w-56 bg-[#fdfcf9] border-r border-black/5 p-5 flex flex-col gap-6">
+<div class="w-full h-full md:w-56 bg-[#fdfcf9] border-r border-black/5 p-5 flex flex-col gap-6">
   <!-- Header -->
   <div class="flex items-center gap-2 pb-3 border-b border-black/5 mb-2">
     <span class="h-2 w-2 rounded-full bg-[#d08873]"></span>
@@ -9,22 +9,27 @@
   <div class="flex flex-col gap-5">
     @for (step of steps; track step.number) {
       <div class="flex items-center gap-3">
+        <!-- Step circle -->
         <div
           class="h-6 w-6 rounded-full flex items-center justify-center text-xs font-semibold"
-          [class.bg-[#d08873]]="currentStep === step.number"
-          [class.text-white]="currentStep === step.number"
-          [class.bg-white]="currentStep !== step.number"
-          [class.border]="currentStep !== step.number"
-          [class.border-black/10]="currentStep !== step.number"
-          [class.text-[#8a7f75]]="currentStep !== step.number"
+          [class.bg-[#2e7d32]]="step.number < currentStep"
+          [class.text-white]="step.number <= currentStep"
+          [class.bg-primary]="step.number === currentStep"
+          [class.bg-white]="step.number > currentStep"
+          [class.border]="step.number > currentStep"
+          [class.border-black/10]="step.number > currentStep"
+          [class.text-[#8a7f75]]="step.number > currentStep"
         >
           {{ step.number }}
         </div>
+
+        <!-- Step labels -->
         <div class="flex flex-col">
           <span
             class="text-xs font-semibold"
-            [class.text-[#1a1a1a]]="currentStep === step.number"
-            [class.text-[#8a7f75]]="currentStep !== step.number"
+            [class.text-[#1a1a1a]]="step.number === currentStep"
+            [class.text-green-700]="step.number < currentStep"
+            [class.text-[#8a7f75]]="step.number > currentStep"
           >
             {{ step.title }}
           </span>

@@ -5,24 +5,32 @@
     class="bg-white rounded-md border border-black/5 shadow-xl w-full max-w-5xl flex flex-col md:flex-row overflow-hidden max-h-[90vh] md:h-[620px]"
   >
     <!-- Sidebar -->
-    <app-wizard-steps
-      [steps]="[
-        { number: 1, title: 'Step 1', subtitle: 'Project Identity' },
-        { number: 2, title: 'Step 2', subtitle: 'Source & Config' },
-        { number: 3, title: 'Step 3', subtitle: 'Review & Create' },
-      ]"
-      [currentStep]="1"
-    >
-    </app-wizard-steps>
+    <app-wizard-steps [steps]="steps" [currentStep]="step"></app-wizard-steps>
 
     <!-- Main Content -->
     <div class="flex-1 flex flex-col min-h-0 bg-white">
       <app-wizard-header [title]="'Create Project'" (close)="onCloseWizard()"> </app-wizard-header>
 
-      <app-project-identity></app-project-identity>
+      @if (step == 1) {
+        <app-project-identity
+          [data]="projectData"
+          [errors]="projectIdentityErrors"
+          [showErrors]="shouldShowErrors(1)"
+        ></app-project-identity>
+      }
+      @if (step == 2) {
+        <app-source-config
+          [data]="projectData"
+          [errors]="sourceConfigErrors"
+          [showErrors]="shouldShowErrors(2)"
+        ></app-source-config>
+      }
+      @if (step == 3) {
+        <app-review-create [data]="projectData"></app-review-create>
+      }
       <app-wizard-footer
         [currentStep]="step"
-        [totalSteps]="3"
+        [steps]="steps"
         (next)="nextStep()"
         (prev)="prevStep()"
         (submit)="submit()"

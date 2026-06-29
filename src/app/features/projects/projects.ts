@@ -13,7 +13,7 @@ import { ProjectIdentity } from './project-identity/project-identity';
 @Component({
   selector: 'app-projects',
   standalone: true,
-  imports: [CommonModule, InputField, SortBar, ProjectCard, CreateProject, ProjectIdentity],
+  imports: [CommonModule, InputField, SortBar, ProjectCard, CreateProject],
   templateUrl: './projects.html',
   styleUrls: ['./projects.css'],
 })

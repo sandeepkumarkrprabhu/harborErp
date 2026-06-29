@@ -1,0 +1,201 @@
+<div class="flex gap-6 px-6 py-5">
+  <!-- Left: Source & Config Form -->
+  <div class="flex-1">
+    <h3 class="text-sm font-semibold text-[#1a1a1a] pb-2 border-b border-black/5">
+      Source & Config
+    </h3>
+
+    <!-- First 4 controls in 2-column grid -->
+    <div class="grid grid-cols-2 gap-4 mt-3">
+      <!-- Organization -->
+      <div>
+        <label class="block text-xs font-semibold text-[#8a7f75]"
+          >Organization / Project
+          <span class="text-[#c62828]">*</span>
+        </label>
+        <input
+          type="text"
+          [value]="data.organization"
+          (input)="onInput('organization', $event)"
+          placeholder="Core Harbor"
+          class="w-full bg-[#fdfcf9] border text-sm px-3 py-2 rounded-md"
+          [class.border-[#c62828]/60]="errorFor('organization')"
+          [class.border-black/5]="!errorFor('organization')"
+        />
+        @if (errorFor('organization')) {
+          <span class="text-[10px] text-[#c62828]">{{ errorFor('organization') }}</span>
+        }
+      </div>
+
+      <!-- GitHub Repo -->
+      <div>
+        <label class="block text-xs font-semibold text-[#8a7f75]"
+          >GitHub Repo
+          <span class="text-[#c62828]">*</span>
+        </label>
+        <input
+          type="text"
+          [value]="data.repo"
+          (input)="onInput('repo', $event)"
+          placeholder="harbor-frontend-repo"
+          class="w-full bg-[#fdfcf9] border text-sm px-3 py-2 rounded-md"
+          [class.border-[#c62828]/60]="errorFor('repo')"
+          [class.border-black/5]="!errorFor('repo')"
+        />
+        @if (errorFor('repo')) {
+          <span class="text-[10px] text-[#c62828]">{{ errorFor('repo') }}</span>
+        }
+      </div>
+
+      <!-- Branch -->
+      <div>
+        <label class="block text-xs font-semibold text-[#8a7f75]"
+          >Branch
+          <span class="text-[#c62828]">*</span>
+        </label>
+        <input
+          type="text"
+          [value]="data.branch"
+          (input)="onInput('branch', $event)"
+          placeholder="dev"
+          class="w-full bg-[#fdfcf9] border text-sm px-3 py-2 rounded-md"
+          [class.border-[#c62828]/60]="errorFor('branch')"
+          [class.border-black/5]="!errorFor('branch')"
+        />
+        @if (errorFor('branch')) {
+          <span class="text-[10px] text-[#c62828]">{{ errorFor('branch') }}</span>
+        }
+      </div>
+
+      <!-- Runtime -->
+      <div>
+        <label class="block text-xs font-semibold text-[#8a7f75]"
+          >Runtime
+          <span class="text-[#c62828]">*</span>
+        </label>
+        <input
+          type="text"
+          [value]="data.runtime"
+          (input)="onInput('runtime', $event)"
+          placeholder="nodejs"
+          class="w-full bg-[#fdfcf9] border text-sm px-3 py-2 rounded-md"
+          [class.border-[#c62828]/60]="errorFor('runtime')"
+          [class.border-black/5]="!errorFor('runtime')"
+        />
+        @if (errorFor('runtime')) {
+          <span class="text-[10px] text-[#c62828]">{{ errorFor('runtime') }}</span>
+        }
+      </div>
+    </div>
+
+    <!-- Environment Name (single row full width) -->
+    <div class="mt-3">
+      <label class="block text-xs font-semibold text-[#8a7f75]">Environment Name</label>
+      <input
+        type="text"
+        [value]="data.environment"
+        (input)="onInput('environment', $event)"
+        placeholder="dev"
+        class="w-full bg-[#fdfcf9] border text-sm px-3 py-2 rounded-md"
+        [class.border-[#c62828]/60]="errorFor('environment')"
+        [class.border-black/5]="!errorFor('environment')"
+      />
+      @if (errorFor('environment')) {
+        <span class="text-[10px] text-[#c62828]">{{ errorFor('environment') }}</span>
+      }
+    </div>
+
+    <!-- AWS Deployment Target Section -->
+    <div class="border border-black/5 bg-[#fdfcf9] rounded-md p-4 mt-2">
+      <h4 class="text-sm font-semibold text-[#1a1a1a] pb-1 border-b border-black/5">
+        AWS Deployment Target
+      </h4>
+
+      <!-- Region + Service in 2 columns -->
+      <div class="grid grid-cols-2 gap-4 mt-3">
+        <div>
+          <label class="block text-xs font-semibold text-[#8a7f75]"
+            >Region
+            <span class="text-[#c62828]">*</span>
+          </label>
+          <select
+            [value]="data.awsRegion"
+            (change)="onSelect('awsRegion', $event)"
+            class="w-full bg-white border text-sm px-3 py-2 rounded-md"
+            [class.border-[#c62828]/60]="errorFor('awsRegion')"
+            [class.border-black/5]="!errorFor('awsRegion')"
+          >
+            <option value="">Select Region</option>
+            @for (region of regions; track region.value) {
+              <option [value]="region.value">{{ region.label }}</option>
+            }
+          </select>
+          @if (errorFor('awsRegion')) {
+            <span class="text-[10px] text-[#c62828]">{{ errorFor('awsRegion') }}</span>
+          }
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-[#8a7f75]"
+            >Service
+            <span class="text-[#c62828]">*</span>
+          </label>
+          <select
+            [value]="data.awsService"
+            (change)="onSelect('awsService', $event)"
+            class="w-full bg-white border text-sm px-3 py-2 rounded-md"
+            [class.border-[#c62828]/60]="errorFor('awsService')"
+            [class.border-black/5]="!errorFor('awsService')"
+          >
+            <option value="">Select Service</option>
+            @for (service of services; track service.value) {
+              <option [value]="service.value">{{ service.label }}</option>
+            }
+          </select>
+          @if (errorFor('awsService')) {
+            <span class="text-[10px] text-[#c62828]">{{ errorFor('awsService') }}</span>
+          }
+        </div>
+      </div>
+
+      <!-- Resource (single row full width) -->
+      <div class="mt-3">
+        <label class="block text-xs font-semibold text-[#8a7f75]">Resource</label>
+        <input
+          type="text"
+          [value]="data.awsResource"
+          (input)="onInput('awsResource', $event)"
+          placeholder="i-08fd90290c60e790"
+          class="w-full bg-[#fdfcf9] border border-black/5 text-sm px-3 py-2 rounded-md"
+        />
+      </div>
+
+      <button
+        class="mt-3 px-3 py-2 text-xs rounded-md bg-primary text-white hover:bg-primary-hover"
+        (click)="addService()"
+      >
+        + New Service
+      </button>
+    </div>
+  </div>
+
+  <!-- Right: Connected Resources (minimal fixed width) -->
+  <!-- Right: Connected Resources (minimal fixed width) -->
+  <div class="w-64 border-l border-black/5 pl-4 overflow-y-auto">
+    <h4 class="text-sm font-semibold text-[#1a1a1a] mb-3">Connected Resources</h4>
+
+    <ul class="space-y-2">
+      @for (resource of connectedResources; track resource.id) {
+        <li
+          class="flex items-center justify-between text-sm border border-black/5 rounded-md px-3 py-2 bg-[#fdfcf9]"
+        >
+          <span class="px-2 py-0.5 text-xs rounded {{ resource.bg }} text-[#1a1a1a] font-medium">
+            {{ resource.type }}
+          </span>
+          <span class="text-[#1a1a1a] font-medium">{{ resource.owner }}</span>
+          <span class="text-xs text-[#777]">{{ resource.handle }}</span>
+        </li>
+      }
+    </ul>
+  </div>
+</div>
