@@ -1,11 +1,12 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableColumn, TableConfig } from '../../../Models/Table';
+import { Badge } from '../badge/badge';
 
 @Component({
   selector: 'app-data-table',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, Badge],
   templateUrl: './data-table.html',
   styleUrls: ['./data-table.css']
 })

@@ -1,0 +1,498 @@
+<div>
+  <!-- Header -->
+  <div class="mb-5 flex justify-between items-center select-none">
+    <!-- Left: Title -->
+    <div>
+      <h1 class="text-[22px] font-medium tracking-tight text-[#1a1a1a]">
+        Deployment #{{ this.deployment?.slNo }}
+        <app-badge badgeStatus="{{ this.deployment?.status }}"></app-badge>
+      </h1>
+      <p class="text-sm text-[#6b5e52] mt-1">
+        {{ this.deployment?.projectName }} • {{ this.deployment?.environmentName }} • Triggered by
+        {{ this.deployment?.triggeredBy }} • {{ this.deployment?.timestamp }}
+      </p>
+    </div>
+
+    <!-- Right: Export button -->
+    <div class="text-right">
+      <span class="text-xs text-[#8a7f75] font-semibold block uppercase tracking-wider">
+        Elapsed Time
+      </span>
+      <span class="text-3xl font-bold text-[#1a1a1a] tracking-tight"> 02:59 </span>
+    </div>
+  </div>
+
+  <!-- Filter + Search + Sort bar -->
+  <div
+    class="bg-[#fdfcf9] border border-black/5 rounded-md p-3.5 mb-5 flex flex-wrap gap-2.5 items-center select-none text-xs font-semibold text-[#6b5e52] animate-slide-up"
+  >
+    <!--Deployment Details-->
+    <span class="bg-white border border-black/5 px-2 py-1 rounded-sm text-[#d08873]"
+      >#{{ this.deployment?.slNo }}
+    </span>
+    <span class="text-[#1a1a1a] font-medium">feat: structured logs</span>
+    <span class="text-[#8a7f75] font-medium">/</span>
+    <span class="bg-white border border-black/5 px-2 py-1 rounded-sm text-[#8a7f75]">{{
+      this.deployment?.branch
+    }}</span>
+    <span class="bg-white border border-black/5 px-2 py-1 rounded-sm font-mono text-[#8a7f75]">{{
+      this.deployment?.prCommit
+    }}</span>
+    <span class="text-[#8a7f75]">by {{ this.deployment?.triggeredBy }}</span>
+    <span class="ml-auto text-[#2e7d32]">+128</span>
+    <span class="text-[#c62828]">-14</span>
+  </div>
+
+  <!-- Table Deplayment Details-->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 animate-slide-up">
+    <div class="lg:col-span-7 flex flex-col gap-5">
+      <div class="bg-white border border-black/5 rounded-md p-4">
+        <h2 class="text-sm font-semibold text-[#1a1a1a] mb-4 select-none">Deployment Steps</h2>
+        <div class="flex flex-col pl-2 border-l border-black/5 gap-6 relative ml-3">
+          <div class="relative flex gap-4 items-start pl-6">
+            <div class="absolute -left-[13px] top-1 z-10 flex items-center justify-center">
+              <div class="bg-[#2e7d32] text-white rounded-full p-0.5">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="lucide lucide-circle-check"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="m9 12 2 2 4-4"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="flex-1">
+              <div class="flex justify-between items-start">
+                <h3 class="text-sm font-semibold text-[#1a1a1a]">Source Checkout</h3>
+                <span class="text-[11px] font-medium text-[#8a7f75]">4s</span>
+              </div>
+              <p class="text-xs text-[#6b5e52] mt-0.5 font-medium leading-normal">
+                git clone org/harbor-api @ a3f9d12
+              </p>
+            </div>
+          </div>
+          <div class="relative flex gap-4 items-start pl-6">
+            <div class="absolute -left-[13px] top-1 z-10 flex items-center justify-center">
+              <div class="bg-[#2e7d32] text-white rounded-full p-0.5">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="lucide lucide-circle-check"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="m9 12 2 2 4-4"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="flex-1">
+              <div class="flex justify-between items-start">
+                <h3 class="text-sm font-semibold text-[#1a1a1a]">Build Application Artifact</h3>
+                <span class="text-[11px] font-medium text-[#8a7f75]">1m 12s</span>
+              </div>
+              <p class="text-xs text-[#6b5e52] mt-0.5 font-medium leading-normal">
+                tar -czf harbor-api-a3f9d12.tar.gz
+              </p>
+            </div>
+          </div>
+          <div class="relative flex gap-4 items-start pl-6">
+            <div class="absolute -left-[13px] top-1 z-10 flex items-center justify-center">
+              <div class="bg-[#2e7d32] text-white rounded-full p-0.5">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="lucide lucide-circle-check"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="m9 12 2 2 4-4"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="flex-1">
+              <div class="flex justify-between items-start">
+                <h3 class="text-sm font-semibold text-[#1a1a1a]">Upload to S3</h3>
+                <span class="text-[11px] font-medium text-[#8a7f75]">38s</span>
+              </div>
+              <p class="text-xs text-[#6b5e52] mt-0.5 font-medium leading-normal">
+                s3://harbor-build-artifacts/harbor-api/
+              </p>
+            </div>
+          </div>
+          <div class="relative flex gap-4 items-start pl-6">
+            <div class="absolute -left-[13px] top-1 z-10 flex items-center justify-center">
+              <div class="bg-[#2e7d32] text-white rounded-full p-0.5">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="lucide lucide-circle-check"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="m9 12 2 2 4-4"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="flex-1">
+              <div class="flex justify-between items-start">
+                <h3 class="text-sm font-semibold text-[#1a1a1a]">CodeDeploy Deployment</h3>
+                <span class="text-[11px] font-medium text-[#8a7f75]">2m 14s</span>
+              </div>
+              <p class="text-xs text-[#6b5e52] mt-0.5 font-medium leading-normal">
+                Rolling update · 2/4 instances running new revision
+              </p>
+            </div>
+          </div>
+          <div class="relative flex gap-4 items-start pl-6">
+            <div class="absolute -left-[13px] top-1 z-10 flex items-center justify-center">
+              <div class="bg-[#2e7d32] text-white rounded-full p-0.5">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="lucide lucide-circle-check"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="m9 12 2 2 4-4"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="flex-1">
+              <div class="flex justify-between items-start">
+                <h3 class="text-sm font-semibold text-[#1a1a1a]">Health Check</h3>
+                <span class="text-[11px] font-medium text-[#8a7f75]">18s</span>
+              </div>
+              <p class="text-xs text-[#6b5e52] mt-0.5 font-medium leading-normal">
+                ALB target group validation
+              </p>
+            </div>
+          </div>
+          <div class="relative flex gap-4 items-start pl-6">
+            <div class="absolute -left-[13px] top-1 z-10 flex items-center justify-center">
+              <div class="bg-[#2e7d32] text-white rounded-full p-0.5">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="lucide lucide-circle-check"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="m9 12 2 2 4-4"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="flex-1">
+              <div class="flex justify-between items-start">
+                <h3 class="text-sm font-semibold text-[#1a1a1a]">Post-deploy Hooks</h3>
+                <span class="text-[11px] font-medium text-[#8a7f75]">8s</span>
+              </div>
+              <p class="text-xs text-[#6b5e52] mt-0.5 font-medium leading-normal">
+                Slack notification · cache invalidation
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white border border-black/5 rounded-md p-4">
+        <h2 class="text-sm font-semibold text-[#1a1a1a] mb-4 select-none">EC2 Deployment State</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3.5">
+          <div
+            class="border border-[#2e7d32]/25 bg-[#e8f5e9]/10 rounded-md p-3.5 flex flex-col items-center justify-center text-center"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="lucide lucide-circle-check text-[#2e7d32] mb-1.5"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="m9 12 2 2 4-4"></path></svg
+            ><span class="text-xs font-semibold text-[#2e7d32]">Instance 1</span
+            ><span class="text-[11px] text-[#6b5e52] mt-0.5">i-0abc12 • healthy</span>
+          </div>
+          <div
+            class="border border-[#2e7d32]/25 bg-[#e8f5e9]/10 rounded-md p-3.5 flex flex-col items-center justify-center text-center"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="lucide lucide-circle-check text-[#2e7d32] mb-1.5"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="m9 12 2 2 4-4"></path></svg
+            ><span class="text-xs font-semibold text-[#2e7d32]">Instance 2</span
+            ><span class="text-[11px] text-[#6b5e52] mt-0.5">i-0def34 • healthy</span>
+          </div>
+          <div
+            class="border rounded-md p-3.5 flex flex-col items-center justify-center text-center transition-all duration-300 border-[#2e7d32]/25 bg-[#e8f5e9]/10"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="lucide lucide-circle-check text-[#2e7d32] mb-1.5"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="m9 12 2 2 4-4"></path></svg
+            ><span class="text-xs font-semibold text-[#2e7d32]">Instance 3</span
+            ><span class="text-[11px] text-[#6b5e52] mt-0.5">i-0ghi56 • healthy</span>
+          </div>
+          <div
+            class="border rounded-md p-3.5 flex flex-col items-center justify-center text-center transition-all duration-300 border-[#2e7d32]/25 bg-[#e8f5e9]/10"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="lucide lucide-circle-check text-[#2e7d32] mb-1.5"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="m9 12 2 2 4-4"></path></svg
+            ><span class="text-xs font-semibold text-[#2e7d32]">Instance 4</span
+            ><span class="text-[11px] text-[#6b5e52] mt-0.5">i-0jkl78 • healthy</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="lg:col-span-5 flex flex-col gap-4">
+      <div class="bg-white border border-black/5 rounded-md p-4 flex flex-col h-[520px]">
+        <div
+          class="flex justify-between items-center pb-3 border-b border-black/5 mb-3 select-none"
+        >
+          <div class="flex items-center gap-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="lucide lucide-terminal text-[#d08873]"
+              aria-hidden="true"
+            >
+              <path d="M12 19h8"></path>
+              <path d="m4 17 6-6-6-6"></path>
+            </svg>
+            <h2 class="text-sm font-semibold text-[#1a1a1a]">Live Log Stream</h2>
+          </div>
+        </div>
+        <div
+          class="flex-1 bg-[#0f0e0d] border border-black/80 rounded-md p-4 overflow-y-auto font-mono text-[11px] leading-relaxed text-[#c9c5c0] h-full flex flex-col gap-1.5"
+        >
+          <div class="flex gap-2">
+            <span class="text-[#a4a09a] select-none">12:05:02</span
+            ><span class="font-semibold shrink-0 text-[#80dd6d]">[INFO]</span
+            ><span class="text-[#80dd6d]">Triggered by Sam T. via Harbor UI</span>
+          </div>
+          <div class="flex gap-2">
+            <span class="text-[#a4a09a] select-none">12:05:03</span
+            ><span class="font-semibold shrink-0 text-[#80dd6d]">[INFO]</span
+            ><span class="text-[#80dd6d]">Cloning org/harbor-api @ a3f9d12</span>
+          </div>
+          <div class="flex gap-2">
+            <span class="text-[#a4a09a] select-none">12:05:07</span
+            ><span class="font-semibold shrink-0 text-[#80dd6d]">[INFO]</span
+            ><span class="text-[#80dd6d]">Clone complete in 4s</span>
+          </div>
+          <div class="flex gap-2">
+            <span class="text-[#a4a09a] select-none">12:05:08</span
+            ><span class="font-semibold shrink-0 text-[#80dd6d]">[INFO]</span
+            ><span class="text-[#80dd6d]"
+              >Packaging application artifact (harbor-api-a3f9d12.tar.gz)</span
+            >
+          </div>
+          <div class="flex gap-2">
+            <span class="text-[#a4a09a] select-none">12:05:10</span
+            ><span class="text-[#a4a09a]">Compressing go binary...</span>
+          </div>
+          <div class="flex gap-2">
+            <span class="text-[#a4a09a] select-none">12:05:14</span
+            ><span class="font-semibold shrink-0 text-[#80dd6d]">[INFO]</span
+            ><span class="text-[#80dd6d]">Running app pre-packaging verification checks...</span>
+          </div>
+          <div class="flex gap-2">
+            <span class="text-[#a4a09a] select-none">12:05:42</span
+            ><span class="font-semibold shrink-0 text-[#80dd6d]">[INFO]</span
+            ><span class="text-[#80dd6d]">Verification check complete.</span>
+          </div>
+          <div class="flex gap-2">
+            <span class="text-[#a4a09a] select-none">12:06:20</span
+            ><span class="font-semibold shrink-0 text-[#80dd6d]">[INFO]</span
+            ><span class="text-[#80dd6d]">Bundle packaged successfully (1m 12s)</span>
+          </div>
+          <div class="flex gap-2">
+            <span class="text-[#a4a09a] select-none">12:06:21</span
+            ><span class="font-semibold shrink-0 text-[#80dd6d]">[INFO]</span
+            ><span class="text-[#80dd6d]">Uploading bundle package to S3 bucket...</span>
+          </div>
+          <div class="flex gap-2">
+            <span class="text-[#a4a09a] select-none">12:06:59</span
+            ><span class="font-semibold shrink-0 text-[#80dd6d]">[INFO]</span
+            ><span class="text-[#80dd6d]">Upload complete (38s)</span>
+          </div>
+          <div class="flex gap-2">
+            <span class="text-[#a4a09a] select-none">12:07:00</span
+            ><span class="font-semibold shrink-0 text-[#80dd6d]">[INFO]</span
+            ><span class="text-[#80dd6d]">Triggering CodeDeploy agent on Auto Scaling Group</span>
+          </div>
+          <div class="flex gap-2">
+            <span class="text-[#a4a09a] select-none">12:07:01</span
+            ><span class="font-semibold shrink-0 text-[#80dd6d]">[INFO]</span
+            ><span class="text-[#80dd6d]">New launch template active: harbor-api-lt:13</span>
+          </div>
+          <div class="flex gap-2">
+            <span class="text-[#a4a09a] select-none">12:07:05</span
+            ><span class="font-semibold shrink-0 text-[#80dd6d]">[INFO]</span
+            ><span class="text-[#80dd6d]"
+              >Rolling instance replacement deploy started — 4 instances</span
+            >
+          </div>
+          <div class="flex gap-2">
+            <span class="text-[#a4a09a] select-none">12:07:10</span
+            ><span class="font-semibold shrink-0 text-[#80dd6d]">[INFO]</span
+            ><span class="text-[#80dd6d]">Instance 1 (i-0abc12): PENDING ➔ RUNNING</span>
+          </div>
+          <div class="flex gap-2">
+            <span class="text-[#a4a09a] select-none">12:07:32</span
+            ><span class="font-semibold shrink-0 text-[#80dd6d]">[INFO]</span
+            ><span class="text-[#80dd6d]">Instance 2 (i-0def34): PENDING ➔ RUNNING</span>
+          </div>
+          <div class="flex gap-2">
+            <span class="text-[#a4a09a] select-none">12:07:44</span
+            ><span class="font-semibold shrink-0 text-[#80dd6d]">[INFO]</span
+            ><span class="text-[#80dd6d]">Instance 1 (i-0abc12): RUNNING ➔ HEALTHY</span>
+          </div>
+          <div class="flex gap-2">
+            <span class="text-[#a4a09a] select-none">12:07:51</span
+            ><span class="font-semibold shrink-0 text-[#80dd6d]">[INFO]</span
+            ><span class="text-[#80dd6d]">Instance 2 (i-0def34): RUNNING ➔ HEALTHY</span>
+          </div>
+          <div class="flex gap-2">
+            <span class="text-[#a4a09a] select-none">12:07:54</span
+            ><span class="font-semibold shrink-0 text-[#80dd6d]">[INFO]</span
+            ><span class="text-[#80dd6d]">Instance 3 (i-0ghi56): PENDING ➔ RUNNING</span>
+          </div>
+          <div class="flex gap-2">
+            <span class="text-[#a4a09a] select-none">12:08:13</span
+            ><span class="font-semibold shrink-0 text-[#80dd6d]">[INFO]</span
+            ><span class="text-[#80dd6d]">Instance 3 (i-0ghi56): RUNNING ➔ HEALTHY</span>
+          </div>
+          <div class="flex gap-2">
+            <span class="text-[#a4a09a] select-none">12:08:16</span
+            ><span class="font-semibold shrink-0 text-[#80dd6d]">[INFO]</span
+            ><span class="text-[#80dd6d]">Instance 4 (i-0jkl78): PENDING ➔ RUNNING</span>
+          </div>
+          <div class="flex gap-2">
+            <span class="text-[#a4a09a] select-none">12:08:24</span
+            ><span class="font-semibold shrink-0 text-[#80dd6d]">[INFO]</span
+            ><span class="text-[#80dd6d]">Instance 4 (i-0jkl78): RUNNING ➔ HEALTHY</span>
+          </div>
+          <div class="flex gap-2">
+            <span class="text-[#a4a09a] select-none">12:08:27</span
+            ><span class="font-semibold shrink-0 text-[#80dd6d]">[INFO]</span
+            ><span class="text-[#80dd6d]"
+              >Rolling update complete — 4/4 instances replacement complete</span
+            >
+          </div>
+          <div class="flex gap-2">
+            <span class="text-[#a4a09a] select-none">12:08:31</span
+            ><span class="font-semibold shrink-0 text-[#80dd6d]">[INFO]</span
+            ><span class="text-[#80dd6d]">ALB target group: all host registration healthy</span>
+          </div>
+          <div class="flex gap-2">
+            <span class="text-[#a4a09a] select-none">12:08:34</span
+            ><span class="font-semibold shrink-0 text-[#80dd6d]">[INFO]</span
+            ><span class="text-[#80dd6d]">Post-deploy: sending Slack notifications...</span>
+          </div>
+          <div class="flex gap-2">
+            <span class="text-[#a4a09a] select-none">12:08:35</span
+            ><span class="font-semibold shrink-0 text-[#80dd6d]">[INFO]</span
+            ><span class="text-[#80dd6d]">Slack notification sent successfully.</span>
+          </div>
+          <div class="flex gap-2">
+            <span class="text-[#a4a09a] select-none">12:08:38</span
+            ><span class="font-semibold shrink-0 text-[#80dd6d]">[INFO]</span
+            ><span class="text-[#80dd6d]">Deployment #143 completed successfully in 3m 36s</span>
+          </div>
+          <div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

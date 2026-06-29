@@ -23,6 +23,14 @@ export const routes: Routes = [
         loadComponent: () => import('./features/history/history').then(m => m.History)
       },
       {
+        path: 'deployments',
+        loadComponent: () => import('./features/deployments/deployments').then(m => m.Deployments)
+      },
+      {
+        path: 'deployments/:id',
+        loadComponent: () => import('./features/deployments/deployment-detail/deployment-detail').then(m => m.DeploymentDetail)
+      },
+      {
         path: 'settings',
         loadComponent: () => import('./features/settings/settings').then(m => m.Settings)
       },
