@@ -31,6 +31,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/deployments/deployment-detail/deployment-detail').then(m => m.DeploymentDetail)
       },
       {
+        path: 'projects/:id',
+        loadComponent: () => import('./features/projects/project-details/project-details').then(m => m.ProjectDetails)
+      },
+      {
         path: 'settings',
         loadComponent: () => import('./features/settings/settings').then(m => m.Settings)
       },

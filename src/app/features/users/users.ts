@@ -4,12 +4,12 @@ import { FilterOption } from '../../Models/FilterOption';
 import { DataTable } from '../../shared/components/data-table/data-table';
 import { TableConfig } from '../../Models/Table';
 import { InputField } from '../../shared/components/input-field/input-field';
-import { Pencil, Trash, Mail } from 'lucide-angular';
+import { LucideAngularModule, Pencil, Trash, Mail, UserPlus } from 'lucide-angular';
 import { CreateUser } from './create-user/create-user';
 
 @Component({
   selector: 'app-users',
-  imports: [InputField, DataTable, CreateUser],
+  imports: [InputField, DataTable, CreateUser, LucideAngularModule],
   templateUrl: './users.html',
   styleUrl: './users.css',
 })
@@ -18,6 +18,7 @@ export class Users {
   readonly Mail = Mail;
   readonly Edit = Pencil;
   readonly Delete = Trash;
+  readonly UserPlus = UserPlus;
 
   showCreateUser = false;
   activeFilter: string = 'all';

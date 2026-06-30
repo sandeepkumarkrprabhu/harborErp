@@ -7,7 +7,11 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['./badge.css']
 })
 export class Badge {
+  /** The status key used for color mapping */
   @Input() badgeStatus: string = '';
+
+  /** Optional text to display inside the badge */
+  @Input() text?: string;
 
   /** Automatically map status → Tailwind classes */
   get colorClass(): string {
@@ -21,5 +25,10 @@ export class Badge {
       default:
         return 'bg-gray-100 text-gray-700';
     }
+  }
+
+  /** Final text shown in the badge */
+  get displayText(): string {
+    return this.text?.trim() || this.badgeStatus;
   }
 }

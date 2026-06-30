@@ -1,12 +1,14 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { Project } from '../../../Models/project'; 
 import { getProjectStatus } from '../../../features/utils/string-utils';
+import { Badge } from '../badge/badge';
 
 @Component({
   selector: 'app-project-card',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink, Badge],
   templateUrl: './project-card.html',
   styleUrls: ['./project-card.css'],
 })
