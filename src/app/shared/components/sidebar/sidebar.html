@@ -30,15 +30,16 @@
 
   <!-- Nav links -->
   <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-    <a
-      *ngFor="let item of navItems"
-      [routerLink]="item.route"
-      routerLinkActive="bg-primary/10 text-primary font-semibold"
-      class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition"
-    >
-      <lucide-icon [img]="item.icon" [size]="18"></lucide-icon>
-      <span *ngIf="!isCollapsed">{{ item.label }}</span>
-    </a>
+    @for (item of navItems; track item.route) {
+      <a
+        [routerLink]="item.route"
+        routerLinkActive="bg-primary/10 text-primary font-semibold"
+        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition"
+      >
+        <lucide-icon [img]="item.icon" [size]="18"></lucide-icon>
+        <span [hidden]="isCollapsed">{{ item.label }}</span>
+      </a>
+    }
   </nav>
 
   <!-- Bottom: user (fixed at bottom) -->
@@ -48,12 +49,14 @@
     >
       A
     </div>
-    <div class="flex-1 min-w-0" *ngIf="!isCollapsed">
-      <p class="text-sm font-medium text-gray-800 truncate">Admin</p>
-      <p class="text-xs text-gray-400 truncate">admin@harbor.com</p>
-      <p class="text-xs text-gray-500 truncate">Workspace</p>
+    <div class="flex-1 min-w-0">
+      @if (!isCollapsed) {
+        <p class="text-sm font-medium text-gray-800 truncate">Admin</p>
+        <p class="text-xs text-gray-400 truncate">admin@harbor.com</p>
+        <p class="text-xs text-gray-500 truncate">Workspace</p>
+      }
     </div>
-    <button class="ml-auto">
+    <button class="ml-auto" type="button" (click)="logout()" title="Logout">
       <lucide-icon
         [img]="LogOut"
         [size]="16"

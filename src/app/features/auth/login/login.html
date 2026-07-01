@@ -1,24 +1,24 @@
 <div class="flex h-screen font-gabarito">
   <!-- Left side image (40%) -->
   <div class="hidden md:flex w-[40%] h-screen bg-white p-2">
-    <img src="assets/loginbg.png" alt="ERP Illustration"
-         class="object-cover w-full h-full rounded-lg shadow-md">
+    <img
+      src="assets/loginbg.png"
+      alt="ERP Illustration"
+      class="object-cover w-full h-full rounded-lg shadow-md"
+    />
   </div>
 
   <!-- Right side form (60%) -->
   <div class="flex w-full md:w-[60%] h-screen items-center justify-center bg-white">
     <div class="w-full max-w-md p-8">
-
       <!-- Logo -->
       <div class="flex justify-center mb-6">
-        <img src="assets/logoName.svg" alt="Company Logo" class="h-12">
+        <img src="assets/logoName.svg" alt="Company Logo" class="h-12" />
       </div>
 
       <!-- Heading -->
       <h2 class="text-2xl font-bold text-center text-gray-800">Secure Access</h2>
-      <p class="text-center text-gray-600 mb-6">
-        Unlock your workspace using your PIN or password
-      </p>
+      <p class="text-center text-gray-600 mb-6">Unlock your workspace using your PIN or password</p>
 
       <!-- Tabs -->
       <div class="flex border border-gray-200 rounded-md mb-6 gap-1 p-1">
@@ -27,7 +27,8 @@
           [variant]="activeTab === 'pin' ? 'primary' : 'neutral'"
           type="button"
           [fullWidth]="true"
-          (click)="switchTab('pin')">
+          (click)="switchTab('pin')"
+        >
           <span class="flex items-center justify-center gap-2">
             <lucide-icon [img]="KeyRound" [size]="16"></lucide-icon>
             Quick PIN
@@ -39,7 +40,8 @@
           [variant]="activeTab === 'password' ? 'primary' : 'neutral'"
           type="button"
           [fullWidth]="true"
-          (click)="switchTab('password')">
+          (click)="switchTab('password')"
+        >
           <span class="flex items-center justify-center gap-2">
             <lucide-icon [img]="LockKeyhole" [size]="16"></lucide-icon>
             Password
@@ -49,11 +51,13 @@
 
       <!-- Forms wrapper -->
       <div class="min-h-[260px] relative">
-
         <!-- PIN Form -->
-        <form [class.hidden]="activeTab !== 'pin'" [formGroup]="pinForm"
-              (ngSubmit)="onSubmit()" class="space-y-4 absolute inset-0">
-
+        <form
+          [class.hidden]="activeTab !== 'pin'"
+          [formGroup]="pinForm"
+          (ngSubmit)="onSubmit()"
+          class="space-y-4 absolute inset-0"
+        >
           <!-- Email -->
           <app-input-field
             label="Email Address"
@@ -61,26 +65,81 @@
             [leftIcon]="UserRound"
             placeholder="Enter your email address"
             [required]="true"
-            formControlName="email">
+            formControlName="email"
+          >
           </app-input-field>
 
           <!-- PIN inputs -->
           <div>
-            <label class="block text-sm font-medium text-gray-700">Enter 6-digit PIN</label>
+            <label class="block text-sm font-medium text-gray-700"> Enter 6-digit PIN </label>
+
             <div class="flex space-x-6 mt-1">
-              <input type="text" maxlength="1" class="w-11 h-12 text-center border border-gray-200 rounded-md focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition" />
-              <input type="text" maxlength="1" class="w-11 h-12 text-center border border-gray-200 rounded-md focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition" />
-              <input type="text" maxlength="1" class="w-11 h-12 text-center border border-gray-200 rounded-md focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition" />
-              <input type="text" maxlength="1" class="w-11 h-12 text-center border border-gray-200 rounded-md focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition" />
-              <input type="text" maxlength="1" class="w-11 h-12 text-center border border-gray-200 rounded-md focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition" />
-              <input type="text" maxlength="1" class="w-11 h-12 text-center border border-gray-200 rounded-md focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition" />
+              <input
+                #pin1
+                type="password"
+                maxlength="1"
+                inputmode="numeric"
+                class="w-11 h-12 text-center border border-gray-200 rounded-md focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition"
+                (input)="onPinDigitInput(0, $event, pin2)"
+                (keydown)="onPinDigitKeydown($event, 0)"
+              />
+
+              <input
+                #pin2
+                type="password"
+                maxlength="1"
+                inputmode="numeric"
+                class="w-11 h-12 text-center border border-gray-200 rounded-md focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition"
+                (input)="onPinDigitInput(1, $event, pin3, pin1)"
+                (keydown)="onPinDigitKeydown($event, 1, pin1)"
+              />
+
+              <input
+                #pin3
+                type="password"
+                maxlength="1"
+                inputmode="numeric"
+                class="w-11 h-12 text-center border border-gray-200 rounded-md focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition"
+                (input)="onPinDigitInput(2, $event, pin4, pin2)"
+                (keydown)="onPinDigitKeydown($event, 2, pin2)"
+              />
+
+              <input
+                #pin4
+                type="password"
+                maxlength="1"
+                inputmode="numeric"
+                class="w-11 h-12 text-center border border-gray-200 rounded-md focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition"
+                (input)="onPinDigitInput(3, $event, pin5, pin3)"
+                (keydown)="onPinDigitKeydown($event, 3, pin3)"
+              />
+
+              <input
+                #pin5
+                type="password"
+                maxlength="1"
+                inputmode="numeric"
+                class="w-11 h-12 text-center border border-gray-200 rounded-md focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition"
+                (input)="onPinDigitInput(4, $event, pin6, pin4)"
+                (keydown)="onPinDigitKeydown($event, 4, pin4)"
+              />
+
+              <input
+                #pin6
+                type="password"
+                maxlength="1"
+                inputmode="numeric"
+                class="w-11 h-12 text-center border border-gray-200 rounded-md focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition"
+                (input)="onPinDigitInput(5, $event, undefined, pin5)"
+                (keydown)="onPinDigitKeydown($event, 5, pin5)"
+              />
             </div>
           </div>
 
           <!-- Remember me & Forgot PIN -->
           <div class="flex items-center justify-between">
             <label class="flex items-center space-x-2">
-              <input type="checkbox" class="rounded border-gray-300">
+              <input type="checkbox" class="rounded border-gray-300" />
               <span class="text-sm text-gray-700">Remember me</span>
             </label>
             <a href="#" class="text-sm text-primary hover:underline">Forgot PIN?</a>
@@ -93,9 +152,12 @@
         </form>
 
         <!-- Password Form -->
-        <form [class.hidden]="activeTab !== 'password'" [formGroup]="loginForm"
-              (ngSubmit)="onSubmit()" class="space-y-4 absolute inset-0">
-
+        <form
+          [class.hidden]="activeTab !== 'password'"
+          [formGroup]="loginForm"
+          (ngSubmit)="onSubmit()"
+          class="space-y-4 absolute inset-0"
+        >
           <!-- Email -->
           <app-input-field
             label="Email Address"
@@ -103,7 +165,8 @@
             [leftIcon]="UserRound"
             placeholder="Enter your email address"
             [required]="true"
-            formControlName="email">
+            formControlName="email"
+          >
           </app-input-field>
 
           <!-- Password -->
@@ -114,13 +177,14 @@
             placeholder="Enter your password"
             [required]="true"
             helperText="Minimum 8 characters."
-            formControlName="password">
+            formControlName="password"
+          >
           </app-input-field>
 
           <!-- Remember me & Forgot Password -->
           <div class="flex items-center justify-between">
             <label class="flex items-center space-x-2">
-              <input type="checkbox" class="rounded border-gray-300">
+              <input type="checkbox" class="rounded border-gray-300" />
               <span class="text-sm text-gray-700">Remember me</span>
             </label>
             <a href="#" class="text-sm text-primary hover:underline">Forgot Password?</a>
@@ -131,11 +195,7 @@
             Unlock Workspace
           </app-button>
         </form>
-
       </div>
-      
     </div>
-
   </div>
-
 </div>

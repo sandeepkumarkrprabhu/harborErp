@@ -1,0 +1,125 @@
+import { HttpClient } from '@angular/common/http';
+import { Injectable, computed, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
+import { Observable, EMPTY, tap, catchError } from 'rxjs';
+
+import {
+  AuthUser,
+  LoginRequest,
+  LoginResponse,
+  PinLoginRequest
+} from '../models/auth';
+
+import { TokenStorageService } from '../../auth/services/token-storage';
+import { environment } from '../../../../environments/environment.development';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthService {
+  private readonly http = inject(HttpClient);
+  private readonly router = inject(Router);
+  private readonly tokenStorage = inject(TokenStorageService);
+
+  private readonly apiUrl = environment.apiBaseUrl;
+
+  private readonly _currentUser = signal<AuthUser | null>(null);
+
+  readonly currentUser = this._currentUser.asReadonly();
+
+  readonly isAuthenticated = computed(() =>
+    this.tokenStorage.accessToken() !== null
+  );
+
+  constructor() {
+    this.initialize();
+  }
+
+  /**
+   * Called once when the application starts.
+   * Reloads the logged-in user's profile if a token exists.
+   */
+  private initialize(): void {
+    if (!this.tokenStorage.hasToken()) {
+      return;
+    }
+
+    this.refreshUser().subscribe();
+  }
+
+  /**
+   * Username/Password Login
+   */
+  login(request: LoginRequest): Observable<LoginResponse> {
+    //console.log('loginWithPin called with request:', request); // Debugging line
+    return this.http
+      .post<LoginResponse>(`${this.apiUrl}/auth/login`, request)
+      .pipe(
+        tap(response => this.handleLoginSuccess(response))
+      );
+  }
+
+  /**
+   * PIN Login
+   */
+  loginWithPin(request: PinLoginRequest): Observable<LoginResponse> {
+    //console.log('loginWithPin called with request:', request); // Debugging line
+    return this.http
+      .post<LoginResponse>(`${this.apiUrl}/auth/login`, request)
+      .pipe(
+        tap(response => this.handleLoginSuccess(response))
+      );
+  }
+
+  /**
+   * Reload logged-in user.
+   * Expected endpoint:
+   * GET /auth/me
+   */
+  refreshUser(): Observable<AuthUser> {
+    return this.http
+      .get<AuthUser>(`${this.apiUrl}/auth/me`)
+      .pipe(
+        tap(user => this._currentUser.set(user)),
+        catchError(error => {
+          this.logout();
+          return EMPTY;
+        })
+      );
+  }
+
+  /**
+   * Save login response.
+   */
+  private handleLoginSuccess(response: LoginResponse): void {
+    console.log('handleLoginSuccess called with response:', response); // Debugging line
+    this.tokenStorage.setTokens(
+      response.accessToken,
+      response.refreshToken
+    );
+
+    this._currentUser.set(response.user);
+  }
+
+  /**
+   * Logout user.
+   */
+  logout(): void {
+    this.tokenStorage.clear();
+    this._currentUser.set(null);
+    this.router.navigate(['/login']);
+  }
+
+  /**
+   * Returns true if current user has the specified role.
+   */
+  hasRole(role: string): boolean {
+    const user = this._currentUser();
+
+    if (!user) {
+      return false;
+    }
+
+    return user.roles?.includes(role) ?? false;
+  }
+}

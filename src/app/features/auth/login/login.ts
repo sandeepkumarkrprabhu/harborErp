@@ -1,9 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule, KeyRound, LockKeyhole, UserRound } from 'lucide-angular';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Button } from '../../../shared/components/button/button';
 import { InputField } from '../../../shared/components/input-field/input-field';
+import { AuthService } from '../../../core/auth/services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -19,6 +21,10 @@ import { InputField } from '../../../shared/components/input-field/input-field';
   styleUrls: ['./login.css']
 })
 export class Login {
+  private readonly fb = inject(FormBuilder);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+
   loginForm: FormGroup;
   pinForm: FormGroup;
   activeTab: 'password' | 'pin' = 'pin';
@@ -27,7 +33,13 @@ export class Login {
   readonly LockKeyhole = LockKeyhole;
   readonly UserRound = UserRound;
 
-  constructor(private fb: FormBuilder) {
+  // The 6 individual PIN box values — synced into pinForm.pin as a joined string.
+  readonly pinDigits = signal<string[]>(['', '', '', '', '', '']);
+
+  readonly isLoading = signal(false);
+  readonly errorMessage = signal<string | null>(null);
+
+  constructor() {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]]
@@ -41,19 +53,80 @@ export class Login {
 
   switchTab(tab: 'password' | 'pin') {
     this.activeTab = tab;
+    this.errorMessage.set(null);
+  }
+
+  /** Called from the template on each PIN box (input) event. */
+  onPinDigitInput(index: number, event: Event, nextInput?: HTMLInputElement, prevInput?: HTMLInputElement) {
+    const input = event.target as HTMLInputElement;
+    const value = input.value.replace(/[^0-9]/g, '').slice(0, 1);
+    input.value = value;
+
+    const digits = [...this.pinDigits()];
+    digits[index] = value;
+    this.pinDigits.set(digits);
+    this.pinForm.get('pin')?.setValue(digits.join(''));
+
+    if (value && nextInput) {
+      nextInput.focus();
+    }
+  }
+
+  /** Backspace on an empty box moves focus to the previous box. */
+  onPinDigitKeydown(event: KeyboardEvent, index: number, prevInput?: HTMLInputElement) {
+    const input = event.target as HTMLInputElement;
+    if (event.key === 'Backspace' && !input.value && prevInput) {
+      prevInput.focus();
+    }
   }
 
   onSubmit() {
     if (this.activeTab === 'password') {
-      this.loginForm.markAllAsTouched();
-      if (this.loginForm.valid) {
-        console.log('Password login:', this.loginForm.value);
-      }
-    } else if (this.activeTab === 'pin') {
-      this.pinForm.markAllAsTouched();
-      if (this.pinForm.valid) {
-        console.log('Quick PIN login:', this.pinForm.value);
-      }
+      this.submitPassword();
+    } else {
+      this.submitPin();
     }
+  }
+
+  private submitPassword() {
+    this.loginForm.markAllAsTouched();
+    if (this.loginForm.invalid) {
+      return;
+    }
+
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
+
+    this.authService.login(this.loginForm.getRawValue()).subscribe({
+      next: () => {
+        this.isLoading.set(false);
+        this.router.navigate(['/dashboard']);
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        this.errorMessage.set(err?.error?.message ?? 'Invalid email or password. Please try again.');
+      }
+    });
+  }
+
+  private submitPin() {
+    this.pinForm.markAllAsTouched();
+    if (this.pinForm.invalid) {
+      return;
+    }
+
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
+
+    this.authService.loginWithPin(this.pinForm.getRawValue()).subscribe({
+      next: () => {
+        this.isLoading.set(false);
+        this.router.navigate(['/dashboard']);
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        this.errorMessage.set(err?.error?.message ?? 'Invalid email or PIN. Please try again.');
+      }
+    });
   }
 }
