@@ -51,7 +51,7 @@ export class AuthService {
    * Username/Password Login
    */
   login(request: LoginRequest): Observable<LoginResponse> {
-    //console.log('loginWithPin called with request:', request); // Debugging line
+    console.log('loginWithPin called with request:', request); // Debugging line
     return this.http
       .post<LoginResponse>(`${this.apiUrl}/auth/login`, request)
       .pipe(
@@ -63,7 +63,7 @@ export class AuthService {
    * PIN Login
    */
   loginWithPin(request: PinLoginRequest): Observable<LoginResponse> {
-    //console.log('loginWithPin called with request:', request); // Debugging line
+    console.log('loginWithPin called with request:', request); // Debugging line
     return this.http
       .post<LoginResponse>(`${this.apiUrl}/auth/login`, request)
       .pipe(
