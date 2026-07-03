@@ -16,7 +16,9 @@ import { environment } from '../../../../environments/environment.development';
 @Injectable({
   providedIn: 'root'
 })
+  
 export class AuthService {
+  
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
   private readonly tokenStorage = inject(TokenStorageService);
@@ -44,14 +46,14 @@ export class AuthService {
       return;
     }
 
-    this.refreshUser().subscribe();
+    this.refreshUser();
   }
 
   /**
    * Username/Password Login
    */
   login(request: LoginRequest): Observable<LoginResponse> {
-    console.log('loginWithPin called with request:', request); // Debugging line
+    //console.log('loginWithPin called with request:', request); // Debugging line
     return this.http
       .post<LoginResponse>(`${this.apiUrl}/auth/login`, request)
       .pipe(
@@ -63,7 +65,7 @@ export class AuthService {
    * PIN Login
    */
   loginWithPin(request: PinLoginRequest): Observable<LoginResponse> {
-    console.log('loginWithPin called with request:', request); // Debugging line
+    //console.log('loginWithPin called with request:', request); // Debugging line
     return this.http
       .post<LoginResponse>(`${this.apiUrl}/auth/login`, request)
       .pipe(
@@ -74,31 +76,31 @@ export class AuthService {
   /**
    * Reload logged-in user.
    * Expected endpoint:
-   * GET /auth/me
+   * GET /auth/me // instead of API checking hastoken of tokenStorage
    */
-  refreshUser(): Observable<AuthUser> {
-    return this.http
-      .get<AuthUser>(`${this.apiUrl}/auth/me`)
-      .pipe(
-        tap(user => this._currentUser.set(user)),
-        catchError(error => {
-          this.logout();
-          return EMPTY;
-        })
-      );
+  refreshUser(): boolean {
+    const hasToken = this.tokenStorage.hasToken();
+
+    if (!hasToken) {
+      this.logout();
+    }
+
+    return hasToken;
   }
+
 
   /**
    * Save login response.
    */
   private handleLoginSuccess(response: LoginResponse): void {
-    console.log('handleLoginSuccess called with response:', response); // Debugging line
+    //console.log('handleLoginSuccess called with response:', response); // Debugging line
+    //console.log('Access Token:', response.access_token); // Debugging line
     this.tokenStorage.setTokens(
-      response.accessToken,
-      response.refreshToken
+      response.access_token,
+      response.refresh_token
     );
 
-    this._currentUser.set(response.user);
+    //this._currentUser.set(response.user);
   }
 
   /**

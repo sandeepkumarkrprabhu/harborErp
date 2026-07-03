@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { Button } from '../../../shared/components/button/button';
 import { InputField } from '../../../shared/components/input-field/input-field';
 import { AuthService } from '../../../core/auth/services/auth.service';
+import { ErrorService } from '../../utils/error-service';
 
 @Component({
   selector: 'app-login',
@@ -24,6 +25,7 @@ export class Login {
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly errorService = inject(ErrorService);
 
   loginForm: FormGroup;
   pinForm: FormGroup;
@@ -37,7 +39,7 @@ export class Login {
   readonly pinDigits = signal<string[]>(['', '', '', '', '', '']);
 
   readonly isLoading = signal(false);
-  readonly errorMessage = signal<string | null>(null);
+  //readonly errorMessage = signal<string | null>(null);
 
   constructor() {
     this.loginForm = this.fb.group({
@@ -53,7 +55,6 @@ export class Login {
 
   switchTab(tab: 'password' | 'pin') {
     this.activeTab = tab;
-    this.errorMessage.set(null);
   }
 
   /** Called from the template on each PIN box (input) event. */
@@ -95,7 +96,6 @@ export class Login {
     }
 
     this.isLoading.set(true);
-    this.errorMessage.set(null);
 
     this.authService.login(this.loginForm.getRawValue()).subscribe({
       next: () => {
@@ -104,7 +104,8 @@ export class Login {
       },
       error: (err) => {
         this.isLoading.set(false);
-        this.errorMessage.set(err?.error?.message ?? 'Invalid email or password. Please try again.');
+        //this.errorMessage.set(err?.error?.message ?? 'Invalid email or password. Please try again.');
+        this.errorService.showError(err?.error?.message ?? 'Invalid email or password. Please try again.');
       }
     });
   }
@@ -116,16 +117,18 @@ export class Login {
     }
 
     this.isLoading.set(true);
-    this.errorMessage.set(null);
 
     this.authService.loginWithPin(this.pinForm.getRawValue()).subscribe({
       next: () => {
         this.isLoading.set(false);
         this.router.navigate(['/dashboard']);
+        this.errorService.showSuccess("user Login validate sucessfully.");
       },
       error: (err) => {
         this.isLoading.set(false);
-        this.errorMessage.set(err?.error?.message ?? 'Invalid email or PIN. Please try again.');
+        console.log("Error:", err?.error?.message ?? "Invalid login");
+        //this.errorMessage.set(err?.error?.message ?? 'Invalid email or PIN. Please try again.');
+        this.errorService.showError(err?.error?.message ?? 'Invalid email or PIN. Please try again.');
       }
     });
   }

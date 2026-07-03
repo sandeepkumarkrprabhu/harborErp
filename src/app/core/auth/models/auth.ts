@@ -16,7 +16,8 @@ export interface AuthUser {
 }
 
 export interface LoginResponse {
-  accessToken: string;
-  refreshToken?: string;
-  user: AuthUser;
+  message: string;
+  access_token: string;
+  refresh_token?: string;
+  user?: AuthUser; // optional since backend doesn’t send it
 }

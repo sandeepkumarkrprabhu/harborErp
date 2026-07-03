@@ -29,7 +29,7 @@ export class ProjectDetails implements OnInit {
   ngOnInit() {
     if (history.state?.project) {
       this.project = history.state.project as Project;
-      this.projectId = this.project.name;
+      this.projectId = this.project.project_name;
     } else {
       this.projectId = this.route.snapshot.paramMap.get('projectId')!;
     }
@@ -106,7 +106,7 @@ export class ProjectDetails implements OnInit {
       slNo: index + 1,
       environmentName: index === 0 ? 'Production' : index === 1 ? 'Staging' : `Env ${index + 1}`,
       status: index < healthyEnvs ? 'Healthy' : 'Unhealthy',
-      lastDeployment: index === 0 ? project.updated : `${index + 1}d ago`,
+      lastDeployment: index === 0 ? project.updated_at : `${index + 1}d ago`,
       deployedBy: index % 2 === 0 ? 'system' : 'developer',
       branch: index === 0 ? 'main' : 'feature/login',
       compute: index === 0 ? '4 vCPU / 8 GB RAM' : '2 vCPU / 4 GB RAM'
@@ -120,7 +120,7 @@ export class ProjectDetails implements OnInit {
       status: index === 0 ? 'Success' : 'In Progress',
       triggeredBy: 'system',
       duration: `${index + 2}m`,
-      timestamp: index === 0 ? project.updated : `${index + 1}d ago`,
+      timestamp: index === 0 ? project.updated_at : `${index + 1}d ago`,
       prCommit: `commit-${project.deployments - index}`,
       branch: 'main'
     }));

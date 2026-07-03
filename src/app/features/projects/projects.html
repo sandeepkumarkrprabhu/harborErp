@@ -57,7 +57,7 @@
   <!-- Project list -->
   <div class="mb-4 border border-gray-200 rounded-lg shadow-sm">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
-      @for (project of projects; track project.name) {
+      @for (project of projects; track project.project_name) {
         <app-project-card [project]="project"></app-project-card>
       }
     </div>

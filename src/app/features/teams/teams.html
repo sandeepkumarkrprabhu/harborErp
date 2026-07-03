@@ -60,7 +60,7 @@
             <span>OWNED PROJECTS ({{ selectedTeam.projects.length }})</span>
           }
         </div>
-        @for (project of selectedTeam?.projects; track project.name) {
+        @for (project of selectedTeam?.projects; track project.project_name) {
           <app-team-owned-project [project]="project"></app-team-owned-project>
         }
       </div>

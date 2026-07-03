@@ -23,6 +23,7 @@ export class TokenStorageService {
   }
 
   setTokens(accessToken: string, refreshToken?: string): void {
+    //console.log('Setting tokens:', { accessToken, refreshToken }); // Debug
     localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
 
     if (refreshToken) {
