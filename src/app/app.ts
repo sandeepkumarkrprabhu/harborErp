@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { NotificationHostComponent } from './features/utils/notification-host.component';
+import { NotificationHostComponent } from './features/utils/notification-host';
 
 @Component({
   selector: 'app-root',

@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { Button } from '../../../shared/components/button/button';
 import { InputField } from '../../../shared/components/input-field/input-field';
 import { AuthService } from '../../../core/auth/services/auth.service';
-import { ErrorService } from '../../utils/error-service';
+import { ErrorService } from '../../utils/harbor-notify-service';
 
 @Component({
   selector: 'app-login',

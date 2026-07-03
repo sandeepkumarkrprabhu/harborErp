@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Observable } from 'rxjs';
-import { NotificationService, Notification } from './notification.service';
+import { NotificationService, Notification } from './notification';
 
 @Component({
   selector: 'app-notification-host',
