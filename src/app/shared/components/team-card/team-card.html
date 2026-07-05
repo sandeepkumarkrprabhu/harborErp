@@ -28,10 +28,10 @@
       @for (user of team.teamRoaster; track user.email) {
         <div
           class="h-7 w-7 rounded-full border-2 border-white flex items-center justify-center text-white text-[10px] font-bold bg-[#beab9d]"
-          [title]="user.memberName"
+          [title]="user.name"
         >
           {{
-            user.memberName
+            user.name
               .split(' ')
               .map((n) => n.charAt(0))
               .join('')

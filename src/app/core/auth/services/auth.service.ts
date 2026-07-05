@@ -93,7 +93,7 @@ export class AuthService {
    * Save login response.
    */
   private handleLoginSuccess(response: LoginResponse): void {
-    //console.log('handleLoginSuccess called with response:', response); // Debugging line
+    console.log('handleLoginSuccess called with response:', response); // Debugging line
     //console.log('Access Token:', response.access_token); // Debugging line
     this.tokenStorage.setTokens(
       response.access_token,

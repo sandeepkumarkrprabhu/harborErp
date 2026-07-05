@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
 import { WizardSteps } from '../../../shared/components/wizard-steps/wizard-steps';
 import { WizardHeader } from '../../../shared/components/wizard-header/wizard-header';
 import { ProjectIdentity } from '../project-identity/project-identity';
@@ -41,6 +42,7 @@ export type ValidationErrors = Partial<Record<keyof CreateProjectData, string>>;
   templateUrl: './create-project.html',
   styleUrls: ['./create-project.css']
 })
+  
 export class CreateProject {
 
   showWizard = true;

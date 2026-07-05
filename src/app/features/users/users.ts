@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 
 import { FilterOption } from '../../Models/FilterOption';
 import { DataTable } from '../../shared/components/data-table/data-table';
@@ -6,10 +6,12 @@ import { TableConfig } from '../../Models/Table';
 import { InputField } from '../../shared/components/input-field/input-field';
 import { LucideAngularModule, Pencil, Trash, Mail, UserPlus } from 'lucide-angular';
 import { CreateUser } from './create-user/create-user';
+import { User, getUserStatus } from '../../Models/User';
+import { UserService } from '../../core/users/services/user.service.ts';
 
 @Component({
   selector: 'app-users',
-  imports: [InputField, DataTable, CreateUser, LucideAngularModule],
+  imports: [LucideAngularModule, InputField, DataTable, CreateUser],
   templateUrl: './users.html',
   styleUrl: './users.css',
 })
@@ -23,104 +25,31 @@ export class Users {
   showCreateUser = false;
   activeFilter: string = 'all';
 
-  users = [
-    {
-      memberName: 'Alex K.',
-      email: 'alex.k@example.com',
-      role: 'Developer',
-      projects: ['harbor-api', 'notification-worker'],
-      lastActive: '2026-06-20T08:45:00',
-      status: 'Active'
-    },
-    {
-      memberName: 'Priya R.',
-      email: 'priya.r@example.com',
-      role: 'Frontend Engineer',
-      projects: ['harbor-frontend', 'reporting-dashboard'],
-      lastActive: '2026-06-20T09:10:00',
-      status: 'Active'
-    },
-    {
-      memberName: 'Sam T.',
-      email: 'sam.t@example.com',
-      role: 'Backend Engineer',
-      projects: ['auth-service'],
-      lastActive: '2026-06-19T22:30:00',
-      status: 'Inactive'
-    },
-    {
-      memberName: 'Zara M.',
-      email: 'zara.m@example.com',
-      role: 'DevOps',
-      projects: ['notification-worker'],
-      lastActive: '2026-06-20T07:55:00',
-      status: 'Active'
-    },
-    {
-      memberName: 'John D.',
-      email: 'john.d@example.com',
-      role: 'Payments Specialist',
-      projects: ['payment-gateway'],
-      lastActive: '2026-06-19T18:15:00',
-      status: 'Active'
-    },
-    {
-      memberName: 'Meera L.',
-      email: 'meera.l@example.com',
-      role: 'QA Engineer',
-      projects: ['inventory-service'],
-      lastActive: '2026-06-20T10:05:00',
-      status: 'Active'
-    },
-    {
-      memberName: 'Carlos M.',
-      email: 'carlos.m@example.com',
-      role: 'UI/UX Designer',
-      projects: ['user-profile'],
-      lastActive: '2026-06-19T21:00:00',
-      status: 'Inactive'
-    },
-    {
-      memberName: 'Nina P.',
-      email: 'nina.p@example.com',
-      role: 'Frontend Engineer',
-      projects: ['reporting-dashboard'],
-      lastActive: '2026-06-20T06:40:00',
-      status: 'Active'
-    },
-    {
-      memberName: 'Omar Q.',
-      email: 'omar.q@example.com',
-      role: 'Email Specialist',
-      projects: ['email-service'],
-      lastActive: '2026-06-20T11:20:00',
-      status: 'Active'
-    },
-    {
-      memberName: 'Sophia W.',
-      email: 'sophia.w@example.com',
-      role: 'Data Analyst',
-      projects: ['analytics-engine'],
-      lastActive: '2026-06-19T20:10:00',
-      status: 'Inactive'
-    },
-    {
-      memberName: 'Rajesh B.',
-      email: 'rajesh.b@example.com',
-      role: 'Chat Engineer',
-      projects: ['chat-service'],
-      lastActive: '2026-06-20T05:25:00',
-      status: 'Active'
-    },
-    {
-      memberName: 'Emily C.',
-      email: 'emily.c@example.com',
-      role: 'Cloud Engineer',
-      projects: ['file-storage'],
-      lastActive: '2026-06-20T09:55:00',
-      status: 'Active'
-    }
-  ];
+  users: User[] = [];
+
+  constructor(
+    private readonly userService: UserService,
+    private readonly cdr: ChangeDetectorRef
+    
+  ) {}
+  
+  ngOnInit(): void {
+  
+    this.loadUsers();
+  
+  }
+  
+  /** Load projects from backend */
+  loadUsers() {
+    this.userService.getUsers().subscribe({
+      next: (data) => {
+        this.users = data;
+        console.log('Users loaded:', this.users);
+        this.cdr.detectChanges(); // 👈 Force UI refresh
+      },
+      error: (err) => console.error('Failed to load users', err),
+    });
+  }
 
   /** Dynamic filter options with counts */
   get filterOptions(): FilterOption[] {
@@ -133,7 +62,7 @@ export class Users {
   }
 
   // Filtered + searched deployments
-  get filteredDeployments() {
+  get filteredUsers() {
     let list = this.users;
 
     // Apply status filter
@@ -151,23 +80,27 @@ export class Users {
   get usersTableConfig(): TableConfig {
     return {
       columns: [
-        { header: 'Member Name', field: 'memberName', bold: true },
+        { header: 'Member Name', field: 'name', bold: true },
         { header: 'Email', field: 'email' },
-        { header: 'Role', field: 'role' },
+        { header: 'Role', field: 'role_id' },
         { header: 'Projects', field: 'projects', badge: true }, 
-        { header: 'Last Active', field: 'lastActive' },
+        { header: 'Last Active', field: 'updated_at' },
         { header: 'Status', field: 'status', badge: true, badgeColorMap: {
             'Active': 'bg-green-100 text-green-700',
             'Inactive': 'bg-red-100 text-red-700'
           }}
       ],
-      data: this.users,
+      data: this.users.map(user => ({
+        ...user,
+        status: getUserStatus(user)
+      })),
       actions: [
         { label: 'Edit', icon: this.Edit, color: 'bg-white-100 text-white-700 border border-black/5', action: 'edit' },
         { label: 'Delete', icon: this.Delete, color: 'bg-red-100 text-red-700 border border-black/5', action: 'delete' }
       ]
     };
   }
+
 
   //Send Invite to new email user
   onAddNewMember() {

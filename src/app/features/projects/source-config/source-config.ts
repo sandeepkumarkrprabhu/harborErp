@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import type { CreateProjectData, ValidationErrors } from '../create-project/create-project';
-import { AwsResource } from './model/AwsResource';
+import { AwsResource } from '../../../Models/AwsResource';
+import { AwsService } from '../../../core/aws/services/awsService';
 
 type SourceConfigTextField =
   | 'organization'
@@ -36,16 +37,30 @@ export class SourceConfig {
     { value: 'ECR', label: 'ECR' }
   ];
 
-  connectedResources: AwsResource[] = [
-    { id: '1', type: 'EC2', owner: 'liamCloud', handle: '@liamCloud', bg: 'bg-[#e3f2fd]' },
-    { id: '2', type: 'RDS', owner: 'liamCloud', handle: '@liamCloud', bg: 'bg-[#e8f5e9]' },
-    { id: '3', type: 'S3', owner: 'noraSky', handle: '@noraSky', bg: 'bg-[#fff3e0]' },
-    { id: '4', type: 'ECR', owner: 'ethanNebula', handle: '@ethanNebula', bg: 'bg-[#ffebee]' },
-    { id: '5', type: 'EC2', owner: 'zaraStellar', handle: '@zaraStellar', bg: 'bg-[#e3f2fd]' },
-    { id: '6', type: 'EC2', owner: 'owenCosmic', handle: '@owenCosmic', bg: 'bg-[#e3f2fd]' }
-  ];
+  connectedResources: AwsResource[] = [];
+  loading = false;
 
-  // Specialized handlers with proper typing
+  constructor(private awsService: AwsService) {}
+
+  ngOnInit() {
+    this.fetchResources();
+  }
+
+  fetchResources() {
+    this.loading = true;
+    this.awsService.fetchResources().subscribe({
+      next: (res) => {
+        this.connectedResources = res;
+        this.data.awsServiceList = res.map(r => r.type);
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Failed to fetch AWS resources', err);
+        this.loading = false;
+      }
+    });
+  }
+
   onInput(field: SourceConfigTextField, event: Event) {
     const input = event.target as HTMLInputElement;
     this.data[field] = input.value;
@@ -54,6 +69,10 @@ export class SourceConfig {
   onSelect(field: SourceConfigSelectField, event: Event) {
     const select = event.target as HTMLSelectElement;
     this.data[field] = select.value;
+    // optional: re-fetch resources when region/service changes
+    if (field === 'awsRegion' || field === 'awsService') {
+      this.fetchResources();
+    }
   }
 
   addService() {
@@ -63,6 +82,9 @@ export class SourceConfig {
         ...this.connectedResources,
         {
           id: newId,
+          name: '',
+          service: '',
+          region:'',
           type: this.data.awsService,
           owner: 'newOwner',
           handle: '@newOwner',

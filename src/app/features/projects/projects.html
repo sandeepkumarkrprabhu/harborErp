@@ -32,15 +32,17 @@
   >
     <!-- Left: Search -->
     <div class="m-4 w-[30%] rounded-md">
-      <app-input-field
-        label=""
-        type="text"
-        [leftIcon]="SearchIcon"
-        placeholder="Search projects...."
-        [required]="false"
-        formControlName="globalSearch"
-      >
-      </app-input-field>
+      <form [formGroup]="form">
+        <app-input-field
+          label=""
+          type="text"
+          [leftIcon]="SearchIcon"
+          placeholder="Search projects...."
+          [required]="false"
+          formControlName="globalSearch"
+        >
+        </app-input-field>
+      </form>
     </div>
 
     <!-- Right: Sort -->
@@ -57,7 +59,7 @@
   <!-- Project list -->
   <div class="mb-4 border border-gray-200 rounded-lg shadow-sm">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
-      @for (project of projects; track project.project_name) {
+      @for (project of filteredProjects; track project.id) {
         <app-project-card [project]="project"></app-project-card>
       }
     </div>

@@ -28,6 +28,8 @@ export class ProjectCard {
 
   /** Status color for the circle */
   get statusColor(): string {
-    return getProjectStatus(this.project.healthy, this.project.unhealthy);
+    
+      return getProjectStatus(this.project.healthy, this.project.unhealthy, this.project.status);
+    
   }
 }

@@ -1,11 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { LucideAngularModule } from 'lucide-angular';
+import { LucideAngularModule, SkipBack, CircleCheck, ChevronRight } from 'lucide-angular'; 
 
-export interface WizardStep {
-  number: number;
-  title: string;
-  subtitle: string;
-}
+import { WizardStep } from '../wizard-steps/wizard-steps';
 
 @Component({
   selector: 'app-wizard-footer',
@@ -15,6 +11,10 @@ export interface WizardStep {
   styleUrls: ['./wizard-footer.css']
 })
 export class WizardFooter {
+  readonly SkipBack = SkipBack;  // expose it to template
+  readonly ChevronRight = ChevronRight;
+  readonly CircleCheck = CircleCheck; 
+
   @Input() currentStep: number = 1;
   @Input() steps: WizardStep[] = [];
 

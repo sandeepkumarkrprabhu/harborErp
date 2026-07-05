@@ -46,7 +46,7 @@
           }
         </div>
 
-        @for (user of selectedTeam?.teamRoaster; track user.memberName) {
+        @for (user of selectedTeam?.teamRoaster; track user.id) {
           <app-team-roaster-user [user]="user"></app-team-roaster-user>
         }
       </div>
@@ -60,7 +60,7 @@
             <span>OWNED PROJECTS ({{ selectedTeam.projects.length }})</span>
           }
         </div>
-        @for (project of selectedTeam?.projects; track project.project_name) {
+        @for (project of selectedTeam?.projects; track project.id) {
           <app-team-owned-project [project]="project"></app-team-owned-project>
         }
       </div>
