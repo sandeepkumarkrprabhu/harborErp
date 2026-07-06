@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import type { CreateUserData } from '../create-user/create-user';
+import { User } from '../../../Models/User';
 
 @Component({
   selector: 'app-review-create',
@@ -8,7 +8,7 @@ import type { CreateUserData } from '../create-user/create-user';
   styleUrls: ['./review-create.css'],
 })
 export class ReviewCreate {
-  @Input({ required: true }) data!: CreateUserData;
+  @Input({ required: true }) data!: User;
 
   get projectAssignments(): string {
     return this.data.projects.length ? this.data.projects.join(', ') : 'None';

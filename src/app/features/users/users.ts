@@ -1,4 +1,5 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { FilterOption } from '../../Models/FilterOption';
 import { DataTable } from '../../shared/components/data-table/data-table';
@@ -7,7 +8,7 @@ import { InputField } from '../../shared/components/input-field/input-field';
 import { LucideAngularModule, Pencil, Trash, Mail, UserPlus } from 'lucide-angular';
 import { CreateUser } from './create-user/create-user';
 import { User, getUserStatus } from '../../Models/User';
-import { UserService } from '../../core/users/services/user.service.ts';
+import { UserService } from '../../core/users/services/userService';
 
 @Component({
   selector: 'app-users',
@@ -28,6 +29,7 @@ export class Users {
   users: User[] = [];
 
   constructor(
+    private router: Router,
     private readonly userService: UserService,
     private readonly cdr: ChangeDetectorRef
     
@@ -122,8 +124,27 @@ export class Users {
 
   /** Handle table actions */
   handleTableAction(event: { action: string; row: any }) {
-    if (event.action === 'view') {
-      console.log('View deployment:', event.row);
+    switch (event.action) {
+      case 'view':
+        console.log('View user:', event.row);
+        break;
+
+      case 'edit':
+        // Navigate to edit page with row.id
+        console.log('edit user:', event.row);
+        this.router.navigate(['/users/edit', event.row.id]);
+        break;
+
+      case 'delete':
+        // Confirm before deleting
+        console.log('Delete user:', event.row);
+        if (confirm(`Are you sure you want to delete ${event.row.name}?`)) {
+          this.userService.deleteUser(event.row.id).subscribe(() => {
+            this.loadUsers(); // refresh table after deletion
+          });
+        }
+        break;
     }
   }
+
 }

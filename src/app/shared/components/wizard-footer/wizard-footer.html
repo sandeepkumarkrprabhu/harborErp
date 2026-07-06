@@ -10,13 +10,21 @@
   </button>
 
   <!-- Next / Submit -->
-  <button
-    (click)="isLastStep ? submit.emit() : next.emit()"
-    class="flex items-center gap-2 px-5 py-2.5 text-sm rounded-md text-white transition-colors {{
-      isLastStep ? 'bg-green-600 hover:bg-green-700' : 'bg-primary hover:bg-primary-hover'
-    }}"
-  >
-    {{ isLastStep ? 'Submit' : nextLabel }}
-    <lucide-icon [img]="isLastStep ? CircleCheck : ChevronRight" class="w-4 h-4"></lucide-icon>
-  </button>
+  @if (!isLastStep) {
+    <button
+      (click)="next.emit()"
+      class="flex items-center gap-2 px-5 py-2.5 text-sm rounded-md bg-primary text-white hover:bg-primary-hover"
+    >
+      {{ nextLabel }}
+      <lucide-icon [img]="ChevronRight" class="w-4 h-4"></lucide-icon>
+    </button>
+  } @else {
+    <button
+      (click)="submit.emit()"
+      class="flex items-center gap-2 px-5 py-2.5 text-sm rounded-md bg-green-600 text-white hover:bg-green-700"
+    >
+      Create Project
+      <lucide-icon [img]="CircleCheck" class="w-4 h-4"></lucide-icon>
+    </button>
+  }
 </div>

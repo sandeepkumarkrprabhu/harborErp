@@ -12,4 +12,5 @@ export interface Project {
   updated_at: string;
   by: string;
   deployments: number;
+  bg: string;
 }

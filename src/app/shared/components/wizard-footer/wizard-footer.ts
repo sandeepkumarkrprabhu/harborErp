@@ -1,6 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { LucideAngularModule, SkipBack, CircleCheck, ChevronRight } from 'lucide-angular'; 
-
 import { WizardStep } from '../wizard-steps/wizard-steps';
 
 @Component({
@@ -11,10 +10,11 @@ import { WizardStep } from '../wizard-steps/wizard-steps';
   styleUrls: ['./wizard-footer.css']
 })
 export class WizardFooter {
-  readonly SkipBack = SkipBack;  // expose it to template
+  readonly SkipBack = SkipBack;
   readonly ChevronRight = ChevronRight;
   readonly CircleCheck = CircleCheck; 
 
+  @Input() formName: string = '';
   @Input() currentStep: number = 1;
   @Input() steps: WizardStep[] = [];
 
@@ -24,7 +24,7 @@ export class WizardFooter {
 
   get nextLabel(): string {
     const nextStep = this.steps.find(s => s.number === this.currentStep + 1);
-    return nextStep ? `Next: ${nextStep.subtitle}` : 'Submit';
+    return nextStep ? `Next: ${nextStep.subtitle}` : '{formName}';
   }
 
   get isLastStep(): boolean {

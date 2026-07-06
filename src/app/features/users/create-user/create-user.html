@@ -23,6 +23,7 @@
           <app-review-create [data]="userData"></app-review-create>
         }
         <app-wizard-footer
+          formName="Create user"
           [currentStep]="step"
           [steps]="steps"
           (next)="nextStep()"

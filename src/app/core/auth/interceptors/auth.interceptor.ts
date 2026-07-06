@@ -2,12 +2,15 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { TokenStorageService } from '../../auth/services/token-storage';
+import { AuthService } from '../../auth/services/auth.service';
+import { catchError } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 
 export const AuthInterceptor: HttpInterceptorFn = (req, next) => {
   const tokenStorage = inject(TokenStorageService);
-  const token = tokenStorage.getAccessToken();
+  const authService = inject(AuthService);
 
-  console.log('AuthInterceptor token:', token); // Debug
+  const token = tokenStorage.getAccessToken();
 
   if (token) {
     req = req.clone({
@@ -17,5 +20,13 @@ export const AuthInterceptor: HttpInterceptorFn = (req, next) => {
     });
   }
 
-  return next(req);
+  return next(req).pipe(
+    catchError(error => {
+      if (error.status === 401) {
+        // 🔴 Unauthorized → trigger logout
+        authService.logout();
+      }
+      return throwError(() => error);
+    })
+  );
 };

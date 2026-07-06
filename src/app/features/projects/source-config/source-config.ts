@@ -8,10 +8,9 @@ type SourceConfigTextField =
   | 'repo'
   | 'branch'
   | 'runtime'
-  | 'environment'
-  | 'awsResource';
+  | 'environment';
 
-type SourceConfigSelectField = 'awsRegion' | 'awsService';
+type SourceConfigSelectField = 'awsRegion' | 'awsService' | 'awsResource';
 
 @Component({
   selector: 'app-source-config',
@@ -37,21 +36,28 @@ export class SourceConfig {
     { value: 'ECR', label: 'ECR' }
   ];
 
+  /** All resources fetched for the selected region+service */
   connectedResources: AwsResource[] = [];
+
+  /** Only the resources the user has actually selected */
+  selectedResources: AwsResource[] = [];
+
   loading = false;
 
   constructor(private awsService: AwsService) {}
 
-  ngOnInit() {
-    this.fetchResources();
-  }
+  // ngOnInit() {
+  //   if (this.data.awsRegion && this.data.awsService) {
+  //     this.fetchResources();
+  //   }
+  // }
 
   fetchResources() {
     this.loading = true;
-    this.awsService.fetchResources().subscribe({
+    this.awsService.fetchResources(this.data.awsService, this.data.awsRegion).subscribe({
       next: (res) => {
+        // only set available resources for dropdown
         this.connectedResources = res;
-        this.data.awsServiceList = res.map(r => r.type);
         this.loading = false;
       },
       error: (err) => {
@@ -68,31 +74,31 @@ export class SourceConfig {
 
   onSelect(field: SourceConfigSelectField, event: Event) {
     const select = event.target as HTMLSelectElement;
-    this.data[field] = select.value;
-    // optional: re-fetch resources when region/service changes
+    this.data[field] = select.value as any;
+
     if (field === 'awsRegion' || field === 'awsService') {
       this.fetchResources();
+    }
+
+    if (field === 'awsResource') {
+      const selected = this.connectedResources.find(r => r.id === this.data.awsResource);
+      if (selected && !this.selectedResources.some(r => r.id === selected.id)) {
+        this.selectedResources = [
+          ...this.selectedResources.filter(r => r.service === this.data.awsService),
+          selected
+        ];
+      }
     }
   }
 
   addService() {
     if (this.data.awsService && this.data.awsResource) {
-      const newId = (this.connectedResources.length + 1).toString();
-      this.connectedResources = [
-        ...this.connectedResources,
-        {
-          id: newId,
-          name: '',
-          service: '',
-          region:'',
-          type: this.data.awsService,
-          owner: 'newOwner',
-          handle: '@newOwner',
-          bg: 'bg-primary'
-        }
-      ];
-      if (!this.data.awsServiceList.includes(this.data.awsService)) {
-        this.data.awsServiceList = [...this.data.awsServiceList, this.data.awsService];
+      const selected = this.connectedResources.find(r => r.id === this.data.awsResource);
+      if (selected && !this.selectedResources.some(r => r.id === selected.id)) {
+        this.selectedResources = [
+          ...this.selectedResources.filter(r => r.service === this.data.awsService),
+          selected
+        ];
       }
       this.data.awsResource = '';
     }

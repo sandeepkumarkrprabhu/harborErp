@@ -53,6 +53,7 @@ export class Teams {
           updated_at: "2026-06-26",
           by: "Frank",
           deployments: 18,
+          bg:''
         },
         {
           id: "2",
@@ -68,6 +69,7 @@ export class Teams {
           updated_at: "2026-06-24",
           by: "Grace",
           deployments: 10,
+          bg:''
         }
       ],
       teamRoaster: [
@@ -86,6 +88,7 @@ export class Teams {
           requires_github_access: true,
           role_id: "1",
           updated_at: "2026-06-26T10:15:00",
+          notes:''
         },
         {
           name: "Grace Lee",
@@ -102,6 +105,7 @@ export class Teams {
           requires_github_access: true,
           role_id: "1",
           updated_at: "2026-06-26T10:15:00",
+          notes:''
         },
         {
           name: "Henry Adams",
@@ -118,6 +122,7 @@ export class Teams {
           requires_github_access: true,
           role_id: "1",
           updated_at: "2026-06-26T10:15:00",
+          notes:''
         },
         {
           name: "Ivy Wilson",
@@ -134,6 +139,7 @@ export class Teams {
           requires_github_access: true,
           role_id: "1",
           updated_at: "2026-06-26T10:15:00",
+          notes:''
         }
       ]
     },
@@ -157,7 +163,8 @@ export class Teams {
           updated_at: "2026-06-25",
           by: "Jack",
           deployments: 14,
-          status: getProjectStatus(2,0),
+          status: getProjectStatus(2, 0),
+          bg:''
         },
         {
           id: "2",
@@ -173,6 +180,7 @@ export class Teams {
           updated_at: "2026-06-21",
           by: "Karen",
           deployments: 6,
+          bg:''
         }
       ],
       teamRoaster: [
@@ -191,6 +199,7 @@ export class Teams {
           requires_github_access: true,
           role_id: "1",
           updated_at: "2026-06-26T10:15:00",
+          notes:''
         },
         {
           name: "Karen White",
@@ -207,6 +216,7 @@ export class Teams {
           requires_github_access: true,
           role_id: "2",
           updated_at: "2026-06-26T10:15:00",
+          notes:''
         },
         {
           name: "Liam Scott",
@@ -223,6 +233,7 @@ export class Teams {
           requires_github_access: true,
           role_id: "3",
           updated_at: "2026-06-26T10:15:00",
+          notes:''
         }
       ]
     },
@@ -246,7 +257,8 @@ export class Teams {
           updated_at: "2026-06-26",
           by: "Mia",
           deployments: 11,
-          status: getProjectStatus(2,0),
+          status: getProjectStatus(2, 0),
+          bg:''
         },
         {
           id: "4",
@@ -261,7 +273,8 @@ export class Teams {
           updated_at: "2026-06-25",
           by: "Noah",
           deployments: 9,
-          status: getProjectStatus(3,0),
+          status: getProjectStatus(3, 0),
+          bg:''
         }
       ],
       teamRoaster: [
@@ -280,6 +293,7 @@ export class Teams {
           requires_github_access: true,
           role_id: "1",
           updated_at: "2026-06-26T10:15:00",
+          notes:''
         },
         {
           name: "Noah Clark",
@@ -296,6 +310,7 @@ export class Teams {
           requires_github_access: true,
           role_id: "1",
           updated_at: "2026-06-26T10:15:00",
+          notes:''
         },
         {
           name: "Olivia Harris",
@@ -312,6 +327,7 @@ export class Teams {
           requires_github_access: true,
           role_id: "1",
           updated_at: "2026-06-26T10:15:00",
+          notes:''
         }
       ]
     }

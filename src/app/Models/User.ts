@@ -15,6 +15,7 @@ export interface User {
     requires_github_access: boolean;
     role_id: string;
     updated_at: string;
+    notes: string;
 }
 
 export function getUserStatus(user: User): string {

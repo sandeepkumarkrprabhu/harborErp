@@ -2,7 +2,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+
 import { Project } from '../../../Models/project';
+import { APIProject } from './project-helper'; 
 import { environment } from '../../../../environments/environment.development';
 
 @Injectable({
@@ -23,8 +25,8 @@ export class ProjectService {
     return this.http.get<Project>(`${this.apiUrl}/${id}`);
   }
 
-  createProject(project: Project): Observable<Project> {
-    return this.http.post<Project>(this.apiUrl, project);
+  createProject(project: APIProject): Observable<Project> {
+    return this.http.post<Project>(`${this.apiUrl}/create-project`, project);
   }
 
   updateProject(id: string, project: Project): Observable<Project> {
