@@ -1,3 +1,4 @@
+/*Project List Model */
 export interface Project {
   id: string;
   project_name: string;
@@ -13,4 +14,33 @@ export interface Project {
   by: string;
   deployments: number;
   bg: string;
+  github_repo: string;
+  total_environments: string;
+}
+
+
+/* Project Create Model */
+export interface NewProject {
+  project_name: string;
+  project_description: string;
+  team: string;
+  project_type: string;
+  tags: string[];
+  members: string[]; // UUIDs
+  github_org: string;
+  github_repo: string;
+  branch: string;
+  runtime: string;
+  environments: Environment[];
+}
+
+export interface Environment {
+  environment_name: string;
+  resources: AwsResource[];
+}
+
+export interface AwsResource {
+  aws_region: string;
+  aws_service: string;
+  aws_resource: string;
 }

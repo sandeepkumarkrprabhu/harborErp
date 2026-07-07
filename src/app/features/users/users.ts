@@ -9,6 +9,7 @@ import { LucideAngularModule, Pencil, Trash, Mail, UserPlus } from 'lucide-angul
 import { CreateUser } from './create-user/create-user';
 import { User, getUserStatus } from '../../Models/User';
 import { UserService } from '../../core/users/services/userService';
+import { DateUtils } from '../../shared/utility/date-utils';
 
 @Component({
   selector: 'app-users',
@@ -31,7 +32,8 @@ export class Users {
   constructor(
     private router: Router,
     private readonly userService: UserService,
-    private readonly cdr: ChangeDetectorRef
+    private readonly cdr: ChangeDetectorRef,
+    private dateUtils: DateUtils
     
   ) {}
   
@@ -84,7 +86,7 @@ export class Users {
       columns: [
         { header: 'Member Name', field: 'name', bold: true },
         { header: 'Email', field: 'email' },
-        { header: 'Role', field: 'role_id' },
+        { header: 'Role', field: 'role_name',badge:true },
         { header: 'Projects', field: 'projects', badge: true }, 
         { header: 'Last Active', field: 'updated_at' },
         { header: 'Status', field: 'status', badge: true, badgeColorMap: {
@@ -94,7 +96,8 @@ export class Users {
       ],
       data: this.users.map(user => ({
         ...user,
-        status: getUserStatus(user)
+        status: getUserStatus(user),
+        updated_at: this.dateUtils.formatDate(user.updated_at)
       })),
       actions: [
         { label: 'Edit', icon: this.Edit, color: 'bg-white-100 text-white-700 border border-black/5', action: 'edit' },

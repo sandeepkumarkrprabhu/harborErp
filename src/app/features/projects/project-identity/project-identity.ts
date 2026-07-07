@@ -1,5 +1,8 @@
-import { Component, Input } from '@angular/core';
+import { Component, ChangeDetectorRef, Input } from '@angular/core';
 import type { CreateProjectData, ValidationErrors } from '../create-project/create-project';
+import { User } from '../../../Models/User';
+import { UserService } from '../../../core/users/services/userService';
+import { UserHelper } from '../../../core/users/services/user-helper';
 
 @Component({
   selector: 'app-project-identity',
@@ -12,15 +15,46 @@ export class ProjectIdentity {
   @Input() errors: ValidationErrors = {};
   @Input() showErrors = false;
 
-  suggestedMembers = [
-    { name: 'Luna Valen', handle: '@lunaVortex', initials: 'LV', bg: 'bg-primary' },
-    { name: 'Ravi Aven', handle: '@raviQuantum', initials: 'RA', bg: 'bg-primary/80' },
-    { name: 'Isla Jansen', handle: '@islaNova', initials: 'IJ', bg: 'bg-primary/60' },
-    { name: 'Kiran Dey', handle: '@kiranChronos', initials: 'KD', bg: 'bg-primary/40' },
-    { name: 'Mira Elwood', handle: '@miraCelestia', initials: 'ME', bg: 'bg-primary/20' },
-    { name: 'Tariq Bloom', handle: '@tariqBloom', initials: 'TB', bg: 'bg-primary/70' }
-  ];
+  suggestedMembers: User[] = [];
 
+  userHelper = UserHelper;
+
+  constructor(
+    private userService: UserService,
+    private cdr: ChangeDetectorRef
+  ) { }
+  
+  ngOnInit() {
+      this.loadUsers();
+  }
+
+  /** Load projects from backend */
+  loadUsers() {
+    this.userService.getUsers().subscribe({
+      next: (data) => {
+        // enrich each user with a bg property
+        this.suggestedMembers = data.map((u, idx) => ({
+          ...u,
+          bg: this.getBgColor(idx)
+        }));
+        console.log('Users loaded:', this.suggestedMembers);
+        this.cdr.detectChanges(); // Force UI refresh
+      },
+      error: (err) => console.error('Failed to load users', err),
+    });
+  }
+
+  getBgColor(index: number): string {
+    const shades = [
+      'bg-primary',
+      'bg-primary/80',
+      'bg-primary/60',
+      'bg-primary/40',
+      'bg-primary/20',
+      'bg-primary/70'
+    ];
+    return shades[index % shades.length];
+  }
   updateField<K extends keyof CreateProjectData>(field: K, value: CreateProjectData[K]) {
     this.data[field] = value;
   }

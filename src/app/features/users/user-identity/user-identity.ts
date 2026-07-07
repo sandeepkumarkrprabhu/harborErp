@@ -1,8 +1,11 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectorRef } from '@angular/core';
 import type { ValidationErrors } from '../create-user/create-user';
 import { User } from '../../../Models/User';
 import { Project } from '../../../Models/project';
 import { ProjectService } from '../../../core/projects/services/project.service';
+import { RoleService } from '../../../core/role/role-service';
+import { RegisterUserRequest } from '../../../core/auth/models/auth';
+import { Role } from '../../../Models/role';
 
 @Component({
   selector: 'app-user-identity',
@@ -15,21 +18,35 @@ export class UserIdentity {
   @Input() errors: ValidationErrors = {};
   @Input() showErrors = false;
 
-  roles = [
-    'Developer', 'Frontend Engineer', 'Backend Engineer', 'DevOps',
-    'QA Engineer', 'UI/UX Designer', 'Data Analyst', 'Cloud Engineer'
-  ];
+  // roles = [
+  //   'Developer', 'Frontend Engineer', 'Backend Engineer', 'DevOps',
+  //   'QA Engineer', 'UI/UX Designer', 'Data Analyst', 'Cloud Engineer'
+  // ];
+  
   statuses = ['Active', 'Pending', 'Inactive'];
 
   suggestedProjects: Project[] = [];
+  roles: Role[] = [];
 
-  constructor(private projectService: ProjectService) {}
+  constructor(
+    private projectService: ProjectService,
+    private roleService: RoleService,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   ngOnInit() {
     // Fetch suggested projects from backend
     this.projectService.getProjects().subscribe(projects => {
+      //console.log("DB Projects:", projects);
       this.suggestedProjects = projects;
+      this.cdr.detectChanges();
     });
+
+    this.roleService.getRoles().subscribe(roles => { 
+      //console.log("DB Roles:", roles);
+      this.roles = roles;
+      this.cdr.detectChanges();
+    })
   }
 
   updateField<K extends keyof User>(field: K, value: User[K]) {
@@ -69,12 +86,15 @@ export class UserIdentity {
         source: '',
         status: 'Active',
         unhealthy: 0,
-        bg:''
+        bg: '',
+        github_repo: '',
+        total_environments: '0' // string instead of number
       }));
   }
 
-
-  errorFor(field: keyof User): string {
+  errorFor(field: keyof RegisterUserRequest): string {
     return this.showErrors ? this.errors[field] ?? '' : '';
   }
+
+
 }

@@ -21,3 +21,15 @@ export interface LoginResponse {
   refresh_token?: string;
   user?: AuthUser; // optional since backend doesn’t send it
 }
+
+
+// models/auth.ts
+export interface RegisterUserRequest {
+  name: string;
+  email: string;
+  role_id: string; 
+  github_username: string;
+  requires_github_access: boolean;
+  status: boolean;
+  projects: [];
+}

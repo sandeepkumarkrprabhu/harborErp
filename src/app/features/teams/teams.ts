@@ -53,7 +53,9 @@ export class Teams {
           updated_at: "2026-06-26",
           by: "Frank",
           deployments: 18,
-          bg:''
+          bg: '',
+          github_repo: '',
+          total_environments:''
         },
         {
           id: "2",
@@ -69,14 +71,16 @@ export class Teams {
           updated_at: "2026-06-24",
           by: "Grace",
           deployments: 10,
-          bg:''
+          bg: '',
+          github_repo: '',
+          total_environments:''
         }
       ],
       teamRoaster: [
         {
           name: "Frank Miller",
           email: "frank@company.com",
-          role: "Backend Lead",
+          role_name: "Backend Lead",
           projects: [],
           lastActive: "2026-06-26T10:15:00",
           status: 'Active',
@@ -93,7 +97,7 @@ export class Teams {
         {
           name: "Grace Lee",
           email: "grace@company.com",
-          role: "Senior Backend Developer",
+          role_name: "Senior Backend Developer",
           projects: [],
           lastActive: "2026-06-25T17:30:00",
           is_active: true,
@@ -110,7 +114,7 @@ export class Teams {
         {
           name: "Henry Adams",
           email: "henry@company.com",
-          role: "API Developer",
+          role_name: "API Developer",
           projects: [],
           lastActive: "2026-06-24T15:10:00",
           is_active: true,
@@ -127,7 +131,7 @@ export class Teams {
         {
           name: "Ivy Wilson",
           email: "ivy@company.com",
-          role: "Database Engineer",
+          role_name: "Database Engineer",
           projects: [],
           lastActive: "2026-06-23T09:45:00",
           is_active: false,
@@ -164,7 +168,9 @@ export class Teams {
           by: "Jack",
           deployments: 14,
           status: getProjectStatus(2, 0),
-          bg:''
+          bg: '',
+          github_repo: '',
+          total_environments:''
         },
         {
           id: "2",
@@ -180,14 +186,16 @@ export class Teams {
           updated_at: "2026-06-21",
           by: "Karen",
           deployments: 6,
-          bg:''
+          bg: '',
+          github_repo: '',
+          total_environments:''
         }
       ],
       teamRoaster: [
         {
           name: "Jack Turner",
           email: "jack@company.com",
-          role: "QA Lead",
+          role_name: "QA Lead",
           projects: [],
           lastActive: "2026-06-26T11:20:00",
           is_active: true,
@@ -204,7 +212,7 @@ export class Teams {
         {
           name: "Karen White",
           email: "karen@company.com",
-          role: "Automation Tester",
+          role_name: "Automation Tester",
           projects: [],
           lastActive: "2026-06-25T13:40:00",
           is_active: true,
@@ -221,7 +229,7 @@ export class Teams {
         {
           name: "Liam Scott",
           email: "liam@company.com",
-          role: "Manual Tester",
+          role_name: "Manual Tester",
           projects: [],
           lastActive: "2026-06-22T09:10:00",
           is_active: false,
@@ -258,7 +266,9 @@ export class Teams {
           by: "Mia",
           deployments: 11,
           status: getProjectStatus(2, 0),
-          bg:''
+          bg: '',
+          github_repo: '',
+          total_environments:''
         },
         {
           id: "4",
@@ -274,14 +284,16 @@ export class Teams {
           by: "Noah",
           deployments: 9,
           status: getProjectStatus(3, 0),
-          bg:''
+          bg: '',
+          github_repo: '',
+          total_environments:''
         }
       ],
       teamRoaster: [
         {
           name: "Mia Davis",
           email: "mia@company.com",
-          role: "Mobile Developer",
+          role_name: "Mobile Developer",
           projects: [],
           lastActive: "2026-06-26T15:45:00",
           is_active: true,
@@ -298,7 +310,7 @@ export class Teams {
         {
           name: "Noah Clark",
           email: "noah@company.com",
-          role: "Flutter Developer",
+          role_name: "Flutter Developer",
           projects: [],
           lastActive: "2026-06-25T12:30:00",
           is_active: true,
@@ -315,7 +327,7 @@ export class Teams {
         {
           name: "Olivia Harris",
           email: "olivia@company.com",
-          role: "Mobile QA Engineer",
+          role_name: "Mobile QA Engineer",
           projects: [],
           lastActive: "2026-06-24T16:15:00",
           is_active: true,

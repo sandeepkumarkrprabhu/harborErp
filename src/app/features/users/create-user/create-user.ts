@@ -8,6 +8,9 @@ import { WizardSteps } from '../../../shared/components/wizard-steps/wizard-step
 import { ReviewCreate } from '../review-create/review-create';
 import { UserIdentity } from '../user-identity/user-identity';
 import { UserService } from '../../../core/users/services/userService';
+import { AuthService } from '../../../core/auth/services/auth.service';
+import { RegisterUserRequest } from '../../../core/auth/models/auth';
+import { UserHelper } from '../../../core/users/services/user-helper';
 import { User } from '../../../Models/User';
 
 enum UserSteps {
@@ -15,7 +18,7 @@ enum UserSteps {
   Review = 2
 }
 
-export type ValidationErrors = Partial<Record<keyof User, string>>;
+export type ValidationErrors = Partial<Record<keyof RegisterUserRequest, string>>;
 
 @Component({
   selector: 'app-create-user',
@@ -53,7 +56,9 @@ export class CreateUser {
 
   constructor(
     private userService: UserService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private authService: AuthService,
+    private userHelper: UserHelper
   ) { 
     if (this.route.snapshot.paramMap.get('id') != null)
     {
@@ -78,7 +83,7 @@ export class CreateUser {
       this.userData = {
         name: '',
         email: '',
-        role: '',
+        role_name: '',
         status: 'Active',
         projects: [],
         github_user_id: '',
@@ -114,6 +119,7 @@ export class CreateUser {
   }
 
   get userIdentityErrors(): ValidationErrors {
+    console.log("User data:", this.userData);
     const errors: ValidationErrors = {};
     const name = this.userData.name.trim();   
     const email = this.userData.email.trim().toLowerCase();
@@ -133,7 +139,7 @@ export class CreateUser {
       errors.email = 'A user with this email already exists.';
     }
 
-    if (!this.userData.role) errors.role = 'Role is required.';
+    if (!this.userData.role_id) errors.role_id = 'Role is required.';
     if (!this.userData.status) errors.status = 'Status is required.';
 
     // if (projects.length <= 1) {
@@ -168,16 +174,27 @@ export class CreateUser {
       return;
     }
 
-    if (this.mode === 'edit') {
-      console.log('User updated:', this.userData);
-      // TODO: integrate with backend update service
+    if (this.mode === 'create') {
+      var registerUser = this.userHelper.toRegisterRequest(this.userData); 
+      console.log("New user Object:", registerUser)
+      // Call backend to register new user
+      this.authService.registerUser(registerUser).subscribe({
+        next: (response) => {
+          console.log('User created successfully:', response);
+          this.closed.emit();
+        },
+        error: (err) => {
+          console.error('Error creating user:', err);
+          // Optionally show a UI error message
+        }
+      });
     } else {
-      console.log('User created:', this.userData);
-      // TODO: integrate with backend create service
+      // For now, just log edit mode until update service is ready
+      console.log('Edit mode selected, update service not yet implemented:', this.userData);
+      this.closed.emit();
     }
-
-    this.closed.emit();
   }
+
 
   // These methods must be inside the class
   private isStepValid(stepNumber: number): boolean {

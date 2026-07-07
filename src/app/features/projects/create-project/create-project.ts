@@ -130,7 +130,7 @@ export class CreateProject {
     // Call backend service
     this.projectService.createProject(apiObject).subscribe({
       next: (createdProject) => {
-        console.log('✅ Project created successfully:', createdProject);
+        //console.log('✅ Project created successfully:', createdProject);
         this.showWizard = false; // optionally close wizard
         // TODO: navigate to project detail page or show success message
       },

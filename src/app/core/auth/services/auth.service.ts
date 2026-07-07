@@ -7,7 +7,8 @@ import {
   AuthUser,
   LoginRequest,
   LoginResponse,
-  PinLoginRequest
+  PinLoginRequest,
+  RegisterUserRequest
 } from '../models/auth';
 
 import { TokenStorageService } from '../../auth/services/token-storage';
@@ -72,6 +73,22 @@ export class AuthService {
         tap(response => this.handleLoginSuccess(response))
       );
   }
+
+  // auth.service.ts
+registerUser(request: RegisterUserRequest): Observable<any> {
+  return this.http
+    .post<any>(`${this.apiUrl}/auth/register`, request)
+    .pipe(
+      tap(response => {
+        console.log('User registered successfully:', response);
+      }),
+      catchError(err => {
+        console.error('Registration failed:', err);
+        return EMPTY; // or throwError(() => err) if you want to propagate
+      })
+    );
+}
+
 
   /**
    * Reload logged-in user.
