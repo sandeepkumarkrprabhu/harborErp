@@ -56,10 +56,10 @@ export class Dashboard implements OnInit {
   metricTiles: { title: string; value: number; details: any[] }[] = [];
 
   projects: Project[] = [
-    { id: "1", project_name: 'harbor-api', status: 'active', project_description: 'Go backend service for Harbor portal', type: 'Microservice', source:'org/harbor-api', branch: 'main', envs: 4, healthy: 4, unhealthy: 0, updated_at: '2h ago', by: 'Alex K.', deployments: 12,bg:'',github_repo: '', total_environments:'' },
-    { id: "2", project_name: 'harbor-frontend',  status: 'active', project_description: 'Angular frontend application', type: 'Infrastructure', envs: 3, source:'org/harbor-frontend', branch: 'main', healthy: 2, unhealthy: 1, updated_at: '5h ago', by: 'Priya R.', deployments: 20, bg:'',github_repo: '', total_environments:'' },
-    { id: "3", project_name: 'auth-service', status: 'active', project_description: 'OAuth2 & RBAC microservice', type: 'Microservice', envs: 3, source:'org/auth-service', branch: 'master', healthy: 3, unhealthy: 0, updated_at: '1d ago', by: 'Sam T.', deployments: 8, bg:'',github_repo: '', total_environments:'' },
-    { id: "4", project_name: 'notification-worker', status: 'active', project_description: 'Slack & email notification worker', type: 'Infrastructure', envs: 4, source:'org/notification-worker', branch: 'prod', healthy: 4, unhealthy: 0, updated_at: '2d ago', by: 'Zara M.', deployments: 15,bg:'',github_repo: '', total_environments:'' },
+    { id: "1", project_name: 'harbor-api', status: 'active', project_description: 'Go backend service for Harbor portal', type: 'Microservice', source:'org/harbor-api', branch: 'main', envs: 4, healthy: 4, unhealthy: 0, updated_at: '2h ago', by: 'Alex K.', deployments: 12,bg:'', github_org:'',github_repo: '', total_environments:'' },
+    { id: "2", project_name: 'harbor-frontend',  status: 'active', project_description: 'Angular frontend application', type: 'Infrastructure', envs: 3, source:'org/harbor-frontend', branch: 'main', healthy: 2, unhealthy: 1, updated_at: '5h ago', by: 'Priya R.', deployments: 20, bg:'', github_org:'',github_repo: '', total_environments:'' },
+    { id: "3", project_name: 'auth-service', status: 'active', project_description: 'OAuth2 & RBAC microservice', type: 'Microservice', envs: 3, source:'org/auth-service', branch: 'master', healthy: 3, unhealthy: 0, updated_at: '1d ago', by: 'Sam T.', deployments: 8, bg:'',github_org:'', github_repo: '', total_environments:'' },
+    { id: "4", project_name: 'notification-worker', status: 'active', project_description: 'Slack & email notification worker', type: 'Infrastructure', envs: 4, source:'org/notification-worker', branch: 'prod', healthy: 4, unhealthy: 0, updated_at: '2d ago', by: 'Zara M.', deployments: 15,bg:'',github_org:'', github_repo: '', total_environments:'' },
   ];
 
   activities = [

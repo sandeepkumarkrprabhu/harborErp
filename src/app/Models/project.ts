@@ -14,6 +14,7 @@ export interface Project {
   by: string;
   deployments: number;
   bg: string;
+  github_org: string;
   github_repo: string;
   total_environments: string;
 }

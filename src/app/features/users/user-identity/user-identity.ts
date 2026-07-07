@@ -87,6 +87,7 @@ export class UserIdentity {
         status: 'Active',
         unhealthy: 0,
         bg: '',
+        github_org:'',
         github_repo: '',
         total_environments: '0' // string instead of number
       }));

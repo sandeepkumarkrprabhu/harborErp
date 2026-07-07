@@ -13,6 +13,7 @@ import {
   Menu,
 } from 'lucide-angular';
 
+import { TokenStorageService } from '../../../core/auth/services/token-storage';
 import { AuthService } from '../../../core/auth/services/auth.service';
 import { Logger } from '../../../features/utils/logger';
 
@@ -28,16 +29,33 @@ import { Logger } from '../../../features/utils/logger';
   styleUrls: ['./sidebar.css'],
 })
 export class Sidebar {
+
+  username: string | null = null;
+  email: string | null = null;
+
   constructor(
+    private tokenStorage: TokenStorageService,
     private readonly authService: AuthService,
     private readonly logger: Logger,
     private readonly router: Router
-  ) {}
+  ) { }
 
   readonly LogOut = LogOut;
   readonly Menu = Menu;
 
   isCollapsed = false;
+
+  ngOnInit(): void {
+    this.loadUserDetails();
+  }
+
+  private loadUserDetails(): void {
+    this.username = this.tokenStorage.userName(); // unwrap signal
+    this.email = this.tokenStorage.userEmail();   // unwrap signal
+    this.logger.debug('Loaded user details:', { username: this.username, email: this.email });
+  }
+
+
 
   toggleSidebar(): void {
     this.isCollapsed = !this.isCollapsed;

@@ -19,7 +19,10 @@ export interface LoginResponse {
   message: string;
   access_token: string;
   refresh_token?: string;
-  user?: AuthUser; // optional since backend doesn’t send it
+  user: AuthUser; 
+  name: string;
+  email: string;
+  username: string;
 }
 
 

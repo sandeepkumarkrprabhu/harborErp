@@ -61,6 +61,8 @@ export class TokenStorageService {
 
   clear(): void {
     localStorage.removeItem(ACCESS_TOKEN_KEY);
+    localStorage.removeItem(LOGGED_IN_USERNAME);
+    localStorage.removeItem(LOGGED_IN_EMAIL);
     localStorage.removeItem(REFRESH_TOKEN_KEY);
 
     this._accessToken.set(null);

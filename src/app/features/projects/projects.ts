@@ -62,12 +62,17 @@ export class Projects {
   loadProjects() {
     this.projectService.getProjects().subscribe({
       next: (data) => {
-        this.projects = data;
+        this.projects = data.map(p => ({
+          ...p,
+          source: `${p.github_org}/${p.github_repo}` // 👈 build source string
+        }));
+        console.log("Projects Loaded:", this.projects);
         this.cdr.detectChanges(); // ✅ fixes ExpressionChanged error
       },
       error: (err) => console.error('Failed to load projects', err),
     });
   }
+
 
   /** Filtered list based on active filter and search term */
   get filteredProjects(): Project[] {

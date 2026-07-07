@@ -54,6 +54,7 @@ export class Teams {
           by: "Frank",
           deployments: 18,
           bg: '',
+          github_org:'',
           github_repo: '',
           total_environments:''
         },
@@ -72,6 +73,7 @@ export class Teams {
           by: "Grace",
           deployments: 10,
           bg: '',
+          github_org:'',
           github_repo: '',
           total_environments:''
         }
@@ -169,6 +171,7 @@ export class Teams {
           deployments: 14,
           status: getProjectStatus(2, 0),
           bg: '',
+          github_org:'',
           github_repo: '',
           total_environments:''
         },
@@ -187,6 +190,7 @@ export class Teams {
           by: "Karen",
           deployments: 6,
           bg: '',
+          github_org:'',
           github_repo: '',
           total_environments:''
         }
@@ -267,6 +271,7 @@ export class Teams {
           deployments: 11,
           status: getProjectStatus(2, 0),
           bg: '',
+          github_org:'',
           github_repo: '',
           total_environments:''
         },
@@ -285,6 +290,7 @@ export class Teams {
           deployments: 9,
           status: getProjectStatus(3, 0),
           bg: '',
+          github_org:'',
           github_repo: '',
           total_environments:''
         }

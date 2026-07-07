@@ -75,19 +75,19 @@ export class AuthService {
   }
 
   // auth.service.ts
-registerUser(request: RegisterUserRequest): Observable<any> {
-  return this.http
-    .post<any>(`${this.apiUrl}/auth/register`, request)
-    .pipe(
-      tap(response => {
-        console.log('User registered successfully:', response);
-      }),
-      catchError(err => {
-        console.error('Registration failed:', err);
-        return EMPTY; // or throwError(() => err) if you want to propagate
-      })
-    );
-}
+  registerUser(request: RegisterUserRequest): Observable<any> {
+    return this.http
+      .post<any>(`${this.apiUrl}/auth/register`, request)
+      .pipe(
+        tap(response => {
+          console.log('User registered successfully:', response);
+        }),
+        catchError(err => {
+          console.error('Registration failed:', err);
+          return EMPTY; // or throwError(() => err) if you want to propagate
+        })
+      );
+  }
 
 
   /**
@@ -117,6 +117,8 @@ registerUser(request: RegisterUserRequest): Observable<any> {
       response.refresh_token
     );
 
+    this.tokenStorage.setuserName(response.name);
+    this.tokenStorage.setuserEmail(response.email);
     //this._currentUser.set(response.user);
   }
 
