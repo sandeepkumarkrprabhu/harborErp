@@ -40,24 +40,35 @@
           class="flex items-center gap-1.5 text-xs font-semibold text-[#8a7f75] uppercase tracking-wider"
         >
           @if (selectedTeam) {
-            <lucide-icon [name]="UserRound" class="h-5 w-5 text-white-700" aria-hidden="true">
+            <!-- Bind the random icon -->
+            <lucide-icon
+              [name]="selectedTeam.icon"
+              class="h-5 w-5 text-gray-700"
+              aria-hidden="true"
+            >
             </lucide-icon>
-            <span>TEAM ROASTER ({{ selectedTeam.teamRoaster.length }})</span>
+
+            <span>TEAM ROASTER ({{ selectedTeam.teamMembers.length }})</span>
           }
         </div>
 
-        @for (user of selectedTeam?.teamRoaster; track user.id) {
+        @for (user of selectedTeam?.teamMembers; track user.id) {
           <app-team-roaster-user [user]="user"></app-team-roaster-user>
         }
       </div>
+
       <div>
         <div
           class="flex items-center gap-1.5 text-xs font-semibold text-[#8a7f75] uppercase tracking-wider"
         >
           @if (selectedTeam) {
-            <lucide-icon [name]="UserRound" class="h-5 w-5 text-white-700" aria-hidden="true">
+            <lucide-icon
+              [name]="selectedTeam.icon"
+              class="h-5 w-5 text-gray-700"
+              aria-hidden="true"
+            >
             </lucide-icon>
-            <span>OWNED PROJECTS ({{ selectedTeam.projects.length }})</span>
+            <span>OWNED PROJECTS ({{ selectedTeam.projects.length || 0 }})</span>
           }
         </div>
         @for (project of selectedTeam?.projects; track project.id) {

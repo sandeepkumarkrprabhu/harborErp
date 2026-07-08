@@ -3,11 +3,20 @@ import { Project } from './project';
 import { User } from './User';
 
 export interface Team{
+    id: string;
     teamName: string;
+    teamDescription: string;
+    teamLeadID: string;
+    teamLeadName: string;
     totalmembers: number;
     totalProjects: number;
     description: string;
-    icon?: LucideIconData;   // ✅ correct type for Lucide icons
+    icon?: LucideIconData;   // correct type for Lucide icons
     projects: Project[];
-    teamRoaster: User[]; 
+    teamMembersIDs: [];
+    teamMembers: User[]; 
+    is_active: boolean;
+    created_at: string;
+    updated_at: string;
+
 }
