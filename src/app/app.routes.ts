@@ -57,6 +57,10 @@ export const routes: Routes = [
     ]
   },
   {
+    path: 'setup-password',
+    loadComponent: () => import('./features/auth/setup-Password/setup-password/setup-password').then(m => m.SetupPassword)
+  },
+  {
     path: 'login',
     canActivate: [loginGuard],
     loadComponent: () => import('./features/auth/login/login').then(m => m.Login)
