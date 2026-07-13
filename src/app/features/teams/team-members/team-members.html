@@ -1,10 +1,20 @@
 <div class="flex gap-6 px-6 py-5 h-full">
   <div class="flex-1">
     <h3 class="flex justify-between items-center pb-2 border-b border-black/5">
-      Select Team Members
-      <span class="text-[10px] text-[#8a7f75] font-semibold"
-        >{{ selectedMembers().length }} selected</span
-      >
+      <div class="flex items-center gap-3 w-full">
+        <div class="flex-1">Select Team Members</div>
+        <div class="w-40">
+          <input
+            type="text"
+            placeholder="Search users..."
+            (input)="onSearchInput($event.target.value)"
+            class="w-full text-sm px-2 py-1 border rounded"
+          />
+        </div>
+        <span class="text-[10px] text-[#8a7f75] font-semibold ml-3"
+          >{{ selectedMembers().length }} selected</span
+        >
+      </div>
     </h3>
 
     @if (showErrors && errors['teamMembers']) {

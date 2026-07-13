@@ -1,15 +1,21 @@
 import { Component, ChangeDetectorRef, Input } from '@angular/core';
+
 import type { CreateProjectData, ValidationErrors } from '../../../Models/project';
 import { User } from '../../../Models/User';
+
 import { UserService } from '../../../core/users/services/userService';
 import { UserHelper } from '../../../core/users/services/user-helper';
+
+import { InputField } from '../../../shared/components/input-field/input-field';
 
 @Component({
   selector: 'app-project-identity',
   standalone: true,
+  imports: [InputField],
   templateUrl: './project-identity.html',
   styleUrls: ['./project-identity.css']
 })
+  
 export class ProjectIdentity {
   @Input({ required: true }) data!: CreateProjectData;
   @Input() errors: ValidationErrors = {};
@@ -37,7 +43,8 @@ export class ProjectIdentity {
           ...u,
           bg: this.getBgColor(idx)
         }));
-        console.log('Users loaded:', this.suggestedMembers);
+        //console.log('Users loaded:', this.suggestedMembers);
+        console.log("Projects suggested users loaded");
         this.cdr.detectChanges(); // Force UI refresh
       },
       error: (err) => console.error('Failed to load users', err),

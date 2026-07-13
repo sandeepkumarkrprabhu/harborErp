@@ -1,22 +1,36 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { AsyncPipe } from '@angular/common';
 import { LucideAngularModule, Server, Smartphone, Bug, Database, UserPlus, LayoutGrid, UserRound, LucideIconData } from 'lucide-angular';
+import { Observable, map, tap } from 'rxjs';
+
+import { Team } from '../../Models/Team';
+
+import { TeamService } from '../../core/team/team-service';
+import { Createteam } from "./createteam/createteam";
 
 import { TeamCard } from "../../shared/components/team-card/team-card";
 import { TeamRoasterHead } from '../../shared/components/team-roaster-head/team-roaster-head';
 import { TeamRoasterUser } from '../../shared/components/team-roaster-user/team-roaster-user';
 import { TeamOwnedProject } from "../../shared/components/team-owned-project/team-owned-project";
 
-import { Team } from '../../Models/Team';
-import { TeamService } from '../../core/team/team-service';
-import { Createteam } from "./createteam/createteam";
 
 @Component({
   selector: 'app-team',
-  imports: [LucideAngularModule, TeamCard, TeamRoasterHead, TeamRoasterUser, TeamOwnedProject, Createteam],
+  imports: [
+    LucideAngularModule,
+    AsyncPipe,
+    TeamCard,
+    TeamRoasterHead,
+    TeamRoasterUser,
+    TeamOwnedProject,
+    Createteam
+  ],
   templateUrl: './teams.html',
   styleUrl: './teams.css',
 })
-export class Teams {
+  
+export class Teams implements OnInit {
+  
   readonly icons: { name: string; icon: LucideIconData }[] = [
     { name: 'server', icon: Server },
     { name: 'smartphone', icon: Smartphone },
@@ -28,14 +42,32 @@ export class Teams {
 
   readonly UserPlus = UserPlus;
 
-  teams: Team[] = [];
+  teams$!: Observable<Team[]>;
   selectedTeam: Team | null = null;
   showCreateTeam = false;
 
   constructor(private teamService: TeamService) {}
 
-  ngOnInit(): void {
-    this.loadTeams();
+  ngOnInit() {
+    // initialize AFTER teamService is injected
+    this.teams$ = this.teamService.getTeams().pipe(
+      map((data: Team[]) =>
+        data.map(team => {
+          const randomIcon = this.getRandomIcon();
+          return {
+            ...team,
+            icon: randomIcon.icon,
+            iconName: randomIcon.name,
+            projects: []
+          };
+        })
+      ),
+      tap((teams: Team[]) => {
+        if (teams.length > 0 && !this.selectedTeam) {
+          this.selectedTeam = teams[0]; // ✅ auto-select first team
+        }
+      })
+    );
   }
 
   onAddNewTeam() {
@@ -51,24 +83,11 @@ export class Teams {
     return this.icons[randomIndex];
   }
 
-  loadTeams() {
-    this.teamService.getTeams().subscribe({
-      next: (data: Team[]) => {
-        console.log("Teams Fetched:", data);
-        this.teams = data.map(team => {
-          const randomIcon = this.getRandomIcon();
-          return {
-            ...team,
-            icon: randomIcon.icon,   // LucideIconData
-            iconName: randomIcon.name, // string for <lucide-icon>
-            projects: []
-          };
-        });
-      }
-    });
-  }
-
   onTeamSelected(team: Team) {
     this.selectedTeam = team;
+  }
+
+  trackById(index: number, team: Team) {
+    return team.id;
   }
 }

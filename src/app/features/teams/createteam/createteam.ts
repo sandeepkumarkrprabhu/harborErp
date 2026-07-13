@@ -65,7 +65,7 @@ export class Createteam {
   }
   
   ngOnInit() {
-    this.loadUsers();
+    // users are loaded by the TeamMembers component when the user opens Step 2
     
     if (this.mode === 'edit') {
       const teamId = this.route.snapshot.paramMap.get('id'); // assumes route like /users/:id/edit
@@ -101,18 +101,6 @@ export class Createteam {
     }
   }
 
-  loadUsers(): void {
-    this.userService.getUsers().subscribe({
-      next: (data: User[]) => {
-        this.users = data;
-        this.teamData.teamMembers = data;
-        console.log('Users loaded:', data);
-      },
-      error: (error) => {
-        console.error('Error loading users:', error);
-      }
-    });
-  }
 
   get teamMembersErrors(): ValidationErrors {
     const errors: ValidationErrors = {};

@@ -1,5 +1,5 @@
-<div class="mx-auto mr-5 animate-slide-up">
-  <div class="mb-5 flex justify-between items-center select-none animate-fade-in">
+<div class="mx-auto mr-2 animate-slide-up">
+  <div class="mb-8 flex justify-between items-center select-none animate-fade-in">
     <!-- Left: Title -->
     <div>
       <h1 class="text-[22px] font-medium tracking-tight text-[#1a1a1a]">Team & Structure</h1>
@@ -9,11 +9,11 @@
     </div>
     <!-- Right: Add Team button -->
     <button
-      class="px-4 py-1 bg-primary text-white text-sm font-medium rounded-md hover:bg-primary/90 transition"
+      class="flex items-center gap-2 px-5 py-1 bg-primary text-white text-sm font-medium rounded-md hover:bg-primary/90 transition"
       (click)="onAddNewTeam()"
     >
-      <lucide-icon [img]="UserPlus" [size]="16"></lucide-icon>
-      New Team
+      <lucide-icon [name]="UserPlus" [size]="16"></lucide-icon>
+      <span>New Team</span>
     </button>
   </div>
 
@@ -25,7 +25,7 @@
     <!-- Left column -->
     <div>
       <div class="lg:col-span-7 flex flex-col gap-4">
-        @for (team of teams; track team.teamName) {
+        @for (team of teams$ | async; track team.teamName) {
           <app-team-card [team]="team" (selectTeam)="onTeamSelected($event)"></app-team-card>
         }
       </div>
@@ -46,14 +46,7 @@
           class="flex items-center gap-1.5 text-xs font-semibold text-[#8a7f75] uppercase tracking-wider"
         >
           @if (selectedTeam) {
-            <!-- Bind the random icon -->
-            <lucide-icon
-              [name]="selectedTeam.icon"
-              class="h-5 w-5 text-gray-700"
-              aria-hidden="true"
-            >
-            </lucide-icon>
-
+            <lucide-icon [name]="selectedTeam.icon" class="h-5 w-5 text-gray-700"></lucide-icon>
             <span>TEAM ROASTER ({{ selectedTeam.teamMembers.length }})</span>
           }
         </div>
@@ -68,12 +61,7 @@
           class="flex items-center gap-1.5 text-xs font-semibold text-[#8a7f75] uppercase tracking-wider"
         >
           @if (selectedTeam) {
-            <lucide-icon
-              [name]="selectedTeam.icon"
-              class="h-5 w-5 text-gray-700"
-              aria-hidden="true"
-            >
-            </lucide-icon>
+            <lucide-icon [name]="selectedTeam.icon" class="h-5 w-5 text-gray-700"></lucide-icon>
             <span>OWNED PROJECTS ({{ selectedTeam.projects.length || 0 }})</span>
           }
         </div>

@@ -1,14 +1,16 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { CreateProjectData, ValidationErrors } from '../../../Models/project';
 import { WizardSteps } from '../../../shared/components/wizard-steps/wizard-steps';
 import { WizardHeader } from '../../../shared/components/wizard-header/wizard-header';
-import { ProjectIdentity } from '../project-identity/project-identity';
 import { WizardFooter } from '../../../shared/components/wizard-footer/wizard-footer';
+
+import { ProjectIdentity } from '../project-identity/project-identity';
 import { SourceConfig } from "../source-config/source-config";
 import { ReviewCreate } from '../review-create/review-create';
+
 import { ProjectHelper } from '../../../core/projects/services/project-helper'
 import { ProjectService } from '../../../core/projects/services/project.service';
 
@@ -37,10 +39,11 @@ enum ProjectSteps {
 })
   
 export class CreateProject {
-  showWizard = true;
   step = ProjectSteps.Details;
   attemptedSteps = new Set<number>();
   submitAttempted = false;
+
+  @Output() close = new EventEmitter<void>();
 
   // Inject ProjectHelper service here
   constructor(private projectHelper: ProjectHelper,
@@ -90,7 +93,7 @@ export class CreateProject {
   }
 
   onCloseWizard() {
-    this.showWizard = false;
+    this.close.emit();
   }
 
   submit() {
@@ -111,8 +114,8 @@ export class CreateProject {
     // Call backend service
     this.projectService.createProject(apiObject).subscribe({
       next: (createdProject) => {
-        //console.log('✅ Project created successfully:', createdProject);
-        this.showWizard = false; // optionally close wizard
+        //console.log('Project created successfully:', createdProject);
+        this.close.emit();
         // TODO: navigate to project detail page or show success message
       },
       error: (err) => {

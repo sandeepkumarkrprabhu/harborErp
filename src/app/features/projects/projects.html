@@ -1,36 +1,31 @@
 <div>
   <div class="mb-5 flex justify-between items-center select-none">
-    <!-- Left: Title -->
     <h1 class="text-[22px] font-medium tracking-tight text-[#1a1a1a]">Projects</h1>
 
-    <!-- Right: Add Project button -->
     <button
       class="px-2 py-1 bg-primary text-white text-sm font-medium rounded-md hover:bg-primary/90 transition"
       (click)="openCreateProject()"
     >
       + New Project
     </button>
-    <!-- Modal -->
-    @if (showCreateProject) {
+
+    <div *ngIf="showCreateProject">
       <div class="fixed inset-0 flex items-center justify-center w-auto h-screen">
         <div
           class="relative bg-white rounded-md border border-black/5 shadow-xl w-full max-w-5xl flex flex-col md:flex-row overflow-hidden max-h-[90vh] md:h-[620px]"
         >
-          <!-- Content wrapper -->
           <div class="flex flex-1 max-h-full overflow-y-auto">
-            <!-- Content -->
-            <app-create-project class="flex-1"></app-create-project>
+            <app-create-project class="flex-1" (close)="closeCreateProject()"></app-create-project>
           </div>
         </div>
       </div>
-    }
+    </div>
   </div>
 
   <!-- Filter + Sort bar -->
   <div
     class="flex flex-col bg-white md:flex-row md:items-center justify-between gap-2 border border-black/5 rounded-md p-1 mb-3 select-none"
   >
-    <!-- Left: Search -->
     <div class="m-4 w-[30%] rounded-md">
       <form [formGroup]="form">
         <app-input-field
@@ -40,28 +35,39 @@
           placeholder="Search projects...."
           [required]="false"
           formControlName="globalSearch"
-        >
-        </app-input-field>
+        ></app-input-field>
       </form>
     </div>
 
-    <!-- Right: Sort -->
-    <div class="p-2 m-2 border border-gray-200 rounded-lg shadow-sm">
+    <div
+      class="p-2 m-2 border border-gray-200 rounded-lg shadow-sm"
+      *ngIf="filteredProjects$ | async as projects"
+    >
       <app-sort-bar
-        [options]="filterOptions"
+        [options]="getFilterOptions(projects)"
         [active]="activeFilter"
         (filterChange)="onFilterChange($event)"
-      >
-      </app-sort-bar>
+      ></app-sort-bar>
     </div>
   </div>
 
   <!-- Project list -->
-  <div class="mb-4 border border-gray-200 rounded-lg shadow-sm">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
-      @for (project of filteredProjects; track project.id) {
-        <app-project-card [project]="project"></app-project-card>
-      }
+  <div *ngIf="filteredProjects$ | async as projects">
+    <div class="mb-4 border border-gray-200 rounded-lg shadow-sm">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
+        <app-project-card
+          *ngFor="let project of getVisibleProjects(projects); trackBy: trackById"
+          [project]="project"
+        >
+        </app-project-card>
+      </div>
+    </div>
+
+    <div class="flex justify-center mt-3" *ngIf="hasMoreProjects(projects)">
+      <!-- ✅ use projects -->
+      <button class="px-3 py-2 bg-white border rounded" (click)="loadMoreProjects()">
+        Load more
+      </button>
     </div>
   </div>
 </div>
