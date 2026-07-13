@@ -1,3 +1,4 @@
+import { RegisterUserRequest } from "../core/auth/models/auth";
 import { Project } from "./project";
 
 export interface User {
@@ -21,3 +22,5 @@ export interface User {
 export function getUserStatus(user: User): string {
   return user.is_active ? "Active" : "Inactive";
 }
+
+export type ValidationErrors = Partial<Record<keyof RegisterUserRequest, string>>;

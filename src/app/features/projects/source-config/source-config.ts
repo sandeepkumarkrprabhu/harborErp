@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import type { CreateProjectData, ValidationErrors } from '../create-project/create-project';
+import type { CreateProjectData, ValidationErrors } from '../../../Models/project';
 import { AwsResource } from '../../../Models/AwsResource';
 import { AwsService } from '../../../core/aws/services/awsService';
 

@@ -1,4 +1,4 @@
-<div class="max-w-7xl mx-auto w-full pb-12 animate-slide-up">
+<div class="mx-auto mr-5 animate-slide-up">
   <div class="mb-5 flex justify-between items-center select-none animate-fade-in">
     <!-- Left: Title -->
     <div>
@@ -7,13 +7,19 @@
         Explore organization structures, member mappings, and project ownership.
       </p>
     </div>
-    <!-- Right: Add Project button -->
+    <!-- Right: Add Team button -->
     <button
-      class="px-2 py-1 bg-primary text-white text-sm font-medium rounded-md hover:bg-primary/90 transition"
+      class="px-4 py-1 bg-primary text-white text-sm font-medium rounded-md hover:bg-primary/90 transition"
+      (click)="onAddNewTeam()"
     >
-      + New Team
+      <lucide-icon [img]="UserPlus" [size]="16"></lucide-icon>
+      New Team
     </button>
   </div>
+
+  @if (showCreateTeam) {
+    <app-createteam (closed)="closeTeamUser()"></app-createteam>
+  }
 
   <div class="grid grid-cols-1 md:grid-cols-[65%_33%] gap-8">
     <!-- Left column -->

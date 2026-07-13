@@ -1,5 +1,5 @@
 import { Component, ChangeDetectorRef, Input } from '@angular/core';
-import type { CreateProjectData, ValidationErrors } from '../create-project/create-project';
+import type { CreateProjectData, ValidationErrors } from '../../../Models/project';
 import { User } from '../../../Models/User';
 import { UserService } from '../../../core/users/services/userService';
 import { UserHelper } from '../../../core/users/services/user-helper';

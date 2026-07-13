@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
+import { CreateProjectData, ValidationErrors } from '../../../Models/project';
 import { WizardSteps } from '../../../shared/components/wizard-steps/wizard-steps';
 import { WizardHeader } from '../../../shared/components/wizard-header/wizard-header';
 import { ProjectIdentity } from '../project-identity/project-identity';
@@ -16,26 +17,6 @@ enum ProjectSteps {
   SourceConfig = 2,
   Review = 3
 }
-
-export interface CreateProjectData {
-  name: string;
-  team: string;
-  type: string;
-  description: string;
-  tags: string[];
-  members: string[];
-  organization: string;
-  repo: string;
-  branch: string;
-  runtime: string;
-  environment: string;
-  awsRegion: string;
-  awsService: string;
-  awsResource: string;
-  awsServiceList: string[];
-}
-
-export type ValidationErrors = Partial<Record<keyof CreateProjectData, string>>;
 
 @Component({
   selector: 'app-create-project',

@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import type { CreateProjectData } from '../create-project/create-project';
+import type { CreateProjectData } from '../../../Models/project';
 
 @Component({
   selector: 'app-review-create',

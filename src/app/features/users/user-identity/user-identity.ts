@@ -18,11 +18,6 @@ export class UserIdentity {
   @Input() errors: ValidationErrors = {};
   @Input() showErrors = false;
 
-  // roles = [
-  //   'Developer', 'Frontend Engineer', 'Backend Engineer', 'DevOps',
-  //   'QA Engineer', 'UI/UX Designer', 'Data Analyst', 'Cloud Engineer'
-  // ];
-  
   statuses = ['Active', 'Pending', 'Inactive'];
 
   suggestedProjects: Project[] = [];

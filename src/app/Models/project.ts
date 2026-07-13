@@ -20,6 +20,24 @@ export interface Project {
 }
 
 
+export interface CreateProjectData {
+  name: string;
+  team: string;
+  type: string;
+  description: string;
+  tags: string[];
+  members: string[];
+  organization: string;
+  repo: string;
+  branch: string;
+  runtime: string;
+  environment: string;
+  awsRegion: string;
+  awsService: string;
+  awsResource: string;
+  awsServiceList: string[];
+}
+
 /* Project Create Model */
 export interface NewProject {
   project_name: string;
@@ -45,3 +63,6 @@ export interface AwsResource {
   aws_service: string;
   aws_resource: string;
 }
+
+
+export type ValidationErrors = Partial<Record<keyof CreateProjectData, string>>;

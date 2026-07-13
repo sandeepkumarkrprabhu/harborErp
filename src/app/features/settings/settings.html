@@ -1,11 +1,148 @@
-<div class="max-w-7xl mx-auto w-full pb-12 animate-slide-up">
-  <div class="mb-5 flex justify-between items-center select-none">
+<div class="mx-auto w-full animate-slide-up">
+  <div class="flex justify-between items-center mb-8 select-none animate-fade-in">
     <!-- Left: Title -->
     <div>
       <h1 class="text-[22px] font-medium tracking-tight text-[#1a1a1a]">Settings</h1>
       <p class="text-sm text-[#6b5e52] mt-1">
         Configure integrations, notifications, and profile details.
       </p>
+    </div>
+
+    <button
+      class="group relative inline-flex items-center justify-center gap-2 overflow-hidden font-semibold tracking-[0.02em] transition-all duration-200 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 select-none cursor-pointer bg-primary text-white hover:bg-primary-hover shadow-sm shadow-primary/10 hover:shadow-md hover:shadow-primary/15 px-3.5 py-1.5 text-xs rounded-md w-auto cursor-pointer font-medium"
+      tabindex="0"
+    >
+      <div
+        class="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500"
+      >
+        <div
+          class="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(208,136,115,0.25),transparent_60%)]"
+        ></div>
+        <div
+          class="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(142,122,111,0.2),transparent_60%)]"
+        ></div>
+      </div>
+      <span class="relative z-10 flex items-center gap-2">
+        <span class="flex items-center justify-center shrink-0">
+          <lucide-icon [img]="Save" [size]="16"></lucide-icon>
+        </span>
+        <span>Save Changes</span>
+      </span>
+    </button>
+  </div>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 select-none animate-slide-up">
+    <div class="lg:col-span-2 flex flex-col gap-5">
+      <div class="bg-white border border-black/5 rounded-md p-4 flex flex-col gap-4">
+        <div class="flex items-center gap-2 pb-2 border-b border-black/5">
+          <lucide-icon [img]="User" [size]="16"></lucide-icon>
+          <h2 class="text-sm font-semibold text-[#1a1a1a]">Profile Settings</h2>
+        </div>
+        <div class="flex flex-row gap-4">
+          <div class="md:w-1/2">
+            <app-input-field
+              label="Full Name"
+              type="text"
+              placeholder="Enter full name"
+              [required]="true"
+              formControlName="fullName"
+            >
+            </app-input-field>
+          </div>
+          <div class="md:w-1/2">
+            <app-input-field
+              label="Email Address"
+              type="email"
+              placeholder="Enter your email address"
+              [required]="true"
+              formControlName="email"
+            >
+            </app-input-field>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white border border-black/5 rounded-md p-4 flex flex-col gap-4">
+        <div class="flex items-center gap-2 pb-2 border-b border-black/5">
+          <lucide-icon [img]="Key" [size]="16"></lucide-icon>
+          <h2 class="text-sm font-semibold text-[#1a1a1a]">Deployment Configuration</h2>
+        </div>
+        <div class="flex flex-row gap-4">
+          <div class="md:w-1/2">
+            <app-input-field
+              label="Default Repository Branch"
+              type="text"
+              placeholder="main"
+              [required]="true"
+              formControlName="defaultRepobranch"
+            >
+            </app-input-field>
+          </div>
+          <div class="md:w-1/2">
+            <app-input-field
+              label="Deployment Region"
+              type="text"
+              placeholder="Enter deployment region"
+              [required]="true"
+              formControlName="deploymentRegion"
+            >
+            </app-input-field>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="flex flex-col gap-5">
+      <div class="bg-white border border-black/5 rounded-md p-4 flex flex-col gap-4">
+        <div class="flex items-center gap-2 pb-2 border-b border-black/5">
+          <lucide-icon [img]="Bell" [size]="16"></lucide-icon>
+          <h2 class="text-sm font-semibold text-[#1a1a1a]">Notifications</h2>
+        </div>
+        <div class="flex flex-col gap-3.5">
+          <div class="flex items-center justify-between">
+            <div class="flex flex-col">
+              <span class="text-xs font-semibold text-[#1a1a1a]">Deployment Success alerts</span
+              ><span class="text-[11px] text-[#8a7f75]"
+                >Notify via webhook when builds succeed</span
+              >
+            </div>
+            <input
+              type="checkbox"
+              class="w-4 h-4 rounded text-[#d08873] border-gray-300 focus:ring-[#d08873] accent-[#d08873]"
+              checked=""
+            />
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex flex-col">
+              <span class="text-xs font-semibold text-[#1a1a1a]">Deployment Failure alerts</span
+              ><span class="text-[11px] text-[#8a7f75]">Notify via webhook when builds fail</span>
+            </div>
+            <input
+              type="checkbox"
+              class="w-4 h-4 rounded text-[#d08873] border-gray-300 focus:ring-[#d08873] accent-[#d08873]"
+              checked=""
+            />
+          </div>
+        </div>
+      </div>
+      <div class="bg-white border border-black/5 rounded-md p-4 flex flex-col gap-4">
+        <div class="flex items-center gap-2 pb-2 border-b border-black/5">
+          <lucide-icon [img]="StickyNote" [size]="16"></lucide-icon>
+          <h2 class="text-sm font-semibold text-[#1a1a1a]">Slack Integration</h2>
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <div
+            class="relative flex items-center rounded-md bg-[#fdfcf9] shadow-[inset_0_0_0_1px_rgba(60,50,40,0.12)] transition-all duration-200 focus-within:shadow-[inset_0_0_0_1px_rgba(255,120,60,0.4),0_0_0_3px_rgba(255,120,60,0.08)]"
+          >
+            <app-input-field
+              label="Incoming Webhook Url"
+              type="text"
+              [leftIcon]="MessagesSquareIcon"
+              placeholder="https://hooks.slack.com/services/"
+              [required]="true"
+              formControlName="webhookUrl"
+            >
+            </app-input-field>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

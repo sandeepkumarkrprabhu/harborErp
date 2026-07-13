@@ -13,10 +13,12 @@ export interface Team{
     description: string;
     icon?: LucideIconData;   // correct type for Lucide icons
     projects: Project[];
-    teamMembersIDs: [];
+    teamMembersIDs: string[];
     teamMembers: User[]; 
     is_active: boolean;
     created_at: string;
     updated_at: string;
-
 }
+
+
+export type ValidationErrors = Partial<Record<keyof Team, string>>;
