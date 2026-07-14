@@ -6,13 +6,11 @@
           <h2 class="text-[22px] font-medium text-[#1a1a1a]">{{ project.project_name }}</h2>
           <p class="text-sm text-[#6b5e52] mt-1">{{ project.project_description }}</p>
           <div class="flex items-center gap-3 mt-3">
-            <span
-              class="inline-flex items-center gap-1 bg-white border border-black/5 text-[#6b5e52] text-[11px] font-medium px-2 py-0.5 rounded-sm"
-              >{{ this.project.source }}
+            <span class="px-2 py-0.5 text-xs rounded bg-blue-100 text-blue-600">
+              Source: {{ this.project.source }}
             </span>
-            <span
-              class="inline-flex items-center gap-1 bg-white border border-black/5 text-[#6b5e52] text-[11px] font-medium px-2 py-0.5 rounded-sm"
-              >{{ this.project.branch }}
+            <span class="px-2 py-0.5 text-xs rounded bg-purple-100 text-purple-600">
+              Branch: {{ this.project.branch }}
             </span>
           </div>
         </div>
@@ -28,7 +26,10 @@
     <!-- Enviornments and Deployments -->
     <div class="flex items-center gap-2">
       <h3 class="text-sm font-semibold text-gray-800">Environments</h3>
-      <app-badge badgeStatus="success" text="4 total. 4 healthy"></app-badge>
+      <app-badge
+        badgeStatus="success"
+        text="{{ this.project.total_environments }} total. {{ this.project.healthy }} healthy"
+      ></app-badge>
     </div>
     <div class="mb-8">
       <app-data-table

@@ -84,7 +84,18 @@ export class UserIdentity {
         bg: '',
         github_org:'',
         github_repo: '',
-        total_environments: '0' // string instead of number
+        total_environments: '0',
+        environments: [{
+          id: crypto.randomUUID(),
+          environment_name: '',
+          resources: [{
+            id: crypto.randomUUID(),
+            environment_id: '',
+            aws_region: '',
+            aws_service: '',
+            aws_resource: ''
+          }]
+        }]
       }));
   }
 

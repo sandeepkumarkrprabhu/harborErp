@@ -4,8 +4,11 @@ import { Eye } from 'lucide-angular';
 
 import { Project } from '../../../Models/project';
 import { TableConfig } from '../../../Models/Table';
+
 import { DataTable } from '../../../shared/components/data-table/data-table';
 import { Badge } from "../../../shared/components/badge/badge";
+
+import { CompositionService } from '../../../core/composition/composition-service';
 
 @Component({
   selector: 'app-project-details',
@@ -24,12 +27,15 @@ export class ProjectDetails implements OnInit {
   environments: Array<{ slNo: number; environmentName: string; status: string }> = [];
   deployments: Array<{ slNo: number; environmentName: string; status: string; triggeredBy: string; duration: string; timestamp: string; prCommit: string; branch: string }> = [];
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(private route: ActivatedRoute, private compositionService: CompositionService) {}
 
   ngOnInit() {
     if (history.state?.project) {
-      this.project = history.state.project as Project;
-      this.projectId = this.project.project_name;
+      // this.project = history.state.project as Project;
+      // this.projectId = this.project.project_name;
+      // console.log("Project:",history.state.project);
+      // console.log("Project Id:",this.project.id);
+      
     } else {
       this.projectId = this.route.snapshot.paramMap.get('projectId')!;
     }

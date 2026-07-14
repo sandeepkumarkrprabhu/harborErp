@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
-import { debounceTime, distinctUntilChanged, startWith, map, combineLatest, Observable } from 'rxjs';
+import { debounceTime, distinctUntilChanged, startWith, map, tap, combineLatest, Observable } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { SearchIcon } from 'lucide-angular';
 import { FilterOption } from '../../Models/FilterOption';
@@ -44,11 +44,12 @@ export class Projects implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // ✅ initialize form first
+    // initialize form first
     this.form = this.fb.group({ globalSearch: [''] });
 
-    // ✅ projects stream
+    // projects stream
     this.projects$ = this.projectService.getProjects().pipe(
+      tap(apiData => console.log('Raw API Data:', apiData)), // log before mapping
       map((data: Project[]) =>
         data.map(p => ({
           ...p,
@@ -57,7 +58,7 @@ export class Projects implements OnInit {
       )
     );
 
-    // ✅ search stream (typed as string)
+    // search stream (typed as string)
     const search$: Observable<string> = this.form.get('globalSearch')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
