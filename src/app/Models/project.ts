@@ -19,7 +19,6 @@ export interface Project {
   github_org: string;
   github_repo: string;
   total_environments: string;
-  environments: environment[];
 }
 
 

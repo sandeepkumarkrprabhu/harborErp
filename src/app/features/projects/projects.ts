@@ -49,7 +49,7 @@ export class Projects implements OnInit {
 
     // projects stream
     this.projects$ = this.projectService.getProjects().pipe(
-      tap(apiData => console.log('Raw API Data:', apiData)), // log before mapping
+      //tap(apiData => console.log('Raw API Data:', apiData)), // log before mapping
       map((data: Project[]) =>
         data.map(p => ({
           ...p,

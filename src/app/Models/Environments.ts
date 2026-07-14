@@ -1,6 +1,11 @@
 export interface environment{
     id: string;
-    environment_name: string;
+    environmentName: string;
+    branchName: string;
+    status: string;
+    lastDeployment: string;
+    deployedBy: string;
+    compute: string;
     resources: resource[];
 }
 

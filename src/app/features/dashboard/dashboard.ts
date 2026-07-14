@@ -74,8 +74,7 @@ export class Dashboard implements OnInit {
       bg: "",
       github_org: "",
       github_repo: "",
-      total_environments: "4",
-      environments: []
+      total_environments: "4"
     },
     {
       id: "2",
@@ -94,8 +93,7 @@ export class Dashboard implements OnInit {
       bg: "",
       github_org: "",
       github_repo: "",
-      total_environments: "3",
-      environments: []
+      total_environments: "3"
     },
     {
       id: "3",
@@ -114,8 +112,7 @@ export class Dashboard implements OnInit {
       bg: "",
       github_org: "",
       github_repo: "",
-      total_environments: "3",
-      environments: []
+      total_environments: "3"
     },
     {
       id: "4",
@@ -134,8 +131,7 @@ export class Dashboard implements OnInit {
       bg: "",
       github_org: "",
       github_repo: "",
-      total_environments: "4",
-      environments: []
+      total_environments: "4"
     }
   ];
 
