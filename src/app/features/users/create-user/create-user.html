@@ -10,18 +10,22 @@
 
       <!-- Main Content -->
       <div class="flex-1 flex flex-col min-h-0 bg-white">
-        <app-wizard-header [title]="'Create User'" (close)="onCloseWizard()"> </app-wizard-header>
+        <app-wizard-header [title]="'Create User'" (close)="onCloseWizard()"></app-wizard-header>
 
-        @if (step == 1) {
-          <app-user-identity
-            [data]="userData"
-            [errors]="userIdentityErrors"
-            [showErrors]="shouldShowErrors(1)"
-          ></app-user-identity>
-        }
-        @if (step == 2) {
-          <app-review-create [data]="userData"></app-review-create>
-        }
+        <ng-container *ngIf="userData$ | async as userData">
+          @if (step == 1) {
+            <app-user-identity
+              [data]="userData"
+              [errors]="userIdentityErrors"
+              [showErrors]="shouldShowErrors(1)"
+            >
+            </app-user-identity>
+          }
+          @if (step == 2) {
+            <app-review-create [data]="userData"></app-review-create>
+          }
+        </ng-container>
+
         <app-wizard-footer
           formName="Create user"
           [currentStep]="step"

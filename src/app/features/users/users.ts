@@ -1,15 +1,19 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
+import { LucideAngularModule, Pencil, Trash, Mail, UserPlus } from 'lucide-angular';
 
 import { FilterOption } from '../../Models/FilterOption';
-import { DataTable } from '../../shared/components/data-table/data-table';
 import { TableConfig } from '../../Models/Table';
-import { InputField } from '../../shared/components/input-field/input-field';
-import { LucideAngularModule, Pencil, Trash, Mail, UserPlus } from 'lucide-angular';
-import { CreateUser } from './create-user/create-user';
 import { User, getUserStatus } from '../../Models/User';
-import { UserService } from '../../core/users/services/userService';
+
+import { CreateUser } from './create-user/create-user';
 import { DateUtils } from '../../shared/utility/date-utils';
+
+import { DataTable } from '../../shared/components/data-table/data-table';
+import { InputField } from '../../shared/components/input-field/input-field';
+
+import { UserService } from '../../core/users/services/userService';
+
 
 @Component({
   selector: 'app-users',
@@ -33,8 +37,7 @@ export class Users {
     private router: Router,
     private readonly userService: UserService,
     private readonly cdr: ChangeDetectorRef,
-    private dateUtils: DateUtils
-    
+    private dateUtils: DateUtils    
   ) {}
   
   ngOnInit(): void {

@@ -38,13 +38,6 @@
                   <!-- Generic badge rendering -->
                   @if (col.badge) {
                     <app-badge [badgeStatus]="row[col.field]"></app-badge>
-
-                    <!-- <span
-                      class="px-2 py-1 rounded-full text-xs font-semibold"
-                      [class]="col.badgeColorMap?.[row[col.field]] ?? 'bg-gray-100 text-gray-700'"
-                    >
-                      {{ row[col.field] }}
-                    </span> -->
                   } @else {
                     {{ row[col.field] }}
                   }

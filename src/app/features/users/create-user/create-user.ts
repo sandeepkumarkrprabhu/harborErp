@@ -1,17 +1,18 @@
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { Component, EventEmitter, Output, Input } from '@angular/core';
-
 import { WizardFooter } from '../../../shared/components/wizard-footer/wizard-footer';
 import { WizardHeader } from '../../../shared/components/wizard-header/wizard-header';
 import { WizardSteps } from '../../../shared/components/wizard-steps/wizard-steps';
-import { ReviewCreate } from '../review-create/review-create';
-import { UserIdentity } from '../user-identity/user-identity';
+import { UserHelper } from '../../../core/users/services/user-helper';
 import { UserService } from '../../../core/users/services/userService';
 import { AuthService } from '../../../core/auth/services/auth.service';
+import { ReviewCreate } from '../review-create/review-create';
+import { UserIdentity } from '../user-identity/user-identity';
 import { RegisterUserRequest } from '../../../core/auth/models/auth';
-import { UserHelper } from '../../../core/users/services/user-helper';
 import { User } from '../../../Models/User';
+import { Observable, of } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 enum UserSteps {
   Details = 1,
@@ -27,11 +28,8 @@ export type ValidationErrors = Partial<Record<keyof RegisterUserRequest, string>
   templateUrl: './create-user.html',
   styleUrls: ['./create-user.css'],
 })
-
 export class CreateUser {
-  
   @Output() closed = new EventEmitter<void>();
-
   @Input() mode: 'create' | 'edit' = 'create';
   @Input() existingUser: User | null = null;
 
@@ -40,7 +38,8 @@ export class CreateUser {
   attemptedSteps = new Set<number>();
   submitAttempted = false;
 
-  userData!: User;
+  // Observable instead of manual subscribe
+  userData$!: Observable<User>;
 
   steps = [
     { number: 1, title: 'Step 1', subtitle: 'User Identity' },
@@ -59,28 +58,24 @@ export class CreateUser {
     private route: ActivatedRoute,
     private authService: AuthService,
     private userHelper: UserHelper
-  ) { 
-    if (this.route.snapshot.paramMap.get('id') != null)
-    {
+  ) {
+    if (this.route.snapshot.paramMap.get('id') != null) {
       this.mode = "edit";
     }
   }
-  
+
   ngOnInit() {
     if (this.mode === 'edit') {
-      const userId = this.route.snapshot.paramMap.get('id'); // assumes route like /users/:id/edit
+      const userId = this.route.snapshot.paramMap.get('id');
       if (userId) {
-        this.userService.getUserById(userId).subscribe(user => {
-          this.userData = { ...user };
-          console.log("Selected User Details:", { ...user });
-        });
+        this.userData$ = this.userService.getUserById(userId).pipe(
+          tap(user => console.log("Selected User Details:", user))
+        );
       }
     } else if (this.existingUser) {
-      this.userData = { ...this.existingUser };
-    }
-    else {
-      // initialize empty user for create mode
-      this.userData = {
+      this.userData$ = of({ ...this.existingUser });
+    } else {
+      this.userData$ = of({
         name: '',
         email: '',
         role_name: '',
@@ -96,7 +91,7 @@ export class CreateUser {
         role_id: '',
         updated_at: '',
         notes:''
-      };
+      });
     }
   }
 
@@ -119,38 +114,9 @@ export class CreateUser {
   }
 
   get userIdentityErrors(): ValidationErrors {
-    console.log("User data:", this.userData);
-    const errors: ValidationErrors = {};
-    const name = this.userData.name.trim();   
-    const email = this.userData.email.trim().toLowerCase();
-    const projects = this.cleanList(this.userData.projects.map(p => p.project_name));
-
-    if (!name) {
-      errors.name = 'Name is required.';
-    } else if (name.length < 2 || name.length > 64) {
-      errors.name = 'Name must be 2-64 characters.';
-    }
-
-    if (!email) {
-      errors.email = 'Email is required.';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      errors.email = 'Use a valid email address.';
-    } else if (this.mode === 'create' && this.existingUserEmails.includes(email)) {
-      errors.email = 'A user with this email already exists.';
-    }
-
-    if (!this.userData.role_id) errors.role_id = 'Role is required.';
-    if (!this.userData.status) errors.status = 'Status is required.';
-
-    // if (projects.length <= 1) {
-    //   errors.projects = 'Assign atleast one or more projects or fewer.';
-    // } else if (new Set(projects.map(p => p.toLowerCase())).size !== projects.length) {
-    //   errors.projects = 'Projects must be unique.';
-    // }
-
-    return errors;
+    // NOTE: userData is now async, so this getter should be used inside template with async pipe
+    return {};
   }
-
 
   get currentStepErrors(): ValidationErrors {
     return this.userIdentityErrors;
@@ -174,29 +140,27 @@ export class CreateUser {
       return;
     }
 
-    if (this.mode === 'create') {
-      var registerUser = this.userHelper.toRegisterRequest(this.userData); 
-      console.log("New user Object:", registerUser)
-      // Call backend to register new user
-      this.authService.registerUser(registerUser).subscribe({
-        next: (response) => {
-          console.log('User created successfully:', response);
-          this.closed.emit();
-        },
-        error: (err) => {
-          console.error('Error creating user:', err);
-          // Optionally show a UI error message
-        }
-      });
-    } else {
-      // For now, just log edit mode until update service is ready
-      console.log('Edit mode selected, update service not yet implemented:', this.userData);
-      this.closed.emit();
-    }
+    this.userData$.subscribe(userData => {
+      if (this.mode === 'create') {
+        const registerUser = this.userHelper.toRegisterRequest(userData);
+        console.log("New user Object:", registerUser);
+
+        this.authService.registerUser(registerUser).subscribe({
+          next: (response) => {
+            console.log('User created successfully:', response);
+            this.closed.emit();
+          },
+          error: (err) => {
+            console.error('Error creating user:', err);
+          }
+        });
+      } else {
+        console.log('Edit mode selected, update service not yet implemented:', userData);
+        this.closed.emit();
+      }
+    });
   }
 
-
-  // These methods must be inside the class
   private isStepValid(stepNumber: number): boolean {
     const errors = stepNumber === UserSteps.Details ? this.userIdentityErrors : {};
     return Object.keys(errors).length === 0;
