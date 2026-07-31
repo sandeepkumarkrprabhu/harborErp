@@ -13,22 +13,20 @@
 
       @if (step == 1) {
         <app-project-identity
-          [data]="projectData"
-          [errors]="projectIdentityErrors"
+          [formGroup]="form"
           [showErrors]="shouldShowErrors(1)"
         >
         </app-project-identity>
       }
       @if (step == 2) {
         <app-source-config
-          [data]="projectData"
-          [errors]="sourceConfigErrors"
+          [formGroup]="form"
           [showErrors]="shouldShowErrors(2)"
         >
         </app-source-config>
       }
       @if (step == 3) {
-        <app-review-create [data]="projectData"></app-review-create>
+        <app-review-create [projectForm]="form"></app-review-create>
       }
 
       <!-- Footer -->

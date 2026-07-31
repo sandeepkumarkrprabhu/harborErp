@@ -1,110 +1,118 @@
-import { Component, Input } from '@angular/core';
-import type { CreateProjectData, ValidationErrors } from '../../../Models/project';
+import { Component, Input, OnInit } from '@angular/core';
+import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+
+import { Repo } from '../../../Models/Repo';
+
 import { AwsResource } from '../../../Models/AwsResource';
 import { AwsService } from '../../../core/aws/services/awsService';
-
-type SourceConfigTextField =
-  | 'organization'
-  | 'repo'
-  | 'branch'
-  | 'runtime'
-  | 'environment';
-
-type SourceConfigSelectField = 'awsRegion' | 'awsService' | 'awsResource';
+import { RepoService } from '../../../core/aws/services/repoService';
 
 @Component({
   selector: 'app-source-config',
   standalone: true,
+  imports: [ReactiveFormsModule],
   templateUrl: './source-config.html',
-  styleUrls: ['./source-config.css']
+  styleUrls: ['./source-config.css'],
 })
-export class SourceConfig {
-  @Input({ required: true }) data!: CreateProjectData;
-  @Input() errors: ValidationErrors = {};
+export class SourceConfig implements OnInit {
+  @Input({ required: true }) formGroup!: FormGroup;
   @Input() showErrors = false;
 
   regions = [
     { value: 'us-east-1', label: 'US East (N. Virginia)' },
     { value: 'us-west-2', label: 'US West (Oregon)' },
-    { value: 'ap-south-1', label: 'Asia Pacific (Mumbai)' }
+    { value: 'ap-south-1', label: 'Asia Pacific (Mumbai)' },
   ];
 
   services = [
     { value: 'EC2', label: 'EC2' },
     { value: 'RDS', label: 'RDS' },
     { value: 'S3', label: 'S3' },
-    { value: 'ECR', label: 'ECR' }
+    { value: 'ECR', label: 'ECR' },
   ];
 
-  /** All resources fetched for the selected region+service */
   connectedResources: AwsResource[] = [];
-
-  /** Only the resources the user has actually selected */
   selectedResources: AwsResource[] = [];
+  repos: Repo[] = [];
 
   loading = false;
 
-  constructor(private awsService: AwsService) {}
+  constructor(
+    private repoService: RepoService,
+    private awsService: AwsService,
+  ) {}
 
-  // ngOnInit() {
-  //   if (this.data.awsRegion && this.data.awsService) {
-  //     this.fetchResources();
-  //   }
-  // }
+  ngOnInit() {
+    // Subscribe to awsRegion and awsService changes to auto-fetch resources
+    this.formGroup.get('awsRegion')?.valueChanges.subscribe(() => this.fetchResources());
+    this.formGroup.get('awsService')?.valueChanges.subscribe(() => this.fetchResources());
+
+    // Subscribe to awsResource changes to handle selection
+    this.formGroup.get('awsResource')?.valueChanges.subscribe((resourceId) => {
+      if (resourceId) {
+        this.onSelectAwsResource(resourceId);
+      }
+    });
+
+    this.repoService.fetchRepos().subscribe((repos) => {
+      console.log('GitHub Repos:', repos);
+      this.repos = repos;
+    });
+  }
 
   fetchResources() {
+    const awsService = this.formGroup.get('awsService')?.value;
+    const awsRegion = this.formGroup.get('awsRegion')?.value;
+
+    if (!awsService || !awsRegion) return;
+
     this.loading = true;
-    this.awsService.fetchResources(this.data.awsService, this.data.awsRegion).subscribe({
+    this.awsService.fetchResources(awsService, awsRegion).subscribe({
       next: (res) => {
-        // only set available resources for dropdown
         this.connectedResources = res;
         this.loading = false;
       },
       error: (err) => {
         console.error('Failed to fetch AWS resources', err);
         this.loading = false;
-      }
+      },
     });
   }
 
-  onInput(field: SourceConfigTextField, event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.data[field] = input.value;
-  }
+  onSelectAwsResource(resourceId: string) {
+    this.formGroup.get('awsResource')?.setValue(resourceId);
 
-  onSelect(field: SourceConfigSelectField, event: Event) {
-    const select = event.target as HTMLSelectElement;
-    this.data[field] = select.value as any;
+    const awsService = this.formGroup.get('awsService')?.value;
+    const selected = this.connectedResources.find((r) => r.id === resourceId);
 
-    if (field === 'awsRegion' || field === 'awsService') {
-      this.fetchResources();
-    }
-
-    if (field === 'awsResource') {
-      const selected = this.connectedResources.find(r => r.id === this.data.awsResource);
-      if (selected && !this.selectedResources.some(r => r.id === selected.id)) {
-        this.selectedResources = [
-          ...this.selectedResources.filter(r => r.service === this.data.awsService),
-          selected
-        ];
-      }
+    if (selected && !this.selectedResources.some((r) => r.id === selected.id)) {
+      this.selectedResources = [
+        ...this.selectedResources.filter((r) => r.service === awsService),
+        selected,
+      ];
     }
   }
 
   addService() {
-    if (this.data.awsService && this.data.awsResource) {
-      const selected = this.connectedResources.find(r => r.id === this.data.awsResource);
-      if (selected && !this.selectedResources.some(r => r.id === selected.id)) {
+    const awsService = this.formGroup.get('awsService')?.value;
+    const awsResource = this.formGroup.get('awsResource')?.value;
+
+    if (awsService && awsResource) {
+      const selected = this.connectedResources.find((r) => r.id === awsResource);
+      if (selected && !this.selectedResources.some((r) => r.id === selected.id)) {
         this.selectedResources = [
-          ...this.selectedResources.filter(r => r.service === this.data.awsService),
-          selected
+          ...this.selectedResources.filter((r) => r.service === awsService),
+          selected,
         ];
       }
-      this.data.awsResource = '';
+      this.formGroup.get('awsResource')?.setValue('');
     }
   }
 
-  errorFor(field: keyof CreateProjectData): string {
-    return this.showErrors ? this.errors[field] ?? '' : '';
+  errorFor(controlName: string): string {
+    const control = this.formGroup.get(controlName);
+    if (!control || !this.showErrors) return '';
+    if (control.hasError('required')) return `${controlName} is required.`;
+    return '';
   }
 }

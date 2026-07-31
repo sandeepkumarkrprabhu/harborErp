@@ -6,8 +6,7 @@ import { RegisterUserRequest } from '../../auth/models/auth';
   providedIn: 'root',
 })
 export class UserHelper {
-
-   toRegisterRequest(user: User): RegisterUserRequest {
+  toRegisterRequest(user: User): RegisterUserRequest {
     return {
       name: user.name,
       email: user.email,
@@ -15,16 +14,15 @@ export class UserHelper {
       github_username: user.github_username,
       requires_github_access: user.requires_github_access,
       status: user.is_active, // boolean, not string
-      projects: [], 
+      projects: [],
     };
   }
-  
+
   static getUserInitials(user: User): string {
     return user.name
       .split(' ')
-      .map(part => part[0])
+      .map((part) => part[0])
       .join('')
       .toUpperCase();
   }
-
 }

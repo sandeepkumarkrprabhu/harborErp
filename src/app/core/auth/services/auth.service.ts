@@ -8,18 +8,16 @@ import {
   LoginRequest,
   LoginResponse,
   PinLoginRequest,
-  RegisterUserRequest
+  RegisterUserRequest,
 } from '../models/auth';
 
 import { TokenStorageService } from '../../auth/services/token-storage';
 import { environment } from '../../../../environments/environment.development';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
-  
 export class AuthService {
-  
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
   private readonly tokenStorage = inject(TokenStorageService);
@@ -30,9 +28,7 @@ export class AuthService {
 
   readonly currentUser = this._currentUser.asReadonly();
 
-  readonly isAuthenticated = computed(() =>
-    this.tokenStorage.accessToken() !== null
-  );
+  readonly isAuthenticated = computed(() => this.tokenStorage.accessToken() !== null);
 
   constructor() {
     this.initialize();
@@ -57,9 +53,7 @@ export class AuthService {
     //console.log('loginWithPin called with request:', request); // Debugging line
     return this.http
       .post<LoginResponse>(`${this.apiUrl}/auth/login`, request)
-      .pipe(
-        tap(response => this.handleLoginSuccess(response))
-      );
+      .pipe(tap((response) => this.handleLoginSuccess(response)));
   }
 
   /**
@@ -69,26 +63,75 @@ export class AuthService {
     //console.log('loginWithPin called with request:', request); // Debugging line
     return this.http
       .post<LoginResponse>(`${this.apiUrl}/auth/login`, request)
-      .pipe(
-        tap(response => this.handleLoginSuccess(response))
-      );
+      .pipe(tap((response) => this.handleLoginSuccess(response)));
   }
 
   // auth.service.ts
   registerUser(request: RegisterUserRequest): Observable<any> {
-    return this.http
-      .post<any>(`${this.apiUrl}/auth/register`, request)
-      .pipe(
-        tap(response => {
-          console.log('User registered successfully:', response);
-        }),
-        catchError(err => {
-          console.error('Registration failed:', err);
-          return EMPTY; // or throwError(() => err) if you want to propagate
-        })
-      );
+    return this.http.post<any>(`${this.apiUrl}/auth/register`, request).pipe(
+      tap((response) => {
+        console.log('User registered successfully:', response);
+      }),
+      catchError((err) => {
+        console.error('Registration failed:', err);
+        return EMPTY; // or throwError(() => err) if you want to propagate
+      }),
+    );
   }
 
+  // ---------------- NEW: Create User ----------------
+
+  /**
+   * Create user for the application.
+   * Endpoint: POST /api/v1/auth/register
+   * Body: {
+      "name": "string",
+      "email": "user@example.com",
+      "role_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "github_username": "string",
+      "requires_github_access": true
+    }
+   */
+
+  // create user
+
+  createUser(request: {
+    name: string;
+    email: string;
+    role_id: string;
+    github_username: string;
+    requires_github_access: boolean;
+  }): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/api/v1/auth/register`, request).pipe(
+      tap((res) => {
+        console.log('User created successfully:', res);
+      }),
+      catchError((err) => {
+        console.error('User creation failed:', err);
+        return EMPTY;
+      }),
+    );
+  }
+
+  // ---------------- NEW: Verify GitHub User ----------------
+
+  /**
+   * Verify GitHub user for a given system user ID.
+   * Endpoint: POST /api/v1/users/{id}/reverify-github
+   * Body: { github_username: string }
+   */
+  verifyGithubUser(userId: string, githubUsername: string): Observable<any> {
+    const url = `${this.apiUrl}/api/v1/users/${userId}/reverify-github`;
+    return this.http.post<any>(url, { github_username: githubUsername }).pipe(
+      tap((res) => {
+        console.log('GitHub verification response:', res);
+      }),
+      catchError((err) => {
+        console.error('GitHub verification failed:', err);
+        return EMPTY;
+      }),
+    );
+  }
 
   /**
    * Reload logged-in user.
@@ -105,17 +148,13 @@ export class AuthService {
     return hasToken;
   }
 
-
   /**
    * Save login response.
    */
   private handleLoginSuccess(response: LoginResponse): void {
     console.log('handleLoginSuccess called with response:', response); // Debugging line
     //console.log('Access Token:', response.access_token); // Debugging line
-    this.tokenStorage.setTokens(
-      response.access_token,
-      response.refresh_token
-    );
+    this.tokenStorage.setTokens(response.access_token, response.refresh_token);
 
     this.tokenStorage.setuserName(response.name);
     this.tokenStorage.setuserEmail(response.email);

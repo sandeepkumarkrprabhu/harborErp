@@ -1,9 +1,12 @@
-import { environment, recentDeployment } from "./Environments";
+import { environment, recentDeployment } from './Environments';
 
-export interface ProjectDetail{
-    projectName: string;
-    projectDescription: string;
-    githubdata: string;
-    environments: environment[],
-    recentDeployments: recentDeployment[]
+export interface ProjectDetail {
+  id: string;
+  projectName: string;
+  projectDescription: string;
+  githubdata: string;
+  source: string;
+  branch: string;
+  environments: environment[];
+  recentDeployments: recentDeployment[];
 }

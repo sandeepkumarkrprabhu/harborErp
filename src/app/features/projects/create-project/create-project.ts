@@ -1,6 +1,12 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 
 import { CreateProjectData, ValidationErrors } from '../../../Models/project';
 import { WizardSteps } from '../../../shared/components/wizard-steps/wizard-steps';
@@ -8,16 +14,16 @@ import { WizardHeader } from '../../../shared/components/wizard-header/wizard-he
 import { WizardFooter } from '../../../shared/components/wizard-footer/wizard-footer';
 
 import { ProjectIdentity } from '../project-identity/project-identity';
-import { SourceConfig } from "../source-config/source-config";
+import { SourceConfig } from '../source-config/source-config';
 import { ReviewCreate } from '../review-create/review-create';
 
-import { ProjectHelper } from '../../../core/projects/services/project-helper'
+import { ProjectHelper } from '../../../core/projects/services/project-helper';
 import { ProjectService } from '../../../core/projects/services/project.service';
 
 enum ProjectSteps {
   Details = 1,
   SourceConfig = 2,
-  Review = 3
+  Review = 3,
 }
 
 @Component({
@@ -32,12 +38,11 @@ enum ProjectSteps {
     WizardFooter,
     ProjectIdentity,
     SourceConfig,
-    ReviewCreate
+    ReviewCreate,
   ],
   templateUrl: './create-project.html',
-  styleUrls: ['./create-project.css']
+  styleUrls: ['./create-project.css'],
 })
-  
 export class CreateProject {
   step = ProjectSteps.Details;
   attemptedSteps = new Set<number>();
@@ -45,33 +50,63 @@ export class CreateProject {
 
   @Output() close = new EventEmitter<void>();
 
+  form: FormGroup;
+
   // Inject ProjectHelper service here
-  constructor(private projectHelper: ProjectHelper,
-    private projectService: ProjectService
-  ) {}
-  
-  projectData: CreateProjectData = {
-    name: '',
-    team: 'Platform Engineering',
-    type: 'Internal Project',
-    description: '',
-    tags: [],
-    members: [],
-    organization: '',
-    repo: '',
-    branch: '',
-    runtime: '',
-    environment: '',
-    awsRegion: '',
-    awsService: '',
-    awsResource: '',
-    awsServiceList: []
-  };
+  constructor(
+    private fb: FormBuilder,
+    private projectHelper: ProjectHelper,
+    private projectService: ProjectService,
+  ) {
+    this.form = this.fb.group({
+      name: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(3),
+          Validators.maxLength(48),
+          Validators.pattern(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+        ],
+      ],
+      team: ['Platform Engineering', Validators.required],
+      type: ['Internal Project', Validators.required],
+      description: [''],
+      tags: [[], Validators.required],
+      members: [[], Validators.required],
+      organization: [''],
+      repo: ['', Validators.required],
+      branch: ['', Validators.required],
+      runtime: ['', Validators.required],
+      environment: [''],
+      awsRegion: ['', Validators.required],
+      awsService: ['', Validators.required],
+      awsResource: [''],
+      awsServiceList: [[]],
+    });
+  }
+
+  // projectData: CreateProjectData = {
+  //   name: '',
+  //   team: 'Platform Engineering',
+  //   type: 'Internal Project',
+  //   description: '',
+  //   tags: [],
+  //   members: [],
+  //   organization: '',
+  //   repo: '',
+  //   branch: '',
+  //   runtime: '',
+  //   environment: '',
+  //   awsRegion: '',
+  //   awsService: '',
+  //   awsResource: '',
+  //   awsServiceList: [],
+  // };
 
   steps = [
     { number: 1, title: 'Step 1', subtitle: 'Project Identity' },
     { number: 2, title: 'Step 2', subtitle: 'Source & Config' },
-    { number: 3, title: 'Step 3', subtitle: 'Review & Create' }
+    { number: 3, title: 'Step 3', subtitle: 'Review & Create' },
   ];
 
   nextStep() {
@@ -109,45 +144,47 @@ export class CreateProject {
     }
 
     // Transform UI data into API payload
-    const apiObject = this.projectHelper.transformToApiObject(this.projectData);
+    const apiObject = this.projectHelper.transformToApiObject(this.form.value);
 
-    // Call backend service
     this.projectService.createProject(apiObject).subscribe({
-      next: (createdProject) => {
-        //console.log('Project created successfully:', createdProject);
-        this.close.emit();
-        // TODO: navigate to project detail page or show success message
-      },
-      error: (err) => {
-        console.error('❌ Failed to create project:', err);
-        // TODO: show error banner/toast in UI
-      }
+      next: () => this.close.emit(),
+      error: (err) => console.error('❌ Failed to create project:', err),
     });
   }
 
-
   get projectIdentityErrors(): ValidationErrors {
     const errors: ValidationErrors = {};
-    const name = this.projectData.name.trim();
+    const name = this.form.get('name')?.value?.trim();
 
     if (!name) errors.name = 'Project name is required.';
-    else if (name.length < 3 || name.length > 48) errors.name = 'Project name must be 3-48 characters.';
-    else if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(name)) errors.name = 'Use lowercase letters, numbers, and single hyphens only.';
+    else if (name.length < 3 || name.length > 48)
+      errors.name = 'Project name must be 3-48 characters.';
+    else if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(name))
+      errors.name = 'Use lowercase letters, numbers, and single hyphens only.';
 
-    if (!this.projectData.team) errors.team = 'Team / owner is required.';
-    if (!this.projectData.type) errors.type = 'Project type is required.';
+    if (!this.form.get('team')?.value) errors.team = 'Team / owner is required.';
+    if (!this.form.get('type')?.value) errors.type = 'Project type is required.';
 
     return errors;
   }
 
   get sourceConfigErrors(): ValidationErrors {
     const errors: ValidationErrors = {};
-    if (!this.projectData.organization.trim()) errors.organization = 'Organization / project is required.';
-    if (!this.projectData.repo.trim()) errors.repo = 'GitHub repo is required.';
-    if (!this.projectData.branch.trim()) errors.branch = 'Branch is required.';
-    if (!this.projectData.runtime.trim()) errors.runtime = 'Runtime is required.';
-    if (!this.projectData.awsRegion) errors.awsRegion = 'AWS region is required.';
-    if (!this.projectData.awsService) errors.awsService = 'AWS service is required.';
+
+    const organization = this.form.get('organization')?.value?.trim();
+    const repo = this.form.get('repo')?.value?.trim();
+    const branch = this.form.get('branch')?.value?.trim();
+    const runtime = this.form.get('runtime')?.value?.trim();
+    const awsRegion = this.form.get('awsRegion')?.value;
+    const awsService = this.form.get('awsService')?.value;
+
+    if (!organization) errors.organization = 'Organization / project is required.';
+    if (!repo) errors.repo = 'GitHub repo is required.';
+    if (!branch) errors.branch = 'Branch is required.';
+    if (!runtime) errors.runtime = 'Runtime is required.';
+    if (!awsRegion) errors.awsRegion = 'AWS region is required.';
+    if (!awsService) errors.awsService = 'AWS service is required.';
+
     return errors;
   }
 
@@ -162,10 +199,17 @@ export class CreateProject {
   }
 
   private isStepValid(stepNumber: number): boolean {
-    const errors = stepNumber === ProjectSteps.Details
-      ? this.projectIdentityErrors
-      : this.sourceConfigErrors;
-    return Object.keys(errors).length === 0;
+    if (stepNumber === ProjectSteps.Details) {
+      const controls = ['name', 'team', 'type', 'tags', 'members'];
+      controls.forEach((c) => this.form.get(c)?.markAsTouched());
+      return controls.every((c) => this.form.get(c)?.valid);
+    }
+    if (stepNumber === ProjectSteps.SourceConfig) {
+      const controls = ['organization', 'repo', 'branch', 'runtime', 'awsRegion', 'awsService'];
+      controls.forEach((c) => this.form.get(c)?.markAsTouched());
+      return controls.every((c) => this.form.get(c)?.valid);
+    }
+    return true;
   }
 
   private canReachStep(stepNumber: number): boolean {

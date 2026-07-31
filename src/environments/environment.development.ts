@@ -1,5 +1,5 @@
 export const environment = {
-    production: true,
-    debug: false,
-    apiBaseUrl: 'https://dev-harbor-backend.bayos.shop/api/v1'
+  production: true,
+  debug: false,
+  apiBaseUrl: 'http://localhost:3535/api/v1',
 };

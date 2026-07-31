@@ -14,7 +14,6 @@ import { InputField } from '../../shared/components/input-field/input-field';
 
 import { UserService } from '../../core/users/services/userService';
 
-
 @Component({
   selector: 'app-users',
   imports: [LucideAngularModule, InputField, DataTable, CreateUser],
@@ -22,7 +21,6 @@ import { UserService } from '../../core/users/services/userService';
   styleUrl: './users.css',
 })
 export class Users {
-
   readonly Mail = Mail;
   readonly Edit = Pencil;
   readonly Delete = Trash;
@@ -37,15 +35,13 @@ export class Users {
     private router: Router,
     private readonly userService: UserService,
     private readonly cdr: ChangeDetectorRef,
-    private dateUtils: DateUtils    
+    private dateUtils: DateUtils,
   ) {}
-  
+
   ngOnInit(): void {
-  
     this.loadUsers();
-  
   }
-  
+
   /** Load projects from backend */
   loadUsers() {
     this.userService.getUsers().subscribe({
@@ -62,9 +58,21 @@ export class Users {
   get filterOptions(): FilterOption[] {
     return [
       { label: 'All', count: this.users.length, value: 'all' },
-      { label: 'Active', count: this.users.filter(d => d.status === 'Active').length, value: 'active' },
-      { label: 'Pending', count: this.users.filter(d => d.status === 'Pending').length, value: 'pending' },
-      { label: 'In Active', count: this.users.filter(d => d.status === 'Inactive').length, value: 'inactive' },
+      {
+        label: 'Active',
+        count: this.users.filter((d) => d.status === 'Active').length,
+        value: 'active',
+      },
+      {
+        label: 'Pending',
+        count: this.users.filter((d) => d.status === 'Pending').length,
+        value: 'pending',
+      },
+      {
+        label: 'In Active',
+        count: this.users.filter((d) => d.status === 'Inactive').length,
+        value: 'inactive',
+      },
     ];
   }
 
@@ -74,10 +82,18 @@ export class Users {
 
     // Apply status filter
     switch (this.activeFilter) {
-      case 'success': list = list.filter(d => d.status === 'Succees'); break;
-      case 'failed': list = list.filter(d => d.status === 'Failed'); break;
-      case 'running': list = list.filter(d => d.status === 'In Progress'); break;
-      case 'archived': list = []; break;
+      case 'success':
+        list = list.filter((d) => d.status === 'Succees');
+        break;
+      case 'failed':
+        list = list.filter((d) => d.status === 'Failed');
+        break;
+      case 'running':
+        list = list.filter((d) => d.status === 'In Progress');
+        break;
+      case 'archived':
+        list = [];
+        break;
     }
 
     return list;
@@ -89,26 +105,39 @@ export class Users {
       columns: [
         { header: 'Member Name', field: 'name', bold: true },
         { header: 'Email', field: 'email' },
-        { header: 'Role', field: 'role_name',badge:true },
-        { header: 'Projects', field: 'projects', badge: true }, 
+        { header: 'Role', field: 'role_name', badge: true },
         { header: 'Last Active', field: 'updated_at' },
-        { header: 'Status', field: 'status', badge: true, badgeColorMap: {
-            'Active': 'bg-green-100 text-green-700',
-            'Inactive': 'bg-red-100 text-red-700'
-          }}
+        {
+          header: 'Status',
+          field: 'status',
+          badge: true,
+          badgeColorMap: {
+            Active: 'bg-green-100 text-green-700',
+            Inactive: 'bg-red-100 text-red-700',
+          },
+        },
       ],
-      data: this.users.map(user => ({
+      data: this.users.map((user) => ({
         ...user,
         status: getUserStatus(user),
-        updated_at: this.dateUtils.formatDate(user.updated_at)
+        updated_at: this.dateUtils.formatDate(user.updated_at),
       })),
       actions: [
-        { label: 'Edit', icon: this.Edit, color: 'bg-white-100 text-white-700 border border-black/5', action: 'edit' },
-        { label: 'Delete', icon: this.Delete, color: 'bg-red-100 text-red-700 border border-black/5', action: 'delete' }
-      ]
+        {
+          label: 'Edit',
+          icon: this.Edit,
+          color: 'bg-white-100 text-white-700 border border-black/5',
+          action: 'edit',
+        },
+        {
+          label: 'Delete',
+          icon: this.Delete,
+          color: 'bg-red-100 text-red-700 border border-black/5',
+          action: 'delete',
+        },
+      ],
     };
   }
-
 
   //Send Invite to new email user
   onAddNewMember() {
@@ -120,7 +149,7 @@ export class Users {
   }
 
   onSendInvite() {
-    console.log("Send Invite");
+    console.log('Send Invite');
   }
 
   /** Handle filter change */
@@ -152,5 +181,4 @@ export class Users {
         break;
     }
   }
-
 }
