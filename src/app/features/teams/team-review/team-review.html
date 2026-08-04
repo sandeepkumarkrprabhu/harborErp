@@ -1,1 +1,60 @@
-<p>team-review works!</p>
+<div class="bg-[#fdfcf9] border border-gray-200 rounded-lg shadow-md p-8">
+    <!-- Header -->
+    <h3 class="text-lg font-semibold text-gray-900 pb-3 border-b border-gray-200">
+        Review Team & Create
+    </h3>
+
+    <!-- Row 1: Team Name + Team Lead -->
+    <div class="grid grid-cols-2 gap-6 mb-6 mt-4">
+        <!-- Team Name -->
+        <div>
+            <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Team Name</h2>
+            <p class="text-gray-800 font-medium break-words">
+                {{ form.get('teamName')?.value }}
+            </p>
+        </div>
+
+        <!-- Team Lead -->
+        <div>
+            <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Team Lead</h2>
+            <p class="text-gray-800 font-medium break-words">
+                {{ teamLeadName }}
+            </p>
+        </div>
+    </div>
+
+    <!-- Row 2: Description -->
+    <div class="mb-6">
+        <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Description</h2>
+        <div class="mt-2">
+            <textarea
+                class="w-full border border-gray-300 rounded-md p-3 text-gray-800 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                rows="3" readonly>
+{{ form.get('teamDescription')?.value }}
+      </textarea>
+        </div>
+    </div>
+
+    <!-- Row 3: Team Members -->
+    <div>
+        <h2 class="text-base font-semibold text-gray-700 mb-3">
+            Team Members ({{ form.get('teamMembers')?.value?.length || 0 }})
+        </h2>
+    
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div *ngFor="let member of form.get('teamMembers')?.value"
+                class="flex flex-col items-start p-4 border border-gray-200 rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow">
+                <!-- Member Name -->
+                <span class="text-sm font-semibold text-gray-900">
+                    {{ member.name }}
+                </span>
+    
+                <!-- Highlighted Role -->
+                <span class="mt-1 text-xs font-bold text-blue-600 uppercase tracking-wide">
+                    {{ member.role_name }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+</div>

@@ -1,43 +1,31 @@
 <div
-  class="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-2xs p-4"
->
-  <div
-    class="bg-white rounded-md border border-black/5 shadow-xl w-full max-w-5xl flex flex-col md:flex-row overflow-hidden max-h-[90vh] md:h-[620px]"
-  >
-    <!-- Sidebar -->
-    <app-wizard-steps [steps]="steps" [currentStep]="step"></app-wizard-steps>
+  class="bg-white rounded-md border border-black/5 shadow-xl w-full max-w-5xl flex flex-col md:flex-row overflow-hidden max-h-[110vh] md:h-[630px]">
+  <!-- Sidebar -->
+  <app-wizard-steps [steps]="steps" [currentStep]="step"></app-wizard-steps>
 
-    <!-- Main Content -->
-    <div class="flex-1 flex flex-col min-h-0 bg-white">
-      <app-wizard-header [title]="'Create Project'" (close)="onCloseWizard()"></app-wizard-header>
+  <!-- Main Content -->
+  <div class="flex-1 flex flex-col min-h-0 bg-white">
+    <app-wizard-header [title]="'Create Project'" (close)="onCloseWizard()"></app-wizard-header>
 
+    <!-- Scrollable content area -->
+    <div class="flex-1 min-h-0 overflow-auto p-4">
       @if (step == 1) {
-        <app-project-identity
-          [formGroup]="form"
-          [showErrors]="shouldShowErrors(1)"
-        >
-        </app-project-identity>
+      <app-project-identity [formGroup]="form" [showErrors]="shouldShowErrors(1)">
+      </app-project-identity>
       }
       @if (step == 2) {
-        <app-source-config
-          [formGroup]="form"
-          [showErrors]="shouldShowErrors(2)"
-        >
-        </app-source-config>
+      <app-source-config [formGroup]="form" [showErrors]="shouldShowErrors(2)">
+      </app-source-config>
       }
       @if (step == 3) {
-        <app-review-create [projectForm]="form"></app-review-create>
+      <app-review-create [projectForm]="form"></app-review-create>
       }
+    </div>
 
-      <!-- Footer -->
-      <app-wizard-footer
-        formName="Create Project"
-        [currentStep]="step"
-        [steps]="steps"
-        (next)="nextStep()"
-        (prev)="prevStep()"
-        (submit)="submit()"
-      >
+    <!-- Footer pinned to bottom -->
+    <div class="w-full">
+      <app-wizard-footer formName="Create Project" [currentStep]="step" [steps]="steps" (next)="nextStep()"
+        (prev)="prevStep()" (submit)="submit()">
       </app-wizard-footer>
     </div>
   </div>

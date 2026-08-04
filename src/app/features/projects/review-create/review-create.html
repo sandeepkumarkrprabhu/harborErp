@@ -1,60 +1,67 @@
-<div class="p-2 space-y-1">
-  <h2 class="text-lg font-semibold text-[#1a1a1a] border-b border-black/5 pb-2">Review & Create</h2>
+<!-- review-create.html -->
+<div class="p-4">
+  <h2 class="text-lg font-semibold text-[#1a1a1a] border-b border-black/5 pb-2">
+    Review & Create
+  </h2>
 
   <!-- Project Identity -->
   <div class="bg-[#fdfcf9] border border-black/5 rounded-md p-4">
-    <h3 class="text-sm font-semibold text-[#1a1a1a] pb-2 border-b border-black/5">Project Identity</h3>
+    <h3 class="text-sm font-semibold text-[#1a1a1a] pb-2 border-b border-black/5">
+      Project Identity
+    </h3>
     <dl class="grid grid-cols-2 gap-x-6 gap-y-4 mt-3 text-sm">
       <div>
         <dt class="font-semibold text-[#8a7f75]">Project Name</dt>
-        <dd>{{ name }}</dd>
+        <dd>{{ this.projectForm.getRawValue().name }}</dd>
       </div>
       <div>
         <dt class="font-semibold text-[#8a7f75]">Team / Owner</dt>
-        <dd>{{ team }}</dd>
+        <dd>{{ this.projectForm.getRawValue().team }}</dd>
       </div>
       <div>
         <dt class="font-semibold text-[#8a7f75]">Project Type</dt>
-        <dd>{{ type }}</dd>
+        <dd>{{ this.projectForm.getRawValue().type }}</dd>
       </div>
       <div>
         <dt class="font-semibold text-[#8a7f75]">Tags</dt>
-        <dd>{{ tags.length ? tags.join(', ') : 'None' }}</dd>
+        <dd>{{ this.projectForm.getRawValue().tags.length ? this.projectForm.getRawValue().tags : 'None' }}</dd>
       </div>
       <div>
         <dt class="font-semibold text-[#8a7f75]">Members</dt>
-        <dd>{{ members.length ? members.join(', ') : 'None' }}</dd>
+        <dd>{{ this.projectForm.getRawValue().members.length ? this.projectForm.getRawValue().members : 'None' }}</dd>
       </div>
     </dl>
   </div>
 
   <!-- Source & Compute -->
   <div class="bg-[#fdfcf9] border border-black/5 rounded-md p-4">
-    <h3 class="text-sm font-semibold text-[#1a1a1a] pb-2 border-b border-black/5">Source & Compute</h3>
+    <h3 class="text-sm font-semibold text-[#1a1a1a] pb-2 border-b border-black/5">
+      Source & Compute
+    </h3>
     <dl class="grid grid-cols-2 gap-x-6 gap-y-4 mt-3 text-sm">
       <div>
         <dt class="font-semibold text-[#8a7f75]">Repository</dt>
-        <dd>{{ organization }}/{{ repo }}</dd>
+        <dd>{{ this.projectForm.getRawValue().repo }}</dd>
       </div>
       <div>
         <dt class="font-semibold text-[#8a7f75]">Branch</dt>
-        <dd>{{ branch }}</dd>
+        <dd>{{ this.projectForm.getRawValue().branch }}</dd>
       </div>
       <div>
         <dt class="font-semibold text-[#8a7f75]">Runtime</dt>
-        <dd>{{ runtime }}</dd>
+        <dd>{{ this.projectForm.getRawValue().runtime }}</dd>
       </div>
       <div>
         <dt class="font-semibold text-[#8a7f75]">Services Target</dt>
-        <dd>{{ serviceTargets }}</dd>
+        <dd>{{ this.projectForm.getRawValue().awsServiceList.length ? this.projectForm.getRawValue().awsServiceList.join(', ') : this.projectForm.getRawValue().awsService || 'None' }}</dd>
       </div>
       <div>
         <dt class="font-semibold text-[#8a7f75]">Region</dt>
-        <dd>{{ awsRegion }}</dd>
+        <dd>{{ this.projectForm.getRawValue().awsRegion }}</dd>
       </div>
       <div>
         <dt class="font-semibold text-[#8a7f75]">Environment</dt>
-        <dd>{{ environment || 'Not specified' }}</dd>
+        <dd>{{ this.projectForm.getRawValue().environment || 'Not specified' }}</dd>
       </div>
     </dl>
   </div>

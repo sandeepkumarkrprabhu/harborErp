@@ -18,7 +18,12 @@
   </div>
 
   @if (showCreateTeam) {
-    <app-createteam (closed)="closeTeamUser()"></app-createteam>
+    <app-create-team
+      [mode]="editingTeam ? 'edit' : 'create'"
+      [existingTeam]="editingTeam"
+      (saved)="onTeamSaved()"
+      (closed)="closeTeamUser()"
+    ></app-create-team>
   }
 
   <div class="grid grid-cols-1 md:grid-cols-[65%_33%] gap-8">
@@ -26,7 +31,7 @@
     <div>
       <div class="lg:col-span-7 flex flex-col gap-4">
         @for (team of teams$ | async; track team.teamName) {
-          <app-team-card [team]="team" (selectTeam)="onTeamSelected($event)"></app-team-card>
+          <app-team-card [team]="team" (selectTeam)="onTeamSelected($event)" (editTeam)="onEditTeam($event)"></app-team-card>
         }
       </div>
     </div>

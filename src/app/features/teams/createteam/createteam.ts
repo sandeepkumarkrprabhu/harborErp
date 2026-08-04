@@ -1,34 +1,54 @@
 import { CommonModule } from '@angular/common';
+import { Component, EventEmitter, Output, Input, OnInit } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+  AbstractControl,
+} from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { Component, EventEmitter, Output, Input } from '@angular/core';
 
 import { WizardFooter } from '../../../shared/components/wizard-footer/wizard-footer';
 import { WizardHeader } from '../../../shared/components/wizard-header/wizard-header';
 import { WizardSteps } from '../../../shared/components/wizard-steps/wizard-steps';
 import { TeamIdentity } from '../team-identity/team-identity';
-import { TeamService } from '../../../core/team/team-service';
-import { UserService } from '../../../core/users/services/userService';
-import {  Team, ValidationErrors } from '../../../Models/Team';
+import { TeamMembers } from '../team-members/team-members';
+import { ReviewTeam } from '../team-review/team-review';
+import { TeamPayload, TeamService } from '../../../core/team/team-service';
+import { Team } from '../../../Models/Team';
 import { User } from '../../../Models/User';
-import { TeamMembers } from "../team-members/team-members";
 
 enum teamSteps {
   Details = 1,
   Members = 2,
-  Review = 3
+  Review = 3,
+}
+
+function atLeastOneMember(control: AbstractControl | null) {
+  const val = control?.value || [];
+  return Array.isArray(val) && val.length > 0 ? null : { required: true };
 }
 
 @Component({
-  selector: 'app-createteam',
-  imports: [CommonModule, WizardHeader, WizardSteps, WizardFooter, TeamIdentity, TeamMembers],
+  selector: 'app-create-team',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    WizardHeader,
+    WizardSteps,
+    WizardFooter,
+    TeamIdentity,
+    TeamMembers,
+    ReviewTeam,
+  ],
   templateUrl: './createteam.html',
-  styleUrl: './createteam.css',
+  styleUrls: ['./createteam.css'],
 })
-
-export class Createteam {
-  
+export class CreateTeam implements OnInit {
   @Output() closed = new EventEmitter<void>();
-
+  @Output() saved = new EventEmitter<void>();
   @Input() mode: 'create' | 'edit' = 'create';
   @Input() existingTeam: Team | null = null;
 
@@ -37,57 +57,92 @@ export class Createteam {
   attemptedSteps = new Set<number>();
   submitAttempted = false;
 
+  form!: FormGroup;
   teamData!: Team;
-  users: User[] = [];
+  isSaving = false;
 
-  steps = [
-    { number: 1, title: 'Step 1', subtitle: 'Team Identity' },
-    { number: 2, title: 'Step 2', subtitle: 'Team Members' },    
-    { number: 3, title: 'Step 3', subtitle: this.mode === 'edit' ? 'Review & Update' : 'Review & Create' }
-  ];
-
-  private existingUserEmails = [
-    'alex.k@example.com', 'priya.r@example.com', 'sam.t@example.com',
-    'zara.m@example.com', 'john.d@example.com', 'meera.l@example.com',
-    'carlos.m@example.com', 'nina.p@example.com', 'omar.q@example.com',
-    'sophia.w@example.com', 'rajesh.b@example.com', 'emily.c@example.com'
-  ];
+  steps: { number: number; title: string; subtitle: string }[] = [];
 
   constructor(
+    private fb: FormBuilder,
     private teamService: TeamService,
-    private userService: UserService,
     private route: ActivatedRoute,
-  ) { 
-    if (this.route.snapshot.paramMap.get('id') != null)
-    {
-      this.mode = "edit";
+  ) {
+    if (this.route.snapshot.paramMap.get('id') != null) {
+      this.mode = 'edit';
     }
   }
-  
-  ngOnInit() {
-    // users are loaded by the TeamMembers component when the user opens Step 2
-    
+
+  private normalizeLeadValue(value: unknown): string {
+    if (value == null || value === '') {
+      return '';
+    }
+
+    if (typeof value === 'string' || typeof value === 'number') {
+      return String(value);
+    }
+
+    if (typeof value === 'object') {
+      const record = value as { id?: unknown; name?: unknown };
+      if (record.id != null) {
+        return String(record.id);
+      }
+      if (typeof record.name === 'string') {
+        return record.name;
+      }
+    }
+
+    return String(value);
+  }
+
+  ngOnInit(): void {
+    // initialize steps after mode is known
+    this.steps = [
+      { number: 1, title: 'Step 1', subtitle: 'Team Identity' },
+      { number: 2, title: 'Step 2', subtitle: 'Team Members' },
+      {
+        number: 3,
+        title: 'Step 3',
+        subtitle: this.mode === 'edit' ? 'Review & Update' : 'Review & Create',
+      },
+    ];
+
+    this.form = this.fb.group({
+      teamName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(64)]],
+      teamLeadID: ['', Validators.required],
+      teamDescription: [''],
+      teamMembers: [[], atLeastOneMember],
+    });
+
     if (this.mode === 'edit') {
-      const teamId = this.route.snapshot.paramMap.get('id'); // assumes route like /users/:id/edit
+      const teamId = this.route.snapshot.paramMap.get('id');
       if (teamId) {
-        this.teamService.getTeamById(teamId).subscribe(team => {
-          this.teamData = {
-            ...team,
-          };
-          console.log("Selected Team Details:", { ...team });
+        this.teamService.getTeamById(teamId).subscribe((team) => {
+          this.teamData = { ...team };
+          this.form.patchValue({
+            teamName: team.teamName,
+            teamLeadID: this.normalizeLeadValue(team.teamLeadID),
+            teamDescription: team.teamDescription,
+            teamMembers: team.teamMembers || [],
+          });
         });
       }
     } else if (this.existingTeam) {
       this.teamData = { ...this.existingTeam };
-    }
-    else {
-      // initialize empty team for create mode
+      this.form.patchValue({
+        teamName: this.existingTeam.teamName,
+        teamLeadID: this.normalizeLeadValue(this.existingTeam.teamLeadID),
+        teamDescription: this.existingTeam.teamDescription,
+        teamMembers: this.existingTeam.teamMembers || [],
+      });
+    } else {
       this.teamData = {
-        teamName: '',
-        description: '',
-        teamDescription: '',
-        created_at: '',
         id: '',
+        teamName: '',
+        teamDescription: '',
+        description: '',
+        created_at: '',
+        updated_at: '',
         is_active: true,
         projects: [],
         teamLeadID: '',
@@ -96,27 +151,30 @@ export class Createteam {
         teamMembersIDs: [],
         totalmembers: 0,
         totalProjects: 0,
-        updated_at: ''
-      };
+      } as Team;
     }
-  }
-
-
-  get teamMembersErrors(): ValidationErrors {
-    const errors: ValidationErrors = {};
-    
-    if (!this.teamData.teamMembers || this.teamData.teamMembers.length === 0) {
-      errors.teamMembers = 'At least one team member is required.';
-    }
-
-    return errors;
   }
 
   onSelectedMembersChange(selectedMembers: User[]): void {
-    this.teamData.teamMembers = selectedMembers;
-    this.teamData.teamMembersIDs = selectedMembers.map(u => u.id);
+    this.form.patchValue({ teamMembers: selectedMembers });
+    this.teamData.teamMembersIDs = selectedMembers.map((u) => u.id);
     this.teamData.totalmembers = selectedMembers.length;
-    console.log('Updated teamData:', this.teamData);
+  }
+
+  private buildTeamPayload(): TeamPayload {
+    const formValue = this.form.getRawValue();
+    const selectedMembers = Array.isArray(formValue.teamMembers)
+      ? (formValue.teamMembers as User[])
+      : [];
+
+    return {
+      teamName: formValue.teamName || this.teamData?.teamName || '',
+      teamDescription: formValue.teamDescription || this.teamData?.teamDescription || '',
+      teamLeadID: this.normalizeLeadValue(formValue.teamLeadID),
+      teamMembersIDs: selectedMembers
+        .map((member) => String(member.id))
+        .filter(Boolean),
+    };
   }
 
   nextStep() {
@@ -129,94 +187,47 @@ export class Createteam {
     if (this.step > teamSteps.Details) this.step--;
   }
 
-  goToStep(stepNumber: number) {
-    if (stepNumber > this.step && !this.canReachStep(stepNumber)) {
-      this.attemptedSteps.add(this.step);
-      return;
-    }
-    this.step = stepNumber;
-  }
-
-  get teamIdentityErrors(): ValidationErrors {
-    console.log("Team data:", this.teamData);
-    const errors: ValidationErrors = {};
-    const name = this.teamData.teamName.trim();   
-    const teamLeadId = this.teamData.teamLeadID.trim();
-    const projects = this.cleanList(this.teamData.projects.map(p => p.project_name));
-
-    if (!name) {
-      errors.teamName = 'Name is required.';
-    } else if (name.length < 2 || name.length > 64) {
-      errors.teamName = 'Name must be 2-64 characters.';
-    }
-
-    if (!teamLeadId) errors.teamLeadID = 'Team Lead is required.';
-    if (!this.teamData.is_active) errors.is_active = 'Status is required.';
-
-    // if (projects.length <= 1) {
-    //   errors.projects = 'Assign atleast one or more projects or fewer.';
-    // } else if (new Set(projects.map(p => p.toLowerCase())).size !== projects.length) {
-    //   errors.projects = 'Projects must be unique.';
-    // }
-
-    return errors;
-  }
-
-
-  get currentStepErrors(): ValidationErrors {
-    return this.teamIdentityErrors;
-  }
-
-  shouldShowErrors(stepNumber: number): boolean {
-    return this.submitAttempted || this.attemptedSteps.has(stepNumber);
-  }
-
-  onCloseWizard() {
-    this.showWizard = false;
-    this.closed.emit();
-  }
-
   submit() {
     this.submitAttempted = true;
-    this.attemptedSteps.add(teamSteps.Details);
+    this.form.markAllAsTouched();
 
     if (!this.isStepValid(teamSteps.Details)) {
       this.step = teamSteps.Details;
       return;
     }
 
-    if (this.mode === 'create') {
-      // var registerUser = this.userHelper.toRegisterRequest(this.teamData); 
-      // console.log("New user Object:", registerUser)
-      // // Call backend to register new user
-      // this.authService.registerUser(registerUser).subscribe({
-      //   next: (response) => {
-      //     console.log('User created successfully:', response);
-      //     this.closed.emit();
-      //   },
-      //   error: (err) => {
-      //     console.error('Error creating user:', err);
-      //     // Optionally show a UI error message
-      //   }
-      // });
-    } else {
-      // For now, just log edit mode until update service is ready
-      console.log('Edit mode selected, update service not yet implemented:', this.teamData);
-      this.closed.emit();
-    }
+    const finalTeam = this.buildTeamPayload();
+    const teamId =
+      this.mode === 'edit' ? this.route.snapshot.paramMap.get('id') || this.teamData?.id : '';
+
+    this.isSaving = true;
+
+    const request$ =
+      this.mode === 'create'
+        ? this.teamService.createUser(finalTeam)
+        : this.teamService.updateUser(teamId, finalTeam);
+
+    request$.subscribe({
+      next: () => {
+        this.isSaving = false;
+        this.saved.emit();
+        this.closed.emit();
+      },
+      error: (error) => {
+        this.isSaving = false;
+        console.error('Failed to save team', error);
+      },
+    });
   }
 
-  // These methods must be inside the class
   private isStepValid(stepNumber: number): boolean {
-    let errors: ValidationErrors = {};
-    
     if (stepNumber === teamSteps.Details) {
-      errors = this.teamIdentityErrors;
+      return (this.form.get('teamName')?.valid && this.form.get('teamLeadID')?.valid) || false;
     } else if (stepNumber === teamSteps.Members) {
-      errors = this.teamMembersErrors;
+      const members = this.form.get('teamMembers')?.value || [];
+      return Array.isArray(members) && members.length > 0;
     }
-    
-    return Object.keys(errors).length === 0;
+    return true;
   }
 
   private canReachStep(stepNumber: number): boolean {
@@ -226,7 +237,8 @@ export class Createteam {
     return true;
   }
 
-  private cleanList(values: string[]): string[] {
-    return values.map(v => v.trim()).filter(Boolean);
+  onCloseWizard() {
+    this.showWizard = false;
+    this.closed.emit();
   }
 }

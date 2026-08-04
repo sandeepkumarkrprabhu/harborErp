@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -8,7 +8,9 @@ import {
   Validators,
 } from '@angular/forms';
 
-import { CreateProjectData, ValidationErrors } from '../../../Models/project';
+import { ValidationErrors } from '../../../Models/project';
+import { User } from '../../../Models/User';
+
 import { WizardSteps } from '../../../shared/components/wizard-steps/wizard-steps';
 import { WizardHeader } from '../../../shared/components/wizard-header/wizard-header';
 import { WizardFooter } from '../../../shared/components/wizard-footer/wizard-footer';
@@ -17,8 +19,11 @@ import { ProjectIdentity } from '../project-identity/project-identity';
 import { SourceConfig } from '../source-config/source-config';
 import { ReviewCreate } from '../review-create/review-create';
 
-import { ProjectHelper } from '../../../core/projects/services/project-helper';
 import { ProjectService } from '../../../core/projects/services/project.service';
+import { UserService } from '../../../core/users/services/userService';
+
+import { ProjectHelper } from '../../../core/projects/services/project-helper';
+import { Observable, tap } from 'rxjs';
 
 enum ProjectSteps {
   Details = 1,
@@ -43,10 +48,11 @@ enum ProjectSteps {
   templateUrl: './create-project.html',
   styleUrls: ['./create-project.css'],
 })
-export class CreateProject {
+export class CreateProject implements OnInit {
   step = ProjectSteps.Details;
   attemptedSteps = new Set<number>();
   submitAttempted = false;
+  suggestedMembers: User[] = [];
 
   @Output() close = new EventEmitter<void>();
 
@@ -57,6 +63,7 @@ export class CreateProject {
     private fb: FormBuilder,
     private projectHelper: ProjectHelper,
     private projectService: ProjectService,
+    private userService: UserService,
   ) {
     this.form = this.fb.group({
       name: [
@@ -85,23 +92,18 @@ export class CreateProject {
     });
   }
 
-  // projectData: CreateProjectData = {
-  //   name: '',
-  //   team: 'Platform Engineering',
-  //   type: 'Internal Project',
-  //   description: '',
-  //   tags: [],
-  //   members: [],
-  //   organization: '',
-  //   repo: '',
-  //   branch: '',
-  //   runtime: '',
-  //   environment: '',
-  //   awsRegion: '',
-  //   awsService: '',
-  //   awsResource: '',
-  //   awsServiceList: [],
-  // };
+  ngOnInit(): void {
+    this.loadUsers().subscribe();
+  }
+
+  /** Load users from backend */
+  loadUsers(): Observable<User[]> {
+    return this.userService.getUsers().pipe(
+      tap((data) => {
+        this.suggestedMembers = (data || []).map((user) => ({ ...user }));
+      }),
+    );
+  }
 
   steps = [
     { number: 1, title: 'Step 1', subtitle: 'Project Identity' },
@@ -143,8 +145,24 @@ export class CreateProject {
       return;
     }
 
-    // Transform UI data into API payload
-    const apiObject = this.projectHelper.transformToApiObject(this.form.value);
+    if (!this.suggestedMembers.length) {
+      this.loadUsers().subscribe({
+        next: () => this.createProject(),
+        error: (err) => console.error('Failed to load users', err),
+      });
+      return;
+    }
+
+    this.createProject();
+  }
+
+  private createProject(): void {
+    const apiObject = this.projectHelper.transformToApiObject(
+      this.form.value,
+      this.suggestedMembers,
+    );
+
+    console.log('Submitting project creation with payload:', apiObject);
 
     this.projectService.createProject(apiObject).subscribe({
       next: () => this.close.emit(),

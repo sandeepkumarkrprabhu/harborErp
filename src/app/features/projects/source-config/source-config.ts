@@ -1,16 +1,18 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { Observable } from 'rxjs';
+import { AsyncPipe } from '@angular/common';
 
 import { Repo } from '../../../Models/Repo';
-
 import { AwsResource } from '../../../Models/AwsResource';
+
 import { AwsService } from '../../../core/aws/services/awsService';
 import { RepoService } from '../../../core/aws/services/repoService';
 
 @Component({
   selector: 'app-source-config',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, AsyncPipe],
   templateUrl: './source-config.html',
   styleUrls: ['./source-config.css'],
 })
@@ -34,6 +36,7 @@ export class SourceConfig implements OnInit {
   connectedResources: AwsResource[] = [];
   selectedResources: AwsResource[] = [];
   repos: Repo[] = [];
+  resources$!: Observable<AwsResource[]>;
 
   loading = false;
 
@@ -55,26 +58,32 @@ export class SourceConfig implements OnInit {
     });
 
     this.repoService.fetchRepos().subscribe((repos) => {
-      console.log('GitHub Repos:', repos);
-      this.repos = repos;
+      this.repos = repos || [];
+      this.syncSelectedRepo();
     });
+
+    this.fetchResources();
   }
 
   fetchResources() {
     const awsService = this.formGroup.get('awsService')?.value;
     const awsRegion = this.formGroup.get('awsRegion')?.value;
 
-    if (!awsService || !awsRegion) return;
+    if (!awsService || !awsRegion) {
+      this.connectedResources = [];
+      return;
+    }
 
-    this.loading = true;
-    this.awsService.fetchResources(awsService, awsRegion).subscribe({
-      next: (res) => {
-        this.connectedResources = res;
-        this.loading = false;
+    const request$ = this.awsService.fetchResources(awsService, awsRegion);
+    this.resources$ = request$;
+
+    request$.subscribe({
+      next: (resources) => {
+        this.connectedResources = resources || [];
+        this.syncSelectedAwsResource();
       },
-      error: (err) => {
-        console.error('Failed to fetch AWS resources', err);
-        this.loading = false;
+      error: () => {
+        this.connectedResources = [];
       },
     });
   }
@@ -106,6 +115,51 @@ export class SourceConfig implements OnInit {
         ];
       }
       this.formGroup.get('awsResource')?.setValue('');
+    }
+  }
+
+  private syncSelectedRepo(): void {
+    const repoControl = this.formGroup.get('repo');
+    const currentValue = repoControl?.value;
+
+    if (!currentValue || !this.repos.length) {
+      return;
+    }
+
+    const matchedRepo = this.repos.find(
+      (repo) =>
+        String(repo.id) === String(currentValue) ||
+        repo.name === String(currentValue) ||
+        repo.full_name === String(currentValue),
+    );
+
+    if (matchedRepo) {
+      repoControl?.setValue(String(matchedRepo.id), { emitEvent: false });
+    }
+  }
+
+  private syncSelectedAwsResource(): void {
+    const resourceControl = this.formGroup.get('awsResource');
+    const currentValue = resourceControl?.value;
+
+    if (!currentValue || !this.connectedResources.length) {
+      return;
+    }
+
+    const matchedResource = this.connectedResources.find(
+      (resource) => String(resource.id) === String(currentValue),
+    );
+
+    if (matchedResource) {
+      resourceControl?.setValue(String(matchedResource.id), { emitEvent: false });
+      if (!this.selectedResources.some((resource) => resource.id === matchedResource.id)) {
+        this.selectedResources = [
+          ...this.selectedResources.filter(
+            (resource) => resource.service !== matchedResource.service,
+          ),
+          matchedResource,
+        ];
+      }
     }
   }
 

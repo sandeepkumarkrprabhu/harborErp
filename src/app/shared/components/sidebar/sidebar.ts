@@ -20,16 +20,11 @@ import { Logger } from '../../../features/utils/logger';
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [
-    RouterLink,
-    RouterLinkActive,
-    LucideAngularModule,
-  ],
+  imports: [RouterLink, RouterLinkActive, LucideAngularModule],
   templateUrl: './sidebar.html',
   styleUrls: ['./sidebar.css'],
 })
 export class Sidebar {
-
   username: string | null = null;
   email: string | null = null;
 
@@ -37,8 +32,8 @@ export class Sidebar {
     private tokenStorage: TokenStorageService,
     private readonly authService: AuthService,
     private readonly logger: Logger,
-    private readonly router: Router
-  ) { }
+    private readonly router: Router,
+  ) {}
 
   readonly LogOut = LogOut;
   readonly Menu = Menu;
@@ -51,11 +46,9 @@ export class Sidebar {
 
   private loadUserDetails(): void {
     this.username = this.tokenStorage.userName(); // unwrap signal
-    this.email = this.tokenStorage.userEmail();   // unwrap signal
+    this.email = this.tokenStorage.userEmail(); // unwrap signal
     this.logger.debug('Loaded user details:', { username: this.username, email: this.email });
   }
-
-
 
   toggleSidebar(): void {
     this.isCollapsed = !this.isCollapsed;
@@ -65,7 +58,7 @@ export class Sidebar {
     { label: 'Dashboard', route: '/dashboard', icon: LayoutDashboard },
     { label: 'Projects', route: '/projects', icon: FolderKanban },
     { label: 'Teams', route: '/teams', icon: UsersRound },
-    { label: 'History', route: '/history', icon: History },
+    // { label: 'History', route: '/history', icon: History },
     { label: 'Users', route: '/users', icon: Users },
     { label: 'Settings', route: '/settings', icon: Settings },
     { label: 'Notifications', route: '/notifications', icon: Bell },

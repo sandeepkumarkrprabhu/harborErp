@@ -1,117 +1,177 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges, Output, signal, effect, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
+import { Subscription } from 'rxjs';
 import { UserService } from '../../../core/users/services/userService';
 import { User } from '../../../Models/User';
-import { Team, ValidationErrors } from '../../../Models/Team';
-import { getAvatarClass, getInitials } from '../../utils/string-utils';
-
-interface UserWithSelection extends User {
-  selected?: boolean;
-}
 
 @Component({
   selector: 'app-team-members',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './team-members.html',
-  styleUrl: './team-members.css',
+  styleUrls: ['./team-members.css'],
 })
-export class TeamMembers implements OnInit, OnChanges {
-  @Input() data!: Team;
-  @Input() errors: ValidationErrors = {};
-  @Input() showErrors: boolean = false;
+export class TeamMembers implements OnInit, OnDestroy {
+  @Input({ required: true }) form!: FormGroup;
   @Output() selectedMembersChange = new EventEmitter<User[]>();
 
-  users = signal<UserWithSelection[]>([]);
-  selectedMembers = signal<User[]>([]);
-  private searchDebounce: any;
+  users: User[] = [];
+  private selectedIds = new Set<string>();
+  private subs = new Subscription();
 
-  getAvatarClass = getAvatarClass;
-  getInitials = getInitials;
+  /** Reactive search control (no FormsModule/ngModel) */
+  searchControl = new FormControl('');
 
-  constructor(private userService: UserService) {
-    effect(() => {
-      const currentUsers = this.users();
-      const selected = currentUsers.filter(u => u.selected);
-      this.selectedMembers.set(selected);
-      this.selectedMembersChange.emit(selected);
-    });
-  }
+  constructor(private userService: UserService) {}
 
   ngOnInit(): void {
-    // Load users only when this component is initialized (i.e. when the user opens step 2)
-    this.loadUsers();
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['data']) {
-      this.loadUsers();
-    }
-  }
-
-  private loadUsers(): void {
-    // If parent passed a prefilled members list, use that as base
-    if (this.data && this.data.teamMembers && this.data.teamMembers.length > 0) {
-      this.users.set(
-        this.data.teamMembers.map(member => ({
-          ...member,
-          selected: false,
-        }))
-      );
-      return;
+    // Ensure the control exists and has an array value
+    if (!this.form.get('teamMembers')) {
+      this.form.addControl('teamMembers', new FormControl([]));
+    } else if (!Array.isArray(this.form.get('teamMembers')?.value)) {
+      this.form.get('teamMembers')?.setValue([]);
     }
 
-    // otherwise fetch from the server (debounced caller may pass a searchTerm)
-    this.userService.getUsers().subscribe({
-      next: (allUsers) => {
-        // limit results to avoid rendering thousands of items; client-side search will filter this set
-        const limited = allUsers.slice(0, 200).map(u => ({ ...u, selected: false }));
-        this.users.set(limited);
-      },
-      error: (err) => {
-        console.error('Failed to load users', err);
+    // Load users
+    const usersSub = this.userService.getUsers().subscribe((users) => {
+      this.users = (users || [])
+        .filter((user) => user.is_active)
+        .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+      this.syncSelectionFromForm();
+    });
+    this.subs.add(usersSub);
+
+    // Watch for external changes to the teamMembers control
+    const control = this.form.get('teamMembers');
+    if (control) {
+      const ctrlSub = control.valueChanges.subscribe(() => {
+        this.syncSelectionFromForm();
+      });
+      this.subs.add(ctrlSub);
+    }
+
+    // Optional: react to search changes if you want to trigger side-effects
+    const searchSub = this.searchControl.valueChanges.subscribe(() => {
+      // no-op here; filteredUsers() reads searchControl synchronously
+    });
+    this.subs.add(searchSub);
+  }
+
+  ngOnDestroy(): void {
+    this.subs.unsubscribe();
+  }
+
+  private syncSelectionFromForm(): void {
+    const raw = this.form.get('teamMembers')?.value || [];
+    this.selectedIds.clear();
+
+    // raw may be array of User objects or array of ids (string/number)
+    if (Array.isArray(raw)) {
+      for (const item of raw) {
+        if (item && typeof item === 'object' && 'id' in item) {
+          this.selectedIds.add(String((item as User).id));
+        } else {
+          this.selectedIds.add(String(item));
+        }
       }
-    });
+    }
+
+    this.enforceLeadMembership();
+
+    // Normalize to User[] if possible (keeps form value consistent)
+    const selectedUsers = this.users.filter((u) => this.selectedIds.has(String(u.id)));
+    const controlVal = this.form.get('teamMembers')?.value || [];
+    const isAlreadyObjects =
+      Array.isArray(controlVal) &&
+      controlVal.some((v: any) => v && typeof v === 'object' && 'id' in v);
+
+    if (selectedUsers.length > 0 && !isAlreadyObjects) {
+      // replace IDs with User[] without emitting valueChanges (avoid loops)
+      this.form.get('teamMembers')?.setValue(selectedUsers, { emitEvent: false });
+    }
+
+    // Emit current selection to parent
+    this.selectedMembersChange.emit(selectedUsers);
   }
 
-  onUserSelectionChange(user: UserWithSelection): void {
-    const updatedUsers = this.users().map(u =>
-      u.id === user.id ? { ...u, selected: !u.selected } : u
+  private enforceLeadMembership(): void {
+    const leadId = this.getSelectedLeadId();
+    if (leadId) {
+      this.selectedIds.add(leadId);
+    }
+  }
+
+  private getSelectedLeadId(): string | null {
+    const leadValue = this.form.get('teamLeadID')?.value;
+    if (leadValue == null || leadValue === '') {
+      return null;
+    }
+
+    return String(leadValue);
+  }
+
+  /** Return users filtered by searchControl value */
+  filteredUsers(): User[] {
+    const q = (this.searchControl.value || '').toString().trim().toLowerCase();
+    if (!q) return this.users;
+    return this.users.filter(
+      (u) =>
+        (u.name || '').toLowerCase().includes(q) || (u.role_name || '').toLowerCase().includes(q),
     );
-    this.users.set(updatedUsers);
-    console.log('Selected members:', this.selectedMembers());
   }
 
-  onSearchInput(term: string) {
-    clearTimeout(this.searchDebounce);
-    this.searchDebounce = setTimeout(() => {
-      this.performSearch(term);
-    }, 300);
+  trackById(index: number, item: User) {
+    return item.id;
   }
 
-  private performSearch(term: string) {
-    const q = (term || '').trim().toLowerCase();
-    if (!q) {
-      // reload base limited set
-      this.loadUsers();
+  isSelected(user: User): boolean {
+    return this.selectedIds.has(String(user.id));
+  }
+
+  isLeadUser(user: User): boolean {
+    return this.getSelectedLeadId() === String(user.id);
+  }
+
+  toggleMember(user: User) {
+    if (this.isLeadUser(user)) {
       return;
     }
 
-    // Fetch full list once and filter client-side (backend may not support search)
-    this.userService.getUsers().subscribe({
-      next: (allUsers) => {
-        const filtered = allUsers.filter(u =>
-          (u.name || '').toLowerCase().includes(q) || (u.email || '').toLowerCase().includes(q)
-        ).slice(0, 200).map(u => ({ ...u, selected: false }));
-        this.users.set(filtered);
-      },
-      error: (err) => console.error('User search failed', err)
-    });
+    const id = String(user.id);
+    if (this.selectedIds.has(id)) {
+      this.selectedIds.delete(id);
+    } else {
+      this.selectedIds.add(id);
+    }
+
+    // Build selected User[] from loaded users
+    const members = this.users.filter((u) => this.selectedIds.has(String(u.id)));
+
+    // Update the form control and mark touched so validation shows
+    this.form.get('teamMembers')?.setValue(members);
+    this.form.get('teamMembers')?.markAsTouched();
+
+    // Notify parent
+    this.selectedMembersChange.emit(members);
   }
 
-  getUserInitials(userName: string): string {
-    return getInitials(userName);
+  /** Helpers for UI */
+  initials(name?: string): string {
+    if (!name) return '';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   }
 
-  getUserAvatarClass(userName: string): string {
-    return getAvatarClass(userName);
+  avatarColor(id: string | number): string {
+    const colors = ['#6EE7B7', '#93C5FD', '#FBCFE8', '#FDE68A', '#FCA5A5', '#C7B3FF'];
+    const idx =
+      Math.abs(
+        String(id)
+          .split('')
+          .reduce((acc, ch) => acc + ch.charCodeAt(0), 0),
+      ) % colors.length;
+    return colors[idx];
   }
 }

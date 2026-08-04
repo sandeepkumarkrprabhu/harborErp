@@ -16,7 +16,7 @@ import { tap } from 'rxjs/operators';
 
 enum UserSteps {
   Details = 1,
-  Review = 2
+  Review = 2,
 }
 
 export type ValidationErrors = Partial<Record<keyof RegisterUserRequest, string>>;
@@ -43,24 +43,21 @@ export class CreateUser {
 
   steps = [
     { number: 1, title: 'Step 1', subtitle: 'User Identity' },
-    { number: 2, title: 'Step 2', subtitle: this.mode === 'edit' ? 'Review & Update' : 'Review & Create' }
-  ];
-
-  private existingUserEmails = [
-    'alex.k@example.com', 'priya.r@example.com', 'sam.t@example.com',
-    'zara.m@example.com', 'john.d@example.com', 'meera.l@example.com',
-    'carlos.m@example.com', 'nina.p@example.com', 'omar.q@example.com',
-    'sophia.w@example.com', 'rajesh.b@example.com', 'emily.c@example.com'
+    {
+      number: 2,
+      title: 'Step 2',
+      subtitle: this.mode === 'edit' ? 'Review & Update' : 'Review & Create',
+    },
   ];
 
   constructor(
     private userService: UserService,
     private route: ActivatedRoute,
     private authService: AuthService,
-    private userHelper: UserHelper
+    private userHelper: UserHelper,
   ) {
     if (this.route.snapshot.paramMap.get('id') != null) {
-      this.mode = "edit";
+      this.mode = 'edit';
     }
   }
 
@@ -68,9 +65,9 @@ export class CreateUser {
     if (this.mode === 'edit') {
       const userId = this.route.snapshot.paramMap.get('id');
       if (userId) {
-        this.userData$ = this.userService.getUserById(userId).pipe(
-          tap(user => console.log("Selected User Details:", user))
-        );
+        this.userData$ = this.userService
+          .getUserById(userId)
+          .pipe(tap((user) => console.log('Selected User Details:', user)));
       }
     } else if (this.existingUser) {
       this.userData$ = of({ ...this.existingUser });
@@ -84,13 +81,13 @@ export class CreateUser {
         github_user_id: '',
         github_username: '',
         github_verified: false,
-        id: "0",
+        id: '0',
         is_active: true,
         lastActive: '',
         requires_github_access: false,
         role_id: '',
         updated_at: '',
-        notes:''
+        notes: '',
       });
     }
   }
@@ -140,10 +137,10 @@ export class CreateUser {
       return;
     }
 
-    this.userData$.subscribe(userData => {
+    this.userData$.subscribe((userData) => {
       if (this.mode === 'create') {
         const registerUser = this.userHelper.toRegisterRequest(userData);
-        console.log("New user Object:", registerUser);
+        console.log('New user Object:', registerUser);
 
         this.authService.registerUser(registerUser).subscribe({
           next: (response) => {
@@ -152,7 +149,7 @@ export class CreateUser {
           },
           error: (err) => {
             console.error('Error creating user:', err);
-          }
+          },
         });
       } else {
         console.log('Edit mode selected, update service not yet implemented:', userData);
@@ -174,6 +171,6 @@ export class CreateUser {
   }
 
   private cleanList(values: string[]): string[] {
-    return values.map(v => v.trim()).filter(Boolean);
+    return values.map((v) => v.trim()).filter(Boolean);
   }
 }

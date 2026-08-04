@@ -1,51 +1,61 @@
-import { ChangeDetectorRef, Component, Input } from '@angular/core';
-import { Team, ValidationErrors } from '../../../Models/Team';
+import { Component, Input, OnInit } from '@angular/core';
+import { FormGroup } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
 import { UserService } from '../../../core/users/services/userService';
 import { User } from '../../../Models/User';
+import { InputField } from '../../../shared/components/input-field/input-field';
 
 @Component({
   selector: 'app-team-identity',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, InputField],
   templateUrl: './team-identity.html',
-  styleUrl: './team-identity.css',
+  styleUrls: ['./team-identity.css'],
 })
-export class TeamIdentity {
-  @Input({ required: true }) data!: Team;
-  @Input() errors: ValidationErrors = {};
-  @Input() showErrors = false;
-
+export class TeamIdentity implements OnInit {
+  @Input({ required: true }) form!: FormGroup;
   teamLeads: User[] = [];
 
-  constructor(
-    private userService: UserService,
-    private cdr: ChangeDetectorRef
-  ) {}
+  constructor(private userService: UserService) {}
 
-  ngOnInit() {
-    // Fetch users from backend
-    this.userService.getUsers().subscribe(users => {
-      this.teamLeads = users;
+  ngOnInit(): void {
+    this.userService.getUsers().subscribe((users) => {
+      this.teamLeads = (users || []).filter((user) => user.is_active);
+      this.syncSelectedLead();
+    });
 
-      console.log("Team Data:", this.data);
-      // If teamLeadID is already set, ensure it's mapped to the dropdown
-      if (this.data.teamLeadID) {
-        console.log("selected Team Lead:", this.data.teamLeadID);
-        const match = this.teamLeads.find(u => u.id === this.data.teamLeadID);
-        if (match) {
-          this.data.teamLeadID = match.id; // ensures dropdown shows correct selection
-          this.data.teamLeadName = match.name; // optional: keep name in sync
-        }
-      }
-
-      this.cdr.detectChanges();
+    this.form.get('teamLeadID')?.valueChanges.subscribe(() => {
+      this.syncSelectedLead();
     });
   }
 
-  updateField<K extends keyof Team>(field: K, value: Team[K]) {
-    this.data[field] = value;
+  private syncSelectedLead(): void {
+    const control = this.form.get('teamLeadID');
+    const currentValue = control?.value;
+
+    if (!this.teamLeads.length || currentValue == null || currentValue === '') {
+      return;
+    }
+
+    const normalizedValue = String(currentValue).trim();
+    const matchedLead = this.teamLeads.find((lead) => String(lead.id) === normalizedValue);
+
+    if (matchedLead) {
+      control?.setValue(String(matchedLead.id), { emitEvent: false });
+      return;
+    }
+
+    const fallbackLead = this.teamLeads.find(
+      (lead) => lead.name?.toLowerCase() === normalizedValue.toLowerCase(),
+    );
+
+    if (fallbackLead) {
+      control?.setValue(String(fallbackLead.id), { emitEvent: false });
+    }
   }
 
-  errorFor(field: keyof Team): string {
-    return this.showErrors ? this.errors[field] ?? '' : '';
+  trackById(index: number, item: User) {
+    return item.id;
   }
 }

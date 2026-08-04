@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Team } from '../../../Models/Team';
 import { LucideAngularModule } from 'lucide-angular';
-import { getProjectStatus } from '../../../features/utils/string-utils'; 
+import { getProjectStatus } from '../../../features/utils/string-utils';
 
 @Component({
   selector: 'app-team-card',
@@ -13,12 +13,18 @@ import { getProjectStatus } from '../../../features/utils/string-utils';
 export class TeamCard {
   @Input() team!: Team;
   @Output() selectTeam = new EventEmitter<Team>();
+  @Output() editTeam = new EventEmitter<Team>();
 
   handleClick() {
     //console.log("selected Team:", this.team);
     this.selectTeam.emit(this.team);
   }
-  
+
+  onEditClick(event: MouseEvent) {
+    event.stopPropagation();
+    this.editTeam.emit(this.team);
+  }
+
   getProjectStatus(healthy: number, unhealthy: number): string {
     return getProjectStatus(healthy, unhealthy);
   }
@@ -51,8 +57,8 @@ export class TeamCard {
   getAvatarColor(name: string): string {
     // Map Tailwind theme tokens to actual colors
     const themeColors: Record<string, string> = {
-      primary: 'var(--tw-bg-primary)',   // uses your defined bg-primary
-      secondary: 'var(--tw-bg-secondary)' // uses your defined bg-secondary
+      primary: 'var(--tw-bg-primary)', // uses your defined bg-primary
+      secondary: 'var(--tw-bg-secondary)', // uses your defined bg-secondary
     };
 
     // Fallback if name is missing
@@ -66,6 +72,4 @@ export class TeamCard {
 
     return usePrimary ? themeColors[0] : themeColors[1];
   }
-
-
 }
