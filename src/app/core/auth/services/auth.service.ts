@@ -81,20 +81,6 @@ export class AuthService {
 
   // ---------------- NEW: Create User ----------------
 
-  /**
-   * Create user for the application.
-   * Endpoint: POST /api/v1/auth/register
-   * Body: {
-      "name": "string",
-      "email": "user@example.com",
-      "role_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-      "github_username": "string",
-      "requires_github_access": true
-    }
-   */
-
-  // create user
-
   createUser(request: {
     name: string;
     email: string;
