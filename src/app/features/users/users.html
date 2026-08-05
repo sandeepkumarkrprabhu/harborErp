@@ -15,7 +15,13 @@
   </div>
 
   @if (showCreateUser) {
-    <app-create-user (closed)="closeCreateUser()"></app-create-user>
+    <app-create-user
+      *ngIf="showCreateUser"
+      [mode]="selectedUser ? 'edit' : 'create'"
+      [existingUser]="selectedUser"
+      (closed)="closeCreateUser()"
+    >
+    </app-create-user>
   }
 
   <!-- Filter + Search + Sort bar -->

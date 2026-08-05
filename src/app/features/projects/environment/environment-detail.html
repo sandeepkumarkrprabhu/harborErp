@@ -20,23 +20,6 @@
         {{ projectDetail.deploymentSummary.author }}
       </p>
     </div>
-
-    <!-- Action Buttons -->
-    <!-- <div class="flex items-center gap-2">
-      <button class="bg-primary text-white hover:bg-primary-hover px-3.5 py-1.5 text-xs rounded-md">
-        Trigger Deploy
-      </button>
-      <button
-        class="bg-white border border-black/5 text-[#3f372f] hover:bg-[#faf9f8] px-3.5 py-1.5 text-xs rounded-md"
-      >
-        Rollback
-      </button>
-      <button
-        class="bg-white border border-black/5 text-[#3f372f] hover:bg-[#faf9f8] px-3.5 py-1.5 text-xs rounded-md"
-      >
-        History
-      </button>
-    </div> -->
   </div>
 
   <!-- ECS Compute Status -->
@@ -118,8 +101,8 @@
             </svg>
             <h2 class="text-sm font-semibold text-[#1a1a1a]">CloudWatch Logs</h2>
             <span class="text-[11px] text-[#8a7f75] font-medium">
-              Last {{ projectDetail?.cloudWatchLogs?.length || 0 }} lines - /ecs/{{
-                projectDetail?.ecs?.taskDefinition || 'N/A'
+              Last {{ projectDetail.cloudWatchLogs.length || 0 }} lines - /ecs/{{
+                projectDetail.ecs.taskDefinition || 'N/A'
               }}/Prod
             </span>
           </div>
@@ -128,7 +111,7 @@
         <div
           class="bg-[#0f0e0d] border border-black/80 rounded-md p-3.5 font-mono text-[11px] leading-relaxed text-[#c9c5c0] flex flex-col gap-1.5 h-[160px] overflow-y-auto"
         >
-          <div *ngIf="projectDetail?.cloudWatchLogs?.length; else noLogs">
+          <div *ngIf="projectDetail.cloudWatchLogs.length; else noLogs">
             <div *ngFor="let log of projectDetail.cloudWatchLogs" class="flex gap-3">
               <!-- Timestamp -->
               <span class="text-[#8a7f75] shrink-0">{{ log.timestamp }}</span>

@@ -1,3 +1,4 @@
+import { NgIf } from '@angular/common';
 import { Component, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { LucideAngularModule, Pencil, Trash, Mail, UserPlus } from 'lucide-angular';
@@ -16,7 +17,7 @@ import { UserService } from '../../core/users/services/userService';
 
 @Component({
   selector: 'app-users',
-  imports: [LucideAngularModule, InputField, DataTable, CreateUser],
+  imports: [NgIf, LucideAngularModule, InputField, DataTable, CreateUser],
   templateUrl: './users.html',
   styleUrl: './users.css',
 })
@@ -28,7 +29,7 @@ export class Users {
 
   showCreateUser = false;
   activeFilter: string = 'all';
-
+  selectedUser: User | null = null;
   users: User[] = [];
 
   constructor(
@@ -36,7 +37,7 @@ export class Users {
     private readonly userService: UserService,
     private readonly cdr: ChangeDetectorRef,
     private dateUtils: DateUtils,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadUsers();
@@ -141,6 +142,7 @@ export class Users {
 
   //Send Invite to new email user
   onAddNewMember() {
+    this.selectedUser = null;
     this.showCreateUser = true;
   }
 
@@ -166,8 +168,10 @@ export class Users {
 
       case 'edit':
         // Navigate to edit page with row.id
-        console.log('edit user:', event.row);
-        this.router.navigate(['/users/edit', event.row.id]);
+        //this.router.navigate(['/users/edit', event.row.id]);
+        //console.log('edit user:', event.row);
+        this.selectedUser = event.row; // store selected user
+        this.showCreateUser = true;
         break;
 
       case 'delete':

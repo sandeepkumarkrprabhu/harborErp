@@ -1,130 +1,103 @@
 import { Component, Input, ChangeDetectorRef } from '@angular/core';
-import type { ValidationErrors } from '../create-user/create-user';
-
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { User } from '../../../Models/User';
-import { Project } from '../../../Models/project';
-import { RegisterUserRequest } from '../../../core/auth/models/auth';
 import { Role } from '../../../Models/role';
-
-import { AuthService } from '../../../core/auth/services/auth.service';
-//import { ProjectService } from '../../../core/projects/services/project.service';
 import { RoleService } from '../../../core/role/role-service';
+import { AuthService } from '../../../core/auth/services/auth.service';
+
+import { InputField } from '../../../shared/components/input-field/input-field';
 
 @Component({
   selector: 'app-user-identity',
   standalone: true,
+  imports: [InputField, ReactiveFormsModule],
   templateUrl: './user-identity.html',
   styleUrls: ['./user-identity.css'],
 })
 export class UserIdentity {
   @Input({ required: true }) data!: User;
-  @Input() errors: ValidationErrors = {};
+  @Input() errors: any = {};
   @Input() showErrors = false;
 
-  statuses = ['Active', 'Pending', 'Inactive'];
-
-  suggestedProjects: Project[] = [];
   roles: Role[] = [];
+  userForm!: FormGroup;
 
   constructor(
-    //private projectService: ProjectService,
+    private fb: FormBuilder,
     private roleService: RoleService,
     private githubService: AuthService,
     private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
-    this.roleService.getRoles().subscribe((roles) => {
-      //console.log("DB Roles:", roles);
-      this.roles = roles;
-      this.cdr.detectChanges();
+    // initialize form with user data
+    this.userForm = this.fb.group({
+      name: [this.data?.name || ''],
+      email: [this.data?.email || ''],
+      role_id: [this.data?.role_id || ''],
+      github_username: [this.data?.github_username || ''],
     });
 
-    console.log('User Detail:', this.data);
+    // load roles async
+    this.roleService.getRoles().subscribe((roles) => {
+      this.roles = roles;
+
+      // If role_id is not set but role_name is, find the matching role to bind it
+      if (!this.data?.role_id && this.data?.role_name) {
+        const matchedRole = this.roles.find(
+          (r) => r.name.toLowerCase() === this.data.role_name.toLowerCase()
+        );
+        if (matchedRole) {
+          this.data.role_id = matchedRole.id;
+        }
+      }
+
+      // patch role_id once roles are loaded
+      if (this.data?.role_id) {
+        this.userForm.patchValue({ role_id: this.data.role_id });
+      }
+
+      // Auto-sync form changes back to data reference after initial load
+      this.userForm.valueChanges.subscribe((val) => {
+        Object.assign(this.data, val);
+        const matchedRole = this.roles.find((r) => r.id === val.role_id);
+        if (matchedRole) {
+          this.data.role_name = matchedRole.name;
+        } else {
+          this.data.role_name = '';
+        }
+      });
+
+      this.cdr.detectChanges();
+    });
   }
 
-  updateField<K extends keyof User>(field: K, value: User[K]) {
-    this.data[field] = value;
-  }
-
-  toggleProject(project: Project) {
-    const idx = this.data.projects.findIndex((p) => p.project_name === project.project_name);
-    if (idx > -1) {
-      // remove existing project
-      this.data.projects = [
-        ...this.data.projects.slice(0, idx),
-        ...this.data.projects.slice(idx + 1),
-      ];
-    } else {
-      // add project object (or just push `project` if backend already provides full details)
-      this.data.projects = [...this.data.projects, project];
+  saveChanges() {
+    Object.assign(this.data, this.userForm.value);
+    const matchedRole = this.roles.find((r) => r.id === this.data.role_id);
+    if (matchedRole) {
+      this.data.role_name = matchedRole.name;
     }
   }
 
-  parseCsv(value: string): Project[] {
-    return value
-      .split(',')
-      .map((item) => item.trim())
-      .filter(Boolean)
-      .map((name) => ({
-        id: '',
-        project_name: name,
-        type: '',
-        project_description: '',
-        branch: '',
-        by: '',
-        updated_at: '',
-        deployments: 0,
-        envs: 0,
-        healthy: 0,
-        source: '',
-        status: 'Active',
-        unhealthy: 0,
-        bg: '',
-        github_org: '',
-        github_repo: '',
-        total_environments: '0',
-        environments: [
-          {
-            id: crypto.randomUUID(),
-            environment_name: '',
-            resources: [
-              {
-                id: crypto.randomUUID(),
-                environment_id: '',
-                aws_region: '',
-                aws_service: '',
-                aws_resource: '',
-              },
-            ],
-          },
-        ],
-      }));
+  errorFor(controlName: string): string {
+    return this.errors?.[controlName] || '';
   }
 
-  errorFor(field: keyof RegisterUserRequest): string {
-    return this.showErrors ? (this.errors[field] ?? '') : '';
-  }
-
-  verifyGithubUser(id: string, username: string) {
-    console.log(
-      'Github verify username :',
-      this.data.github_username,
-      ' for user id :',
-      this.data.id,
-    );
-    // Call backend API to verify GitHub user
-    this.githubService.verifyGithubUser(id, username).subscribe({
+  verifyGithubUser(userId: string, username: string) {
+    if (!username) return;
+    this.githubService.verifyGithubUser(userId, username).subscribe({
       next: (res) => {
-        if (res.verified) {
-          this.updateField('github_verified', true);
-        } else {
-          this.updateField('github_verified', false);
-        }
+        console.log('GitHub user verified:', res);
+        this.data.github_username = username;
+        this.data.github_verified = true;
+        this.cdr.detectChanges();
       },
-      error: () => {
-        this.updateField('github_verified', false);
-      },
+      error: (err) => {
+        console.error('Error verifying GitHub user:', err);
+        this.data.github_verified = false;
+        this.cdr.detectChanges();
+      }
     });
   }
 }

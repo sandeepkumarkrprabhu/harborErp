@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-import { Component, EventEmitter, Output, Input } from '@angular/core';
+import { Component, EventEmitter, Output, Input, ViewChild } from '@angular/core';
 import { WizardFooter } from '../../../shared/components/wizard-footer/wizard-footer';
 import { WizardHeader } from '../../../shared/components/wizard-header/wizard-header';
 import { WizardSteps } from '../../../shared/components/wizard-steps/wizard-steps';
@@ -33,6 +33,8 @@ export class CreateUser {
   @Input() mode: 'create' | 'edit' = 'create';
   @Input() existingUser: User | null = null;
 
+  @ViewChild(UserIdentity) userIdentityComponent!: UserIdentity;
+
   showWizard = true;
   step = UserSteps.Details;
   attemptedSteps = new Set<number>();
@@ -41,14 +43,16 @@ export class CreateUser {
   // Observable instead of manual subscribe
   userData$!: Observable<User>;
 
-  steps = [
-    { number: 1, title: 'Step 1', subtitle: 'User Identity' },
-    {
-      number: 2,
-      title: 'Step 2',
-      subtitle: this.mode === 'edit' ? 'Review & Update' : 'Review & Create',
-    },
-  ];
+  get steps() {
+    return [
+      { number: 1, title: 'Step 1', subtitle: 'User Identity' },
+      {
+        number: 2,
+        title: 'Step 2',
+        subtitle: this.mode === 'edit' ? 'Review & Update' : 'Review & Create',
+      },
+    ];
+  }
 
   constructor(
     private userService: UserService,
@@ -62,16 +66,21 @@ export class CreateUser {
   }
 
   ngOnInit() {
-    if (this.mode === 'edit') {
+    if (this.mode === 'edit' && this.existingUser) {
+      // Editing inline from Users table
+      this.userData$ = of({
+        ...this.existingUser,
+      });
+    } else if (this.mode === 'edit') {
+      // Editing via route navigation (fallback)
       const userId = this.route.snapshot.paramMap.get('id');
       if (userId) {
         this.userData$ = this.userService
           .getUserById(userId)
           .pipe(tap((user) => console.log('Selected User Details:', user)));
       }
-    } else if (this.existingUser) {
-      this.userData$ = of({ ...this.existingUser });
     } else {
+      // Create mode
       this.userData$ = of({
         name: '',
         email: '',
@@ -90,10 +99,15 @@ export class CreateUser {
         notes: '',
       });
     }
+
+    //console.log('User Detail:', this.userData$);
   }
 
   nextStep() {
     this.attemptedSteps.add(this.step);
+    if (this.step === UserSteps.Details && this.userIdentityComponent) {
+      this.userIdentityComponent.saveChanges();
+    }
     if (!this.isStepValid(this.step)) return;
     if (this.step < UserSteps.Review) this.step++;
   }
@@ -106,6 +120,9 @@ export class CreateUser {
     if (stepNumber > this.step && !this.canReachStep(stepNumber)) {
       this.attemptedSteps.add(this.step);
       return;
+    }
+    if (this.step === UserSteps.Details && this.userIdentityComponent) {
+      this.userIdentityComponent.saveChanges();
     }
     this.step = stepNumber;
   }
@@ -132,6 +149,10 @@ export class CreateUser {
     this.submitAttempted = true;
     this.attemptedSteps.add(UserSteps.Details);
 
+    if (this.userIdentityComponent) {
+      this.userIdentityComponent.saveChanges();
+    }
+
     if (!this.isStepValid(UserSteps.Details)) {
       this.step = UserSteps.Details;
       return;
@@ -140,20 +161,21 @@ export class CreateUser {
     this.userData$.subscribe((userData) => {
       if (this.mode === 'create') {
         const registerUser = this.userHelper.toRegisterRequest(userData);
-        console.log('New user Object:', registerUser);
-
         this.authService.registerUser(registerUser).subscribe({
           next: (response) => {
             console.log('User created successfully:', response);
             this.closed.emit();
           },
-          error: (err) => {
-            console.error('Error creating user:', err);
-          },
+          error: (err) => console.error('Error creating user:', err),
         });
       } else {
-        console.log('Edit mode selected, update service not yet implemented:', userData);
-        this.closed.emit();
+        this.userService.updateUser(userData.id, userData).subscribe({
+          next: (response) => {
+            console.log('User updated successfully:', response);
+            this.closed.emit();
+          },
+          error: (err) => console.error('Error updating user:', err),
+        });
       }
     });
   }
@@ -168,9 +190,5 @@ export class CreateUser {
       if (!this.isStepValid(currentStep)) return false;
     }
     return true;
-  }
-
-  private cleanList(values: string[]): string[] {
-    return values.map((v) => v.trim()).filter(Boolean);
   }
 }
