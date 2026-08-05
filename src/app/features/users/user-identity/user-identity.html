@@ -11,7 +11,7 @@
           [leftIcon]=""
           placeholder="eg. Alek K."
           [required]="true"
-          class="w-full bg-[#fdfcf9] border text-sm px-3 py-2.5 rounded-md focus:outline-none focus:border-[#d08873]/50"
+          class=""
           [class.border-[#c62828]/60]="errorFor('name')"
           [class.border-black/5]="!errorFor('name')"
           formControlName="name"
@@ -27,7 +27,7 @@
           [leftIcon]=""
           placeholder="eg. alek.k@example.com"
           [required]="true"
-          class="w-full bg-[#fdfcf9] border text-sm px-3 py-2.5 rounded-md focus:outline-none focus:border-[#d08873]/50"
+          class=""
           [class.border-[#c62828]/60]="errorFor('email')"
           [class.border-black/5]="!errorFor('email')"
           formControlName="email"
@@ -40,6 +40,7 @@
         <label class="text-xs font-semibold text-[#8a7f75]">
           Role <span class="text-[#c62828]">*</span>
         </label>
+        <!-- w-full bg-[#fdfcf9] border text-sm px-3 py-2 rounded-md focus:outline-none focus:border-[#d08873]/50 -->
         <select
           formControlName="role_id"
           class="w-full bg-[#fdfcf9] border text-sm px-3 py-2 rounded-md focus:outline-none focus:border-[#d08873]/50"
@@ -58,9 +59,6 @@
 
       <!-- GitHub Verification -->
       <div class="flex flex-col gap-1">
-        <!-- <label class="text-xs font-semibold text-[#8a7f75]">
-            Verify GitHub User <span class="text-[#c62828]">*</span>
-          </label> -->
         <div class="flex items-center gap-2">
           <app-input-field
             label="GitHub Username"
@@ -68,7 +66,7 @@
             [leftIcon]=""
             placeholder="eg. alexk-dev"
             [required]="true"
-            class="w-full bg-[#fdfcf9] border text-sm px-3 py-2.5 rounded-md focus:outline-none focus:border-[#d08873]/50"
+            class=""
             [class.border-[#c62828]/60]="errorFor('github_username')"
             [class.border-black/5]="!errorFor('github_username')"
             formControlName="github_username"

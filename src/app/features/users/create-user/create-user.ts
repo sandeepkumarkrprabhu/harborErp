@@ -99,8 +99,6 @@ export class CreateUser {
         notes: '',
       });
     }
-
-    //console.log('User Detail:', this.userData$);
   }
 
   nextStep() {
@@ -128,7 +126,7 @@ export class CreateUser {
   }
 
   get userIdentityErrors(): ValidationErrors {
-    // NOTE: userData is now async, so this getter should be used inside template with async pipe
+    const errors: ValidationErrors = {};
     return {};
   }
 
