@@ -60,16 +60,6 @@ export class Projects implements OnInit {
     // initialize form first
     this.form = this.fb.group({ globalSearch: [''] });
 
-    // projects stream
-    // this.projects$ = this.projectService.getProjects().pipe(
-    //   tap((apiData) => console.log('Raw API Data:', apiData)), // log before mapping
-    //   map((data: Project[]) =>
-    //     data.map((p) => ({
-    //       ...p,
-    //       source: `${p.github_org}/${p.github_repo}`,
-    //     })),
-    //   ),
-    // );
     this.projects$ = this.refresh$.pipe(
       startWith(void 0), // initial load
       switchMap(() =>

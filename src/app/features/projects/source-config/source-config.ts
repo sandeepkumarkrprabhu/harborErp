@@ -10,6 +10,7 @@ import {
 import { EMPTY, merge, Observable, Subscription } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { CommonModule, AsyncPipe } from '@angular/common';
+import { LucideAngularModule, Trash } from 'lucide-angular';
 
 import { Repo } from '../../../Models/Repo';
 import { Branch } from '../../../Models/branch';
@@ -24,13 +25,15 @@ import { BranchService } from '../../../core/aws/services/branch-service';
 @Component({
   selector: 'app-source-config',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, AsyncPipe],
+  imports: [ReactiveFormsModule, CommonModule, AsyncPipe, LucideAngularModule],
   templateUrl: './source-config.html',
   styleUrls: ['./source-config.css'],
 })
 export class SourceConfig implements OnInit, OnDestroy {
   @Input({ required: true }) formGroup!: FormGroup;
   @Input() showErrors = false;
+
+  readonly Trash = Trash;
 
   regions = [
     { value: 'us-east-1', label: 'US East (N. Virginia)' },
