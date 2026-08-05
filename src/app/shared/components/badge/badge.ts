@@ -4,7 +4,7 @@ import { Component, Input } from '@angular/core';
   selector: 'app-badge',
   standalone: true,
   templateUrl: './badge.html',
-  styleUrls: ['./badge.css']
+  styleUrls: ['./badge.css'],
 })
 export class Badge {
   /** The status key used for color mapping */
@@ -20,7 +20,9 @@ export class Badge {
       case 'active':
         return 'bg-green-100 text-green-700';
       case 'failed':
+      case 'failure':
       case 'inactive':
+      case 'cancelled':
         return 'bg-red-100 text-red-700';
       case 'in progress':
         return 'bg-yellow-100 text-yellow-700 italic';

@@ -32,6 +32,7 @@ export interface APIProject {
   runtime: string;
   environments: {
     environment_name: string;
+    branch_name: string;
     resources: {
       aws_region: string;
       aws_service: string;
@@ -87,6 +88,7 @@ export class ProjectHelper {
       environments: [
         {
           environment_name: screenObj.environment,
+          branch_name: screenObj.branch,
           resources: [
             {
               aws_region: screenObj.awsRegion,

@@ -72,61 +72,40 @@
         <span class="text-[10px] text-[#c62828]">{{ errorFor('tags') }}</span>
       }
 
-      <!-- <label class="text-xs font-semibold text-[#8a7f75] mt-4">Members</label>
-      <input
-        #membersInput
-        type="text"
-        [value]="data.members.join(', ')"
-        (input)="updateField('members', parseCsv(membersInput.value))"
-        placeholder="eg. sangeeth"
-        class="w-full bg-[#fdfcf9] border text-sm px-3 py-2.5 rounded-md focus:outline-none focus:border-[#d08873]/50"
-        [class.border-[#c62828]/60]="errorFor('members')"
-        [class.border-black/5]="!errorFor('members')"
-      /> -->
-      <app-input-field
-        label="Members"
-        type="text"
-        placeholder="eg. sangeeth"
-        formControlName="members"
-        [required]="true"
-        [errorMessage]="'Please enter at least one member'"
-      >
-      </app-input-field>
-
       @if (errorFor('members')) {
-        <span class="text-[10px] text-[#c62828]">{{ errorFor('members') }}</span>
+        <span class="text-[10px] text-[#c62828] mt-2 block">{{ errorFor('members') }}</span>
       }
     </form>
   </div>
 
   <div class="w-72 border-l border-black/5 pl-4 overflow-y-auto">
     <h4 class="text-sm font-semibold text-[#1a1a1a] mb-3">Suggested Members</h4>
+    <div class="flex items-center justify-between mb-3">
+      <span class="text-[10px] text-[#8a7f75]">Select users to include</span>
+      <span class="text-[10px] text-[#8a7f75]">
+        {{ (formGroup.get('members')?.value || []).length }} selected
+      </span>
+    </div>
 
     <div class="flex flex-col gap-2 overflow-y-auto pr-1">
       <ul class="space-y-3">
-        @for (member of suggestedMembers; track member.name) {
-          <li
-            class="relative p-2 rounded-md border cursor-pointer transition-all duration-200 border-black/5 hover:bg-[#faf9f8]"
-          >
-            <!-- Button in top-right corner -->
+        @for (member of suggestedMembers; track member.id) {
+          <li class="relative p-2 rounded-md border cursor-pointer transition-all duration-200 border-black/5 hover:bg-[#faf9f8]">
             <button
               type="button"
               class="absolute top-2 right-2 w-5 h-5 rounded-full cursor-pointer border transition-colors flex items-center justify-center"
-                [class.border-[#d08873]]="formGroup.get('members')?.value.includes(member.name)"
-                [class.bg-[#d08873]]="formGroup.get('members')?.value.includes(member.name)"
-                [class.text-white]="formGroup.get('members')?.value.includes(member.name)"
-              (click)="toggleMember(member.name)"
+              [class.border-[#d08873]]="isSelected(member)"
+              [class.bg-[#d08873]]="isSelected(member)"
+              [class.text-white]="isSelected(member)"
+              (click)="toggleMember(member)"
             >
-              <span class="text-[10px]" [class.hidden]="!formGroup.get('members')?.value.includes(member.name)">
+              <span class="text-[10px]" [class.hidden]="!isSelected(member)">
                 &#10003;
               </span>
             </button>
 
-            <!-- Member info -->
-            <div class="flex items-center gap-2">
-              <div
-                class="w-5 h-5 rounded-full flex items-center justify-center text-xs font-semibold text-white bg-primary/70"
-              >
+            <div class="flex items-center gap-2 pr-7">
+              <div class="w-5 h-5 rounded-full flex items-center justify-center text-xs font-semibold text-white bg-primary/70">
                 {{ userHelper.getUserInitials(member) }}
               </div>
               <div>

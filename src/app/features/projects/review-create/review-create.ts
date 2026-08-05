@@ -1,5 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
+import { User } from '../../../Models/User';
+import { UserService } from '../../../core/users/services/userService';
 
 @Component({
   selector: 'app-review-create',
@@ -8,8 +10,42 @@ import { FormGroup } from '@angular/forms';
   templateUrl: './review-create.html',
   styleUrls: ['./review-create.css'],
 })
-export class ReviewCreate {
+export class ReviewCreate implements OnInit {
   @Input({ required: true }) projectForm!: FormGroup;
+
+  memberDetails: User[] = [];
+
+  constructor(private userService: UserService) {}
+
+  ngOnInit(): void {
+    this.loadMemberDetails();
+  }
+
+  private loadMemberDetails(): void {
+    const selectedMemberIds = (this.projectForm.get('members')?.value || []) as Array<
+      string | User
+    >;
+
+    if (!selectedMemberIds.length) {
+      this.memberDetails = [];
+      return;
+    }
+
+    this.userService.getUsers().subscribe((users) => {
+      this.memberDetails = (users || []).filter((user) =>
+        selectedMemberIds.some((selected) => String(selected) === String(user.id)),
+      );
+    });
+  }
+
+  getSelectedMembers(): User[] {
+    return this.memberDetails;
+  }
+
+  getBranchLabel(): string {
+    const branch = this.projectForm.get('branch')?.value;
+    return branch ? String(branch) : 'Not specified';
+  }
 
   // // Convenience getters for template binding
   // get name(): string {

@@ -162,7 +162,7 @@ export class CreateProject implements OnInit {
       this.suggestedMembers,
     );
 
-    console.log('Submitting project creation with payload:', apiObject);
+    //console.log('Submitting project creation with payload:', apiObject);
 
     this.projectService.createProject(apiObject).subscribe({
       next: () => this.close.emit(),

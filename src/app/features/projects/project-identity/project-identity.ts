@@ -33,10 +33,12 @@ export class ProjectIdentity {
   loadUsers() {
     this.userService.getUsers().subscribe({
       next: (data) => {
-        this.suggestedMembers = data.map((u, idx) => ({
-          ...u,
-          bg: this.getBgColor(idx),
-        }));
+        this.suggestedMembers = data
+          .filter((u) => u.is_active)
+          .map((u, idx) => ({
+            ...u,
+            bg: this.getBgColor(idx),
+          }));
         this.cdr.detectChanges();
       },
       error: (err) => console.error('Failed to load users', err),
@@ -56,19 +58,29 @@ export class ProjectIdentity {
   }
 
   /** Toggle members array inside the form control */
-  toggleMember(memberName: string) {
+  toggleMember(member: User) {
     const membersControl = this.formGroup.get('members');
     if (!membersControl) return;
 
-    const members = membersControl.value as string[];
-    const idx = members.indexOf(memberName);
+    const currentMembers = (membersControl.value || []) as Array<string | User>;
+    const memberId = String(member.id);
+    const nextMembers = currentMembers.filter((item) => String(item) !== memberId);
 
-    if (idx > -1) {
-      members.splice(idx, 1);
-    } else {
-      members.push(memberName);
+    if (currentMembers.some((item) => String(item) === memberId)) {
+      membersControl.setValue(nextMembers);
+      return;
     }
-    membersControl.setValue([...members]);
+
+    nextMembers.push(memberId);
+    membersControl.setValue(nextMembers);
+  }
+
+  isSelected(member: User): boolean {
+    const membersControl = this.formGroup.get('members');
+    if (!membersControl) return false;
+
+    const currentMembers = (membersControl.value || []) as Array<string | User>;
+    return currentMembers.some((item) => String(item) === String(member.id));
   }
 
   /** Helper to show error messages */

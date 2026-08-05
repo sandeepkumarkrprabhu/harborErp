@@ -26,9 +26,19 @@
         <dt class="font-semibold text-[#8a7f75]">Tags</dt>
         <dd>{{ this.projectForm.getRawValue().tags.length ? this.projectForm.getRawValue().tags : 'None' }}</dd>
       </div>
-      <div>
+      <div class="col-span-2">
         <dt class="font-semibold text-[#8a7f75]">Members</dt>
-        <dd>{{ this.projectForm.getRawValue().members.length ? this.projectForm.getRawValue().members : 'None' }}</dd>
+        <dd class="mt-2 flex flex-wrap gap-2">
+          @if (getSelectedMembers().length) {
+            @for (member of getSelectedMembers(); track member.id) {
+              <span class="inline-flex items-center rounded-full border border-[#d08873]/20 bg-[#fdf2ec] px-3 py-1 text-sm font-medium text-[#8f4b2f]">
+                {{ member.name }}
+              </span>
+            }
+          } @else {
+            <span class="text-[#6b5e52]">None selected</span>
+          }
+        </dd>
       </div>
     </dl>
   </div>
@@ -45,7 +55,11 @@
       </div>
       <div>
         <dt class="font-semibold text-[#8a7f75]">Branch</dt>
-        <dd>{{ this.projectForm.getRawValue().branch }}</dd>
+        <dd>
+          <span class="inline-flex items-center rounded-full bg-[#eef4ff] px-2.5 py-1 text-xs font-semibold text-[#2f5db8]">
+            {{ getBranchLabel() }}
+          </span>
+        </dd>
       </div>
       <div>
         <dt class="font-semibold text-[#8a7f75]">Runtime</dt>

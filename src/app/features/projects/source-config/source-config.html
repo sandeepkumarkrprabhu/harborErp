@@ -6,27 +6,35 @@
 
     <!-- First 4 controls in 2-column grid (Runtime, Environment, Repo, Branch) -->
     <div class="grid grid-cols-2 gap-4 mt-3">
+      
+      <!-- Organization -->
+      <div>
+        <label class="text-xs font-semibold text-[#8a7f75]">
+          Organization <span class="text-[#c62828]">*</span>
+        </label>
+        <select formControlName="organization"
+          class="w-full bg-[#fdfcf9] border text-sm px-3 py-2 rounded-md focus:outline-none focus:border-[#d08873]/50"
+          [class.border-[#c62828]/60]="errorFor('organization')" [class.border-black/5]="!errorFor('organization')">
+          <option value="">Select Organization</option>
+          @for (org of orgs$ | async ; track org.id) {
+          <option [value]="org.id">{{ org.description }}</option>
+          }
+        </select>
+        @if (errorFor('organization')) {
+        <span class="text-[10px] text-[#c62828]">{{ errorFor('organization') }}</span>
+        }
+      </div>
+
       <!-- Runtime -->
       <div>
         <label class="block text-xs font-semibold text-[#8a7f75]">
           Runtime <span class="text-[#c62828]">*</span>
         </label>
         <input type="text" formControlName="runtime" placeholder="nodejs"
-          class="w-full bg-[#fdfcf9] border text-sm px-3 py-2 rounded-md"
-          [class.border-[#c62828]/60]="errorFor('runtime')" [class.border-black/5]="!errorFor('runtime')" />
+          class="w-full bg-[#fdfcf9] border text-sm px-3 py-2 rounded-md" [class.border-[#c62828]/60]="errorFor('runtime')"
+          [class.border-black/5]="!errorFor('runtime')" />
         @if (errorFor('runtime')) {
         <span class="text-[10px] text-[#c62828]">{{ errorFor('runtime') }}</span>
-        }
-      </div>
-
-      <!-- Environment -->
-      <div>
-        <label class="block text-xs font-semibold text-[#8a7f75]">Environment Name</label>
-        <input type="text" formControlName="environment" placeholder="dev"
-          class="w-full bg-[#fdfcf9] border text-sm px-3 py-2 rounded-md"
-          [class.border-[#c62828]/60]="errorFor('environment')" [class.border-black/5]="!errorFor('environment')" />
-        @if (errorFor('environment')) {
-        <span class="text-[10px] text-[#c62828]">{{ errorFor('environment') }}</span>
         }
       </div>
 
@@ -50,16 +58,34 @@
 
       <!-- Branch -->
       <div>
-        <label class="block text-xs font-semibold text-[#8a7f75]">
+        <label class="text-xs font-semibold text-[#8a7f75]">
           Branch <span class="text-[#c62828]">*</span>
         </label>
-        <input type="text" formControlName="branch" placeholder="dev"
-          class="w-full bg-[#fdfcf9] border text-sm px-3 py-2 rounded-md"
-          [class.border-[#c62828]/60]="errorFor('branch')" [class.border-black/5]="!errorFor('branch')" />
+
+        <select formControlName="branch"
+          class="w-full bg-[#fdfcf9] border text-sm px-3 py-2 rounded-md focus:outline-none focus:border-[#d08873]/50"
+          [class.border-[#c62828]/60]="errorFor('branch')" [class.border-black/5]="!errorFor('branch')">
+          <option value="">Select Branch</option>
+          @for (branch of branches; track branch) {
+          <option [value]="branch.name">{{ branch.name }}</option>
+          }
+        </select>
+
         @if (errorFor('branch')) {
         <span class="text-[10px] text-[#c62828]">{{ errorFor('branch') }}</span>
         }
       </div>
+    </div>
+
+    <!-- Environment -->
+    <div>
+      <label class="block text-xs font-semibold text-[#8a7f75]">Environment Name</label>
+      <input type="text" formControlName="environment" placeholder="dev"
+        class="w-full bg-[#fdfcf9] border text-sm px-3 py-2 rounded-md"
+        [class.border-[#c62828]/60]="errorFor('environment')" [class.border-black/5]="!errorFor('environment')" />
+      @if (errorFor('environment')) {
+      <span class="text-[10px] text-[#c62828]">{{ errorFor('environment') }}</span>
+      }
     </div>
 
     <!-- AWS Deployment Target (unchanged) -->

@@ -1,18 +1,22 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Observable } from 'rxjs';
-import { AsyncPipe } from '@angular/common';
+import { CommonModule, AsyncPipe } from '@angular/common';
 
 import { Repo } from '../../../Models/Repo';
+import { Branch } from '../../../Models/branch';
 import { AwsResource } from '../../../Models/AwsResource';
+import { Orgs } from '../../../Models/Organization';
 
 import { AwsService } from '../../../core/aws/services/awsService';
 import { RepoService } from '../../../core/aws/services/repoService';
+import { OrganizationService } from '../../../core/aws/services/OrganizationService';
+import { BranchService } from '../../../core/aws/services/branch-service';
 
 @Component({
   selector: 'app-source-config',
   standalone: true,
-  imports: [ReactiveFormsModule, AsyncPipe],
+  imports: [ReactiveFormsModule, CommonModule, AsyncPipe],
   templateUrl: './source-config.html',
   styleUrls: ['./source-config.css'],
 })
@@ -36,32 +40,75 @@ export class SourceConfig implements OnInit {
   connectedResources: AwsResource[] = [];
   selectedResources: AwsResource[] = [];
   repos: Repo[] = [];
+  orgs: Orgs[] = [];
+  branches: Branch[] = [];
+
+  branches$: Observable<Branch[]> | undefined;
   resources$!: Observable<AwsResource[]>;
+  orgs$!: Observable<Orgs[]>;
 
   loading = false;
 
   constructor(
     private repoService: RepoService,
+    private orgService: OrganizationService,
     private awsService: AwsService,
+    private branchService: BranchService,
   ) {}
 
   ngOnInit() {
-    // Subscribe to awsRegion and awsService changes to auto-fetch resources
+    // AWS resource subscriptions (unchanged)
     this.formGroup.get('awsRegion')?.valueChanges.subscribe(() => this.fetchResources());
     this.formGroup.get('awsService')?.valueChanges.subscribe(() => this.fetchResources());
-
-    // Subscribe to awsResource changes to handle selection
     this.formGroup.get('awsResource')?.valueChanges.subscribe((resourceId) => {
       if (resourceId) {
         this.onSelectAwsResource(resourceId);
       }
     });
 
-    this.repoService.fetchRepos().subscribe((repos) => {
-      this.repos = repos || [];
-      this.syncSelectedRepo();
+    // Load organizations initially
+    this.orgs$ = this.orgService.fetchOrganizations();
+    this.orgs$.subscribe((orgs) => {
+      this.orgs = orgs || [];
     });
 
+    // When organization changes → fetch repos
+    this.formGroup.get('organization')?.valueChanges.subscribe((orgId) => {
+      const organizationLogin = this.getOrganizationLogin(orgId);
+
+      if (orgId && organizationLogin) {
+        this.repoService.fetchRepos(organizationLogin).subscribe((repos) => {
+          this.repos = repos || [];
+          this.formGroup.get('repo')?.setValue('');
+          this.branches = []; // reset branches when org changes
+        });
+      } else {
+        this.repos = [];
+        this.branches = [];
+      }
+    });
+
+    // When repo changes → fetch branches
+    this.formGroup.get('repo')?.valueChanges.subscribe((repoId) => {
+      const organization = this.formGroup.get('organization')?.value;
+      const selectedRepo = this.repos.find(
+        (repo) => String(repo.id) === String(repoId) || repo.name === String(repoId),
+      );
+
+      if (repoId && organization && selectedRepo) {
+        const owner = this.getOrganizationLogin(organization);
+        const repoName = selectedRepo.name;
+
+        this.branchService.fetchBranches(owner, repoName).subscribe((branches) => {
+          this.branches = branches || [];
+          this.formGroup.get('branch')?.setValue('');
+        });
+      } else {
+        this.branches = [];
+      }
+    });
+
+    // Initial AWS resources fetch
     this.fetchResources();
   }
 
@@ -116,6 +163,11 @@ export class SourceConfig implements OnInit {
       }
       this.formGroup.get('awsResource')?.setValue('');
     }
+  }
+
+  private getOrganizationLogin(organizationValue: string): string {
+    const selectedOrg = this.orgs.find((org) => String(org.id) === String(organizationValue));
+    return selectedOrg?.login || String(organizationValue || '');
   }
 
   private syncSelectedRepo(): void {
