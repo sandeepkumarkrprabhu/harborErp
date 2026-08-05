@@ -1,6 +1,7 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
+  FormArray,
   FormBuilder,
   FormGroup,
   FormsModule,
@@ -58,7 +59,6 @@ export class CreateProject implements OnInit {
 
   form: FormGroup;
 
-  // Inject ProjectHelper service here
   constructor(
     private fb: FormBuilder,
     private projectHelper: ProjectHelper,
@@ -85,10 +85,11 @@ export class CreateProject implements OnInit {
       branch: ['', Validators.required],
       runtime: ['', Validators.required],
       environment: [''],
-      awsRegion: ['', Validators.required],
-      awsService: ['', Validators.required],
+      awsRegion: [''],
+      awsService: [''],
       awsResource: [''],
       awsServiceList: [[]],
+      deploymentTargets: this.fb.array([this.createDeploymentTargetGroup()]),
     });
   }
 
@@ -162,8 +163,6 @@ export class CreateProject implements OnInit {
       this.suggestedMembers,
     );
 
-    //console.log('Submitting project creation with payload:', apiObject);
-
     this.projectService.createProject(apiObject).subscribe({
       next: () => this.close.emit(),
       error: (err) => console.error('❌ Failed to create project:', err),
@@ -193,15 +192,13 @@ export class CreateProject implements OnInit {
     const repo = this.form.get('repo')?.value?.trim();
     const branch = this.form.get('branch')?.value?.trim();
     const runtime = this.form.get('runtime')?.value?.trim();
-    const awsRegion = this.form.get('awsRegion')?.value;
-    const awsService = this.form.get('awsService')?.value;
 
     if (!organization) errors.organization = 'Organization / project is required.';
     if (!repo) errors.repo = 'GitHub repo is required.';
     if (!branch) errors.branch = 'Branch is required.';
     if (!runtime) errors.runtime = 'Runtime is required.';
-    if (!awsRegion) errors.awsRegion = 'AWS region is required.';
-    if (!awsService) errors.awsService = 'AWS service is required.';
+    // if (!this.hasValidDeploymentTargets())
+    //   errors.deploymentTargets = 'Add at least one deployment target.';
 
     return errors;
   }
@@ -223,9 +220,15 @@ export class CreateProject implements OnInit {
       return controls.every((c) => this.form.get(c)?.valid);
     }
     if (stepNumber === ProjectSteps.SourceConfig) {
-      const controls = ['organization', 'repo', 'branch', 'runtime', 'awsRegion', 'awsService'];
+      const controls = ['organization', 'repo', 'branch', 'runtime'];
       controls.forEach((c) => this.form.get(c)?.markAsTouched());
-      return controls.every((c) => this.form.get(c)?.valid);
+      const deploymentTargets = this.form.get('deploymentTargets') as FormArray;
+
+      deploymentTargets?.controls.forEach((control) => {
+        (control as FormGroup).markAllAsTouched();
+      });
+
+      return controls.every((c) => this.form.get(c)?.valid) && this.hasValidDeploymentTargets();
     }
     return true;
   }
@@ -235,5 +238,26 @@ export class CreateProject implements OnInit {
       if (!this.isStepValid(currentStep)) return false;
     }
     return true;
+  }
+
+  private createDeploymentTargetGroup(): FormGroup {
+    return this.fb.group({
+      awsRegion: ['', Validators.required],
+      awsService: ['', Validators.required],
+      awsResource: ['', Validators.required],
+    });
+  }
+
+  private hasValidDeploymentTargets(): boolean {
+    const deploymentTargets = this.form.get('deploymentTargets') as FormArray;
+    if (!deploymentTargets?.length) return false;
+
+    return deploymentTargets.controls.some((control) => {
+      const targetGroup = control as FormGroup;
+      const region = targetGroup.get('awsRegion')?.value;
+      const service = targetGroup.get('awsService')?.value;
+      const resource = targetGroup.get('awsResource')?.value;
+      return Boolean(region && service && resource);
+    });
   }
 }

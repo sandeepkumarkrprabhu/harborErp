@@ -1,7 +1,15 @@
-import { Component, Input, OnInit } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+} from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { User } from '../../../Models/User';
 import { UserService } from '../../../core/users/services/userService';
+import { RepoService } from '../../../core/aws/services/repoService';
 
 @Component({
   selector: 'app-review-create',
@@ -10,31 +18,54 @@ import { UserService } from '../../../core/users/services/userService';
   templateUrl: './review-create.html',
   styleUrls: ['./review-create.css'],
 })
-export class ReviewCreate implements OnInit {
+export class ReviewCreate implements OnInit, OnChanges {
   @Input({ required: true }) projectForm!: FormGroup;
 
   memberDetails: User[] = [];
 
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private repoService: RepoService,
+    private cdr: ChangeDetectorRef,
+  ) {}
 
   ngOnInit(): void {
+    this.projectForm.get('members')?.valueChanges.subscribe(() => this.loadMemberDetails());
     this.loadMemberDetails();
   }
 
-  private loadMemberDetails(): void {
-    const selectedMemberIds = (this.projectForm.get('members')?.value || []) as Array<
-      string | User
-    >;
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['projectForm'] && this.projectForm) {
+      this.loadMemberDetails();
+    }
+  }
 
-    if (!selectedMemberIds.length) {
+  private loadMemberDetails(): void {
+    const selectedMembers = (this.projectForm.get('members')?.value || []) as Array<string | User>;
+
+    if (!selectedMembers.length) {
       this.memberDetails = [];
+      this.cdr.detectChanges();
       return;
     }
 
     this.userService.getUsers().subscribe((users) => {
-      this.memberDetails = (users || []).filter((user) =>
-        selectedMemberIds.some((selected) => String(selected) === String(user.id)),
-      );
+      const userLookup = new Map((users || []).map((user) => [String(user.id), user]));
+
+      this.memberDetails = selectedMembers.reduce<User[]>((acc, selected) => {
+        const selectedId = typeof selected === 'string' ? selected : String(selected?.id || '');
+        const matchedUser = userLookup.get(String(selectedId));
+
+        if (matchedUser) {
+          acc.push(matchedUser);
+        } else if (selected && typeof selected !== 'string') {
+          acc.push(selected);
+        }
+
+        return acc;
+      }, []);
+
+      this.cdr.detectChanges();
     });
   }
 
@@ -47,61 +78,40 @@ export class ReviewCreate implements OnInit {
     return branch ? String(branch) : 'Not specified';
   }
 
-  // // Convenience getters for template binding
-  // get name(): string {
-  //   return this.projectForm.get('name')?.value || '';
-  // }
+  getRepositoryLabel(): string {
+    const repoValue = this.projectForm.get('repo')?.value;
+    if (!repoValue) {
+      return 'Not specified';
+    }
 
-  // get team(): string {
-  //   return this.projectForm.get('team')?.value || '';
-  // }
+    const selectedRepoId = String(repoValue);
+    const organization = this.projectForm.get('organization')?.value;
+    const organizationLogin = organization ? String(organization) : '';
 
-  // get type(): string {
-  //   return this.projectForm.get('type')?.value || '';
-  // }
+    if (!organizationLogin) {
+      return selectedRepoId;
+    }
 
-  // get tags(): string[] {
-  //   console.log('project Form (tags):', this.projectForm);
-  //   return this.projectForm.get('tags')?.value || [];
-  // }
+    this.repoService.fetchRepos(organizationLogin).subscribe((repos) => {
+      const matchedRepo = (repos || []).find(
+        (repo) => String(repo.id) === selectedRepoId || repo.name === selectedRepoId,
+      );
 
-  // get members(): string[] {
-  //   return this.projectForm.get('members')?.value || [];
-  // }
+      if (matchedRepo) {
+        this.projectForm.get('repo')?.setValue(matchedRepo.name, { emitEvent: false });
+      }
+    });
 
-  // get organization(): string {
-  //   return this.projectForm.get('organization')?.value || '';
-  // }
+    return selectedRepoId;
+  }
 
-  // get repo(): string {
-  //   return this.projectForm.get('repo')?.value || '';
-  // }
-
-  // get branch(): string {
-  //   return this.projectForm.get('branch')?.value || '';
-  // }
-
-  // get runtime(): string {
-  //   return this.projectForm.get('runtime')?.value || '';
-  // }
-
-  // get awsRegion(): string {
-  //   return this.projectForm.get('awsRegion')?.value || '';
-  // }
-
-  // get environment(): string {
-  //   return this.projectForm.get('environment')?.value || '';
-  // }
-
-  // get awsServiceList(): string[] {
-  //   return this.projectForm.get('awsServiceList')?.value || [];
-  // }
-
-  // get awsService(): string {
-  //   return this.projectForm.get('awsService')?.value || '';
-  // }
-
-  // get serviceTargets(): string {
-  //   return this.awsServiceList.length ? this.awsServiceList.join(', ') : this.awsService || 'None';
-  // }
+  getDeploymentTargets(): Array<{ awsRegion: string; awsService: string; awsResource: string }> {
+    return (
+      (this.projectForm.get('deploymentTargets')?.value || []) as Array<{
+        awsRegion: string;
+        awsService: string;
+        awsResource: string;
+      }>
+    ).filter((target) => target && (target.awsRegion || target.awsService || target.awsResource));
+  }
 }

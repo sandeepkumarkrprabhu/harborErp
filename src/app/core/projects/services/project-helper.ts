@@ -1,6 +1,12 @@
 import { Injectable } from '@angular/core';
 import { User } from '../../../Models/User';
 
+export interface DeploymentTarget {
+  awsRegion: string;
+  awsService: string;
+  awsResource: string;
+}
+
 export interface ScreenProject {
   name: string;
   team: string;
@@ -17,6 +23,7 @@ export interface ScreenProject {
   awsService: string;
   awsResource: string;
   awsServiceList: string[];
+  deploymentTargets?: DeploymentTarget[];
 }
 
 export interface APIProject {
@@ -72,6 +79,17 @@ export class ProjectHelper {
 
     console.log('Normalized member IDs:', memberIds);
 
+    const deploymentTargets =
+      Array.isArray(screenObj.deploymentTargets) && screenObj.deploymentTargets.length
+        ? screenObj.deploymentTargets
+        : [
+            {
+              awsRegion: screenObj.awsRegion,
+              awsService: screenObj.awsService,
+              awsResource: screenObj.awsResource || 'default resource',
+            },
+          ];
+
     return {
       project_name: screenObj.name,
       project_description: screenObj.description,
@@ -89,13 +107,11 @@ export class ProjectHelper {
         {
           environment_name: screenObj.environment,
           branch_name: screenObj.branch,
-          resources: [
-            {
-              aws_region: screenObj.awsRegion,
-              aws_service: screenObj.awsService,
-              aws_resource: screenObj.awsResource || 'default resource',
-            },
-          ],
+          resources: deploymentTargets.map((target) => ({
+            aws_region: target.awsRegion,
+            aws_service: target.awsService,
+            aws_resource: target.awsResource || 'default resource',
+          })),
         },
       ],
     };

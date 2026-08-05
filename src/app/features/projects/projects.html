@@ -1,4 +1,15 @@
 <div>
+  <div *ngIf="showCreateProject">
+    <div class="fixed inset-0 flex items-center justify-center w-auto h-screen">
+      <div
+        class="relative bg-white rounded-md border border-black/5 shadow-xl w-full max-w-5xl flex flex-col md:flex-row overflow-hidden max-h-[90vh] md:h-[620px]"
+      >
+        <div class="flex flex-1 max-h-full overflow-y-auto">
+          <app-create-project class="flex-1" (close)="closeCreateProject()"></app-create-project>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="mb-5 flex justify-between items-center select-none">
     <h1 class="text-[22px] font-medium tracking-tight text-[#1a1a1a]">Projects</h1>
 
@@ -8,18 +19,6 @@
     >
       + New Project
     </button>
-
-    <div *ngIf="showCreateProject">
-      <div class="fixed inset-0 flex items-center justify-center w-auto h-screen">
-        <div
-          class="relative bg-white rounded-md border border-black/5 shadow-xl w-full max-w-5xl flex flex-col md:flex-row overflow-hidden max-h-[90vh] md:h-[620px]"
-        >
-          <div class="flex flex-1 max-h-full overflow-y-auto">
-            <app-create-project class="flex-1" (close)="closeCreateProject()"></app-create-project>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 
   <!-- Filter + Sort bar -->

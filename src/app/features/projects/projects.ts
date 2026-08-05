@@ -9,6 +9,8 @@ import {
   tap,
   combineLatest,
   Observable,
+  Subject,
+  switchMap,
 } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { SearchIcon } from 'lucide-angular';
@@ -47,6 +49,8 @@ export class Projects implements OnInit {
   projects$!: Observable<Project[]>;
   filteredProjects$!: Observable<Project[]>;
 
+  refresh$ = new Subject<void>();
+
   constructor(
     private readonly projectService: ProjectService,
     private readonly fb: FormBuilder,
@@ -57,13 +61,26 @@ export class Projects implements OnInit {
     this.form = this.fb.group({ globalSearch: [''] });
 
     // projects stream
-    this.projects$ = this.projectService.getProjects().pipe(
-      //tap(apiData => console.log('Raw API Data:', apiData)), // log before mapping
-      map((data: Project[]) =>
-        data.map((p) => ({
-          ...p,
-          source: `${p.github_org}/${p.github_repo}`,
-        })),
+    // this.projects$ = this.projectService.getProjects().pipe(
+    //   tap((apiData) => console.log('Raw API Data:', apiData)), // log before mapping
+    //   map((data: Project[]) =>
+    //     data.map((p) => ({
+    //       ...p,
+    //       source: `${p.github_org}/${p.github_repo}`,
+    //     })),
+    //   ),
+    // );
+    this.projects$ = this.refresh$.pipe(
+      startWith(void 0), // initial load
+      switchMap(() =>
+        this.projectService.getProjects().pipe(
+          map((data: Project[]) =>
+            data.map((p) => ({
+              ...p,
+              source: `${p.github_org}/${p.github_repo}`,
+            })),
+          ),
+        ),
       ),
     );
 
@@ -116,8 +133,10 @@ export class Projects implements OnInit {
   openCreateProject() {
     this.showCreateProject = true;
   }
+
   closeCreateProject() {
     this.showCreateProject = false;
+    this.refresh$.next(); // trigger reload
   }
 
   onFilterChange(value: string) {
