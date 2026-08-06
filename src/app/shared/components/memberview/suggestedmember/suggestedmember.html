@@ -1,0 +1,26 @@
+<li
+  class="relative p-2 rounded-md border cursor-pointer transition-all duration-200 border-black/5 hover:bg-[#faf9f8]"
+>
+  <button
+    type="button"
+    class="absolute top-2 right-2 w-5 h-5 rounded-full cursor-pointer border transition-colors flex items-center justify-center"
+    [class.border-[#d08873]]="isSelected"
+    [class.bg-[#d08873]]="isSelected"
+    [class.text-white]="isSelected"
+    (click)="onToggle()"
+  >
+    <span class="text-[10px]" [class.hidden]="!isSelected">&#10003;</span>
+  </button>
+
+  <div class="flex items-center gap-2 pr-7">
+    <div
+      class="w-5 h-5 rounded-full flex items-center justify-center text-xs font-semibold text-white bg-primary/70"
+    >
+      {{ userHelper.getUserInitials(member) }}
+    </div>
+    <div>
+      <div class="font-medium text-[#1a1a1a]">{{ member.name }}</div>
+      <div class="text-xs text-[#777]">{{ member.email }}</div>
+    </div>
+  </div>
+</li>

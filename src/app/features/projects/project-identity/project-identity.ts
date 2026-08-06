@@ -1,21 +1,21 @@
-import { Component, ChangeDetectorRef, Input } from '@angular/core';
-import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { Component, Input } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Observable, catchError, map, of, tap } from 'rxjs';
+import { AsyncPipe } from '@angular/common';
 
 import { User } from '../../../Models/User';
+import { Team } from '../../../Models/Team';
+
 import { UserService } from '../../../core/users/services/userService';
 import { UserHelper } from '../../../core/users/services/user-helper';
 import { InputField } from '../../../shared/components/input-field/input-field';
+import { Suggestedmember } from '../../../shared/components/memberview/suggestedmember/suggestedmember';
+import { TeamService } from '../../../core/team/team-service';
 
-/**
- * ProjectIdentity Component
- * -------------------------
- * Handles project identity form section including suggested members.
- * Provides user selection, validation, and error handling.
- */
 @Component({
   selector: 'app-project-identity',
   standalone: true,
-  imports: [InputField, ReactiveFormsModule],
+  imports: [InputField, Suggestedmember, ReactiveFormsModule, AsyncPipe],
   templateUrl: './project-identity.html',
   styleUrls: ['./project-identity.css'],
 })
@@ -26,38 +26,68 @@ export class ProjectIdentity {
   /** Flag to control error message visibility */
   @Input() showErrors = false;
 
-  /** Suggested members list populated from backend */
-  suggestedMembers: User[] = [];
+  /** Suggested members list as observable */
+  suggestedMembers$!: Observable<User[]>;
+
+  /** Teams list as observable */
+  teams$!: Observable<Team[]>;
 
   /** Static helper reference for user utilities */
   userHelper = UserHelper;
 
   constructor(
+    private fb: FormBuilder,
     private userService: UserService,
-    private cdr: ChangeDetectorRef,
+    private teamService: TeamService,
   ) {}
 
-  /** Lifecycle hook: load users on init */
   ngOnInit() {
+    this.formGroup = this.fb.group({
+      name: ['', [Validators.required]],
+      team: [null, [Validators.required]], // will be set dynamically
+      type: ['Internal Project', [Validators.required]], // default value
+      description: [''],
+      tags: ['', [Validators.required]],
+      members: [[]],
+    });
+
     this.loadUsers();
+    this.loadTeams();
   }
 
   /**
-   * Fetch active users from backend and assign background colors
+   * Fetch teams as observable
+   */
+  private loadTeams(): void {
+    this.teams$ = this.teamService.getTeams().pipe(
+      tap((teams) => {
+        if (teams && teams.length > 0) {
+          // set first team as default
+          this.formGroup.get('team')?.setValue(teams[0].id);
+        }
+      }),
+      catchError((error) => {
+        console.error('Error loading teams:', error);
+        // Return empty array gracefully
+        return of([]);
+      }),
+    );
+  }
+
+  /**
+   * Fetch active users and assign background colors
    */
   private loadUsers(): void {
-    this.userService.getUsers().subscribe({
-      next: (data) => {
-        this.suggestedMembers = data
+    this.suggestedMembers$ = this.userService.getUsers().pipe(
+      map((users) =>
+        users
           .filter((u) => u.is_active)
           .map((u, idx) => ({
             ...u,
             bg: this.getBgColor(idx),
-          }));
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error('❌ Failed to load users', err),
-    });
+          })),
+      ),
+    );
   }
 
   /**
@@ -75,11 +105,6 @@ export class ProjectIdentity {
     return shades[index % shades.length];
   }
 
-  /**
-   * Toggle member selection inside the form control
-   * - Adds member if not selected
-   * - Removes member if already selected
-   */
   toggleMember(member: User): void {
     const membersControl = this.formGroup.get('members');
     if (!membersControl) return;
@@ -87,19 +112,14 @@ export class ProjectIdentity {
     const currentMembers = (membersControl.value || []) as Array<string | User>;
     const memberId = String(member.id);
 
-    // Remove if already selected
     if (currentMembers.some((item) => String(item) === memberId)) {
       membersControl.setValue(currentMembers.filter((item) => String(item) !== memberId));
       return;
     }
 
-    // Add new member
     membersControl.setValue([...currentMembers, memberId]);
   }
 
-  /**
-   * Check if a member is currently selected
-   */
   isSelected(member: User): boolean {
     const membersControl = this.formGroup.get('members');
     if (!membersControl) return false;
@@ -108,9 +128,6 @@ export class ProjectIdentity {
     return currentMembers.some((item) => String(item) === String(member.id));
   }
 
-  /**
-   * Generate user-friendly error messages for form controls
-   */
   errorFor(controlName: string): string {
     const control = this.formGroup.get(controlName);
     if (!control || !this.showErrors) return '';

@@ -34,9 +34,13 @@
             [class.border-[#c62828]/60]="errorFor('team')"
             [class.border-black/5]="!errorFor('team')"
           >
-            <option value="Platform Engineering">Platform Engineering</option>
+            <!-- <option value="Platform Engineering">Platform Engineering</option>
             <option value="Product Delivery">Product Delivery</option>
-            <option value="Core Architecture">Core Architecture</option>
+            <option value="Core Architecture">Core Architecture</option> -->
+            <option value="-1">Select Organization</option>
+            @for (team of teams$ | async; track team.id) {
+              <option [value]="team.id">{{ team.teamName }}</option>
+            }
           </select>
 
           @if (errorFor('team')) {
@@ -96,7 +100,7 @@
 
     <div class="flex flex-col gap-2 overflow-y-auto pr-1">
       <ul class="space-y-3">
-        @for (member of suggestedMembers; track member.id) {
+        <!-- @for (member of suggestedMembers; track member.id) {
           <li
             class="relative p-2 rounded-md border cursor-pointer transition-all duration-200 border-black/5 hover:bg-[#faf9f8]"
           >
@@ -123,7 +127,16 @@
               </div>
             </div>
           </li>
-        }
+        } -->
+        <ul>
+          @for (member of suggestedMembers$ | async; track member.id) {
+            <app-suggestedmember
+              [member]="member"
+              [isSelected]="isSelected(member)"
+              (toggle)="toggleMember($event)"
+            ></app-suggestedmember>
+          }
+        </ul>
       </ul>
     </div>
   </div>
