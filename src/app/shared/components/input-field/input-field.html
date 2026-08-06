@@ -1,5 +1,4 @@
 <div class="flex flex-col gap-1 w-full">
-
   <!-- Label -->
   <label *ngIf="label" class="text-sm font-medium text-gray-700">
     {{ label }}
@@ -13,9 +12,9 @@
       'border-red-400 ring-2 ring-red-100': hasError,
       'border-primary ring-2 ring-primary/20': isFocused && !hasError,
       'border-gray-200': !isFocused && !hasError,
-      'bg-gray-50 opacity-60 cursor-not-allowed': disabled
-    }">
-
+      'bg-gray-50 opacity-60 cursor-not-allowed': disabled,
+    }"
+  >
     <!-- Left icon -->
     <lucide-icon
       *ngIf="leftIcon"
@@ -25,8 +24,9 @@
       [ngClass]="{
         'text-red-400': hasError,
         'text-primary': isFocused && !hasError,
-        'text-gray-400': !isFocused && !hasError
-      }">
+        'text-gray-400': !isFocused && !hasError,
+      }"
+    >
     </lucide-icon>
 
     <!-- Input -->
@@ -46,7 +46,8 @@
       *ngIf="type === 'password'"
       type="button"
       (click)="togglePassword()"
-      class="shrink-0 text-gray-400 hover:text-gray-600 transition">
+      class="shrink-0 text-gray-400 hover:text-gray-600 transition"
+    >
       <lucide-icon [img]="showPassword ? EyeOff : Eye" [size]="18"></lucide-icon>
     </button>
 
@@ -55,19 +56,18 @@
       *ngIf="rightIcon && type !== 'password'"
       [img]="rightIcon"
       [size]="18"
-      class="shrink-0 text-gray-400">
+      class="shrink-0 text-gray-400"
+    >
     </lucide-icon>
-
   </div>
 
   <!-- Error message -->
-  <p *ngIf="hasError" class="text-xs text-red-500 mt-0.5">
+  <p *ngIf="hasError" class="text-[10px] text-[#c62828]">
     {{ resolvedErrorMessage }}
   </p>
 
   <!-- Helper text -->
-  <p *ngIf="helperText && !hasError" class="text-xs text-gray-400 mt-0.5">
+  <p *ngIf="helperText && !hasError" class="text-[10px] text-gray-400 mt-0.5">
     {{ helperText }}
   </p>
-
 </div>
