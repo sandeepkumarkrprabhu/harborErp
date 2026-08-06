@@ -19,7 +19,7 @@
         >
           <option value="">Select Organization</option>
           @for (org of orgs$ | async; track org.id) {
-            <option [value]="org.id">{{ org.description }}</option>
+            <option [value]="org.id">{{ org.login }}</option>
           }
         </select>
         @if (errorFor('organization')) {

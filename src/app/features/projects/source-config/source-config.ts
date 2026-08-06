@@ -81,6 +81,7 @@ export class SourceConfig implements OnInit, OnDestroy {
     this.orgs$ = this.orgService.fetchOrganizations();
     this.orgs$.subscribe((orgs) => {
       this.orgs = orgs || [];
+      //console.log('SourceConfig: fetched orgs observable', this.orgs);
       this.restoreSelectedState();
     });
 
