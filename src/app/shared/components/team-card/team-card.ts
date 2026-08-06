@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Team } from '../../../Models/Team';
-import { LucideAngularModule } from 'lucide-angular';
+import { LucideAngularModule, Pencil } from 'lucide-angular';
 import { getProjectStatus } from '../../../features/utils/string-utils';
 
 @Component({
@@ -14,6 +14,8 @@ export class TeamCard {
   @Input() team!: Team;
   @Output() selectTeam = new EventEmitter<Team>();
   @Output() editTeam = new EventEmitter<Team>();
+
+  readonly pencil = Pencil;
 
   handleClick() {
     //console.log("selected Team:", this.team);

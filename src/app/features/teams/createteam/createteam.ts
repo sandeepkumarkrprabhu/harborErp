@@ -7,15 +7,19 @@ import {
   ReactiveFormsModule,
   AbstractControl,
 } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
 
+/* Shared Components */
 import { WizardFooter } from '../../../shared/components/wizard-footer/wizard-footer';
 import { WizardHeader } from '../../../shared/components/wizard-header/wizard-header';
 import { WizardSteps } from '../../../shared/components/wizard-steps/wizard-steps';
 import { TeamIdentity } from '../team-identity/team-identity';
 import { TeamMembers } from '../team-members/team-members';
 import { ReviewTeam } from '../team-review/team-review';
+
+/* services for Team */
 import { TeamPayload, TeamService } from '../../../core/team/team-service';
+
+/* Team model */
 import { Team } from '../../../Models/Team';
 import { User } from '../../../Models/User';
 
@@ -66,12 +70,7 @@ export class CreateTeam implements OnInit {
   constructor(
     private fb: FormBuilder,
     private teamService: TeamService,
-    private route: ActivatedRoute,
-  ) {
-    if (this.route.snapshot.paramMap.get('id') != null) {
-      this.mode = 'edit';
-    }
-  }
+  ) {}
 
   private normalizeLeadValue(value: unknown): string {
     if (value == null || value === '') {
@@ -114,20 +113,7 @@ export class CreateTeam implements OnInit {
       teamMembers: [[], atLeastOneMember],
     });
 
-    if (this.mode === 'edit') {
-      const teamId = this.route.snapshot.paramMap.get('id');
-      if (teamId) {
-        this.teamService.getTeamById(teamId).subscribe((team) => {
-          this.teamData = { ...team };
-          this.form.patchValue({
-            teamName: team.teamName,
-            teamLeadID: this.normalizeLeadValue(team.teamLeadID),
-            teamDescription: team.teamDescription,
-            teamMembers: team.teamMembers || [],
-          });
-        });
-      }
-    } else if (this.existingTeam) {
+    if (this.mode === 'edit' && this.existingTeam) {
       this.teamData = { ...this.existingTeam };
       this.form.patchValue({
         teamName: this.existingTeam.teamName,
@@ -171,9 +157,7 @@ export class CreateTeam implements OnInit {
       teamName: formValue.teamName || this.teamData?.teamName || '',
       teamDescription: formValue.teamDescription || this.teamData?.teamDescription || '',
       teamLeadID: this.normalizeLeadValue(formValue.teamLeadID),
-      teamMembersIDs: selectedMembers
-        .map((member) => String(member.id))
-        .filter(Boolean),
+      teamMembersIDs: selectedMembers.map((member) => String(member.id)).filter(Boolean),
     };
   }
 
@@ -197,8 +181,7 @@ export class CreateTeam implements OnInit {
     }
 
     const finalTeam = this.buildTeamPayload();
-    const teamId =
-      this.mode === 'edit' ? this.route.snapshot.paramMap.get('id') || this.teamData?.id : '';
+    const teamId = this.mode === 'edit' ? this.existingTeam?.id || this.teamData?.id : '';
 
     this.isSaving = true;
 

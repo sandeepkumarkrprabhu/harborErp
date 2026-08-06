@@ -21,29 +21,34 @@
 
     <!-- Team Users -->
     <div class="flex items-center gap-2">
+      <div class="flex -space-x-2.5">
+        @for (user of team.teamMembers; track user.id) {
+          <div
+            class="h-7 w-7 rounded-full border-2 border-white flex items-center justify-center bg-primary/90 text-white text-[10px] font-bold"
+            [title]="user.name"
+            [style.backgroundColor]="getAvatarColor(user.name)"
+          >
+            {{
+              user.name
+                .split(' ')
+                .map((n) => n.charAt(0))
+                .join('')
+            }}
+          </div>
+        }
+      </div>
+
       <button
         type="button"
         class="rounded-md border border-black/10 bg-white px-2.5 py-1 text-[11px] font-medium text-[#6b5e52] hover:bg-[#f6efe9]"
         (click)="onEditClick($event)"
       >
-        Edit
+        <lucide-icon
+          [name]="pencil"
+          [size]="16"
+          class="text-gray-600 hover:text-red-600 transition-colors"
+        ></lucide-icon>
       </button>
-      <div class="flex -space-x-2.5">
-      @for (user of team.teamMembers; track user.id) {
-        <div
-          class="h-7 w-7 rounded-full border-2 border-white flex items-center justify-center bg-primary/90 text-white text-[10px] font-bold"
-          [title]="user.name"
-          [style.backgroundColor]="getAvatarColor(user.name)"
-        >
-          {{
-            user.name
-              .split(' ')
-              .map((n) => n.charAt(0))
-              .join('')
-          }}
-        </div>
-      }
-      </div>
     </div>
   </div>
 

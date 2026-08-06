@@ -8,6 +8,8 @@ import { ProjectCard } from '../../shared/components/project-card/project-card';
 import { Deployment } from '../../Models/Deployment';
 import { environment } from '../../../environments/environment.development';
 
+import { ProjectService } from '../../core/projects/services/project.service';
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,

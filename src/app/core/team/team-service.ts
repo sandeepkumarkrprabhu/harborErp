@@ -34,10 +34,10 @@ export class TeamService {
   }
 
   updateUser(id: string, user: TeamPayload): Observable<Team> {
-    return this.http.put<Team>(`${this.apiUrl}/${id}`, user);
+    return this.http.put<Team>(`${this.apiUrl}/update-team/${id}`, user);
   }
 
   deleteUser(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/delete-team/${id}`);
   }
 }
