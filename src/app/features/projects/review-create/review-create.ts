@@ -30,6 +30,7 @@ export class ReviewCreate implements OnInit, OnChanges {
   ) {}
 
   ngOnInit(): void {
+    console.log('ReviewCreate: ngOnInit called with projectForm:', this.projectForm);
     this.projectForm.get('members')?.valueChanges.subscribe(() => this.loadMemberDetails());
     this.loadMemberDetails();
   }
