@@ -6,7 +6,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { User } from '../../../Models/User';
 import { Role } from '../../../Models/role';
 import { RoleService } from '../../../core/role/role-service';
-import { AuthService } from '../../../core/auth/services/auth.service';
+import { GithubService } from '../../../core/github/github-service';
 
 import { InputField } from '../../../shared/components/input-field/input-field';
 
@@ -48,7 +48,7 @@ export class UserIdentity implements OnInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private roleService: RoleService,
-    private githubService: AuthService,
+    private githubService: GithubService,
     private cdr: ChangeDetectorRef,
   ) {}
 
@@ -81,6 +81,17 @@ export class UserIdentity implements OnInit, OnDestroy {
       .subscribe((val) => {
         if (!val) {
           this.userForm.get('github_username')?.reset();
+          this.data.github_verified = false;
+        }
+      });
+
+    // Reset verification when username changes due to user input
+    this.userForm
+      .get('github_username')
+      ?.valueChanges.pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        if (this.userForm.get('github_username')?.dirty) {
+          this.data.github_verified = false;
         }
       });
 
@@ -197,6 +208,8 @@ export class UserIdentity implements OnInit, OnDestroy {
         if (github.hasError('maxlength')) errs.github_username = 'GitHub username is too long.';
         else if (github.hasError('pattern'))
           errs.github_username = 'Invalid GitHub username format.';
+      } else if (!this.data.github_verified) {
+        errs.github_username = 'GitHub username must be verified.';
       }
     }
 
@@ -216,13 +229,36 @@ export class UserIdentity implements OnInit, OnDestroy {
   controlInvalid(controlName: string): boolean {
     const control = this.userForm.get(controlName);
     if (!control) return false;
-    return control.invalid && (this.showErrors || control.touched || control.dirty);
+    
+    let isInvalid = control.invalid;
+    if (controlName === 'github_username' && this.userForm.get('requires_github_access')?.value) {
+      if (!this.data.github_verified) {
+        isInvalid = true;
+      }
+    }
+    
+    return isInvalid && (this.showErrors || control.touched || control.dirty);
   }
 
   /**
    * Template helper: friendly error messages for a control
    */
   getErrorMessage(controlName: string): string {
+    if (controlName === 'github_username' && this.userForm.get('requires_github_access')?.value) {
+      const control = this.userForm.get('github_username');
+      if (!control?.value) return 'GitHub username is required.';
+      if (control?.invalid) {
+        if (control.hasError('maxlength')) {
+          const max = control.getError('maxlength')?.requiredLength;
+          return `Maximum ${max} characters allowed.`;
+        }
+        if (control.hasError('pattern')) return 'Invalid GitHub username format.';
+      }
+      if (!this.data.github_verified) {
+        return 'GitHub username must be verified.';
+      }
+    }
+
     const control = this.userForm.get(controlName);
     if (!control || !control.errors) {
       // fallback to server-side error if present
@@ -248,11 +284,11 @@ export class UserIdentity implements OnInit, OnDestroy {
    */
   verifyGithubUser(userId: string, username: string) {
     if (!username) return;
-    this.githubService.verifyGithubUser(userId, username).subscribe({
+    this.githubService.getUserByUsername(username).subscribe({
       next: (res) => {
         console.log('GitHub user verified:', res);
         this.data.github_username = username;
-        this.data.github_verified = true;
+        this.data.github_verified = res.valid;
         this.cdr.detectChanges();
       },
       error: (err) => {
