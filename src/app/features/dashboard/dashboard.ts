@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FolderGit2, Clock3, LucideAngularModule } from 'lucide-angular';
 
 import { MetricTile } from '../../shared/components/metric-tile/metric-tile';
 import { ActivityList } from '../../shared/components/activity-list/activity-list';
@@ -9,15 +10,26 @@ import { Deployment } from '../../Models/Deployment';
 import { environment } from '../../../environments/environment.development';
 
 import { ProjectService } from '../../core/projects/services/project.service';
+import { Observable, map } from 'rxjs';
+import { DateUtils } from '../../shared/utility/date-utils';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, MetricTile, ActivityList, ProjectCard],
+  imports: [CommonModule, MetricTile, ActivityList, ProjectCard, LucideAngularModule],
   templateUrl: './dashboard.html',
-  styleUrls: ['./dashboard.css']
+  styleUrls: ['./dashboard.css'],
 })
 export class Dashboard implements OnInit {
+  readonly FolderGit2 = FolderGit2;
+  readonly Clock3 = Clock3;
+
+  projects$!: Observable<Project[]>;
+
+  constructor(
+    private projectService: ProjectService,
+    private dateUtils: DateUtils,
+  ) {}
 
   // Source of truth
   metrics = {
@@ -27,14 +39,14 @@ export class Dashboard implements OnInit {
       unhealthy: 1,
       details: [
         { label: 'healthy', value: 14, textColor: 'text-green-600', barColor: 'bg-green-500' },
-        { label: 'unhealthy', value: 1, textColor: 'text-red-600', barColor: 'bg-red-500' }
-      ]
+        { label: 'unhealthy', value: 1, textColor: 'text-red-600', barColor: 'bg-red-500' },
+      ],
     },
     deployments: {
       inProgress: 2,
       details: [
-        { label: 'in progress', value: 2, textColor: 'text-orange-600', barColor: 'bg-orange-500' }
-      ]
+        { label: 'in progress', value: 2, textColor: 'text-orange-600', barColor: 'bg-orange-500' },
+      ],
     },
     last24h: {
       total: 11,
@@ -42,127 +54,154 @@ export class Dashboard implements OnInit {
       failed: 1,
       details: [
         { label: 'succeeded', value: 10, textColor: 'text-green-600', barColor: 'bg-green-500' },
-        { label: 'failed', value: 1, textColor: 'text-red-600', barColor: 'bg-red-500' }
-      ]
+        { label: 'failed', value: 1, textColor: 'text-red-600', barColor: 'bg-red-500' },
+      ],
     },
     frequency: {
       today: 8,
       week: 34,
       details: [
         { label: 'today', value: 8, textColor: 'text-blue-600', barColor: 'bg-blue-500' },
-        { label: 'this week', value: 34, textColor: 'text-purple-600', barColor: 'bg-purple-500' }
-      ]
-    }
+        { label: 'this week', value: 34, textColor: 'text-purple-600', barColor: 'bg-purple-500' },
+      ],
+    },
   };
 
   // Array for looping in template
   metricTiles: { title: string; value: number; details: any[] }[] = [];
 
-  projects: Project[] = [
-    {
-      id: "1",
-      project_name: "harbor-api",
-      status: "active",
-      project_description: "Go backend service for Harbor portal",
-      type: "Microservice",
-      source: "org/harbor-api",
-      branch: "main",
-      envs: 4,
-      healthy: 4,
-      unhealthy: 0,
-      updated_at: "2h ago",
-      by: "Alex K.",
-      deployments: 12,
-      bg: "",
-      github_org: "",
-      github_repo: "",
-      total_environments: "4"
-    },
-    {
-      id: "2",
-      project_name: "harbor-frontend",
-      status: "active",
-      project_description: "Angular frontend application",
-      type: "Infrastructure",
-      source: "org/harbor-frontend",
-      branch: "main",
-      envs: 3,
-      healthy: 2,
-      unhealthy: 1,
-      updated_at: "5h ago",
-      by: "Priya R.",
-      deployments: 20,
-      bg: "",
-      github_org: "",
-      github_repo: "",
-      total_environments: "3"
-    },
-    {
-      id: "3",
-      project_name: "auth-service",
-      status: "active",
-      project_description: "OAuth2 & RBAC microservice",
-      type: "Microservice",
-      source: "org/auth-service",
-      branch: "master",
-      envs: 3,
-      healthy: 3,
-      unhealthy: 0,
-      updated_at: "1d ago",
-      by: "Sam T.",
-      deployments: 8,
-      bg: "",
-      github_org: "",
-      github_repo: "",
-      total_environments: "3"
-    },
-    {
-      id: "4",
-      project_name: "notification-worker",
-      status: "active",
-      project_description: "Slack & email notification worker",
-      type: "Infrastructure",
-      source: "org/notification-worker",
-      branch: "prod",
-      envs: 4,
-      healthy: 4,
-      unhealthy: 0,
-      updated_at: "2d ago",
-      by: "Zara M.",
-      deployments: 15,
-      bg: "",
-      github_org: "",
-      github_repo: "",
-      total_environments: "4"
-    }
-  ];
-
+  // projects: Project[] = [
+  //   {
+  //     id: '1',
+  //     project_name: 'harbor-api',
+  //     status: 'active',
+  //     project_description: 'Go backend service for Harbor portal',
+  //     type: 'Microservice',
+  //     source: 'org/harbor-api',
+  //     branch: 'main',
+  //     envs: 4,
+  //     healthy: 4,
+  //     unhealthy: 0,
+  //     updated_at: '2h ago',
+  //     by: 'Alex K.',
+  //     deployments: 12,
+  //     bg: '',
+  //     github_org: '',
+  //     github_repo: '',
+  //     total_environments: '4',
+  //   },
+  //   {
+  //     id: '2',
+  //     project_name: 'harbor-frontend',
+  //     status: 'active',
+  //     project_description: 'Angular frontend application',
+  //     type: 'Infrastructure',
+  //     source: 'org/harbor-frontend',
+  //     branch: 'main',
+  //     envs: 3,
+  //     healthy: 2,
+  //     unhealthy: 1,
+  //     updated_at: '5h ago',
+  //     by: 'Priya R.',
+  //     deployments: 20,
+  //     bg: '',
+  //     github_org: '',
+  //     github_repo: '',
+  //     total_environments: '3',
+  //   },
+  //   {
+  //     id: '3',
+  //     project_name: 'auth-service',
+  //     status: 'active',
+  //     project_description: 'OAuth2 & RBAC microservice',
+  //     type: 'Microservice',
+  //     source: 'org/auth-service',
+  //     branch: 'master',
+  //     envs: 3,
+  //     healthy: 3,
+  //     unhealthy: 0,
+  //     updated_at: '1d ago',
+  //     by: 'Sam T.',
+  //     deployments: 8,
+  //     bg: '',
+  //     github_org: '',
+  //     github_repo: '',
+  //     total_environments: '3',
+  //   },
+  //   {
+  //     id: '4',
+  //     project_name: 'notification-worker',
+  //     status: 'active',
+  //     project_description: 'Slack & email notification worker',
+  //     type: 'Infrastructure',
+  //     source: 'org/notification-worker',
+  //     branch: 'prod',
+  //     envs: 4,
+  //     healthy: 4,
+  //     unhealthy: 0,
+  //     updated_at: '2d ago',
+  //     by: 'Zara M.',
+  //     deployments: 15,
+  //     bg: '',
+  //     github_org: '',
+  //     github_repo: '',
+  //     total_environments: '4',
+  //   },
+  // ];
 
   activities = [
     { name: 'payment-service', status: 'deploying', by: 'Arjun' },
     { name: 'user-authentication', status: 'active', by: 'Maya' },
     { name: 'order-management', status: 'idle', by: 'Liam' },
     { name: 'inventory-tracking', status: 'deployed', by: 'Zara' },
-    { name: 'notification-system', status: 'error', by: 'Ethan' }
+    { name: 'notification-system', status: 'error', by: 'Ethan' },
   ];
 
   ngOnInit(): void {
+    // Fetch projects from the service
+    this.projects$ = this.projectService.getLatestProjects().pipe(
+      map((projects) =>
+        projects.map((project) => ({
+          ...project,
+          updated_at: this.dateUtils.formatDate(project.updated_at),
+        })),
+      ),
+    );
+
+    console.log('Recent projects:', this.projects$);
+
     this.metricTiles = [
-      { title: 'Environments', value: this.metrics.environments.total, details: this.metrics.environments.details },
-      { title: 'Deployments', value: this.metrics.deployments.inProgress, details: this.metrics.deployments.details },
-      { title: 'Last 24 hours', value: this.metrics.last24h.total, details: this.metrics.last24h.details },
-      { title: 'Deployment Frequency', value: this.metrics.frequency.today, details: this.metrics.frequency.details }
+      {
+        title: 'Environments',
+        value: this.metrics.environments.total,
+        details: this.metrics.environments.details,
+      },
+      {
+        title: 'Deployments',
+        value: this.metrics.deployments.inProgress,
+        details: this.metrics.deployments.details,
+      },
+      {
+        title: 'Last 24 hours',
+        value: this.metrics.last24h.total,
+        details: this.metrics.last24h.details,
+      },
+      {
+        title: 'Deployment Frequency',
+        value: this.metrics.frequency.today,
+        details: this.metrics.frequency.details,
+      },
     ];
   }
 
-  get projectsMostDeployments(): Project[] {
-    return [...this.projects].sort((a, b) => b.deployments - a.deployments).slice(0, 5);
-  }
+  // get projectsMostDeployments(): Project[] {
+  //   return [...this.projects$].sort((a, b) => b.deployments - a.deployments).slice(0, 5);
+  // }
 
-  get deploymentChartData(): { name: string; value: number }[] {
-    return this.projectsMostDeployments.map((project: Project) => ({
-      name: project.project_name,
-      value: project.deployments
-    }));
-  }
+  // get deploymentChartData(): { name: string; value: number }[] {
+  //   return this.projectsMostDeployments.map((project: Project) => ({
+  //     name: project.project_name,
+  //     value: project.deployments,
+  //   }));
+  // }
 }

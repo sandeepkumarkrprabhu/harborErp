@@ -17,14 +17,23 @@
     <div>
       <!-- Recent Projects -->
       <div class="bg-white mb-4 border border-gray-200 rounded-lg shadow-sm">
-        <h2 class="text-lg font-small bg-secondary text-black px-4 py-2 rounded">
-          Recent Projects
+        <h2 class="bg-secondary text-black px-4 py-2 rounded">
+          <span class="inline-flex items-center gap-2">
+            <lucide-angular class="inline-block" [img]="FolderGit2" [size]="18"> </lucide-angular>
+
+            <span class="text-lg font-medium"> Recent Projects </span>
+          </span>
         </h2>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-4">
-          @for (project of projects; track project.project_name) {
+          <app-project-card
+            *ngFor="let project of projects$ | async"
+            [project]="project"
+          ></app-project-card>
+
+          <!-- @for (project of projects; track project.project_name) {
             <app-project-card [project]="project"></app-project-card>
-          }
+          } -->
         </div>
       </div>
 
@@ -51,7 +60,11 @@
     <!-- Right column -->
     <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
       <h2 class="text-lg font-small mb-4 bg-secondary text-black rounded px-4 py-2">
-        Recent Activity
+        <span class="inline-flex items-center gap-2">
+          <lucide-angular class="inline-block" [img]="Clock3" [size]="18"> </lucide-angular>
+
+          <span class="text-lg font-medium"> Recent Activity </span>
+        </span>
       </h2>
       <app-activity-list [activities]="activities"></app-activity-list>
     </div>
