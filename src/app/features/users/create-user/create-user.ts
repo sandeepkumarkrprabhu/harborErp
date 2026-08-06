@@ -10,6 +10,7 @@ import { AuthService } from '../../../core/auth/services/auth.service';
 import { ReviewCreate } from '../review-create/review-create';
 import { UserIdentity } from '../user-identity/user-identity';
 import { RegisterUserRequest } from '../../../core/auth/models/auth';
+import { ValidationErrors } from '../validation-errors';
 import { User } from '../../../Models/User';
 import { Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -18,8 +19,6 @@ enum UserSteps {
   Details = 1,
   Review = 2,
 }
-
-export type ValidationErrors = Partial<Record<keyof RegisterUserRequest, string>>;
 
 @Component({
   selector: 'app-create-user',
@@ -101,11 +100,30 @@ export class CreateUser {
     }
   }
 
+  ngAfterViewInit() {
+    console.log('Child component ready:', this.userIdentityComponent);
+  }
+
+  /**
+   * Mark controls for the given step as touched so child components show errors.
+   */
+  private markStepControlsTouched(stepNumber: number): void {
+    if (stepNumber === UserSteps.Details && this.userIdentityComponent) {
+      this.userIdentityComponent.markAllTouched();
+    }
+  }
+
   nextStep() {
     this.attemptedSteps.add(this.step);
+
+    // Ensure child controls are marked so errors appear
+    this.markStepControlsTouched(this.step);
+
+    // Ask child to persist/validate changes (child returns boolean or handles internal state)
     if (this.step === UserSteps.Details && this.userIdentityComponent) {
       this.userIdentityComponent.saveChanges();
     }
+
     if (!this.isStepValid(this.step)) return;
     if (this.step < UserSteps.Review) this.step++;
   }
@@ -125,8 +143,17 @@ export class CreateUser {
     this.step = stepNumber;
   }
 
+  /**
+   * Collect validation errors from the UserIdentity child component.
+   * The child returns a ValidationErrors object keyed by RegisterUserRequest fields.
+   */
   get userIdentityErrors(): ValidationErrors {
-    const errors: ValidationErrors = {};
+    if (
+      this.userIdentityComponent &&
+      typeof this.userIdentityComponent.getValidationErrors === 'function'
+    ) {
+      return this.userIdentityComponent.getValidationErrors();
+    }
     return {};
   }
 
@@ -134,6 +161,9 @@ export class CreateUser {
     return this.userIdentityErrors;
   }
 
+  /**
+   * Whether to show errors for a step (used by child components)
+   */
   shouldShowErrors(stepNumber: number): boolean {
     return this.submitAttempted || this.attemptedSteps.has(stepNumber);
   }
@@ -147,6 +177,8 @@ export class CreateUser {
     this.submitAttempted = true;
     this.attemptedSteps.add(UserSteps.Details);
 
+    // mark controls and persist child changes
+    this.markStepControlsTouched(UserSteps.Details);
     if (this.userIdentityComponent) {
       this.userIdentityComponent.saveChanges();
     }
@@ -188,5 +220,9 @@ export class CreateUser {
       if (!this.isStepValid(currentStep)) return false;
     }
     return true;
+  }
+
+  trackByUser(index: number, user: User) {
+    return user.id; // stable unique identifier
   }
 }

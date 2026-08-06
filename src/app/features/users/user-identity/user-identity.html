@@ -1,90 +1,111 @@
-<div class="flex gap-6 px-6 py-5" [formGroup]="userForm">
-  <div class="flex-1">
-    <h3 class="text-sm font-semibold text-[#1a1a1a] pb-1 border-b border-black/5">User Identity</h3>
+<!-- user-identity.html -->
+<div class="space-y-4 p-3" [formGroup]="userForm">
+  <!-- Full name -->
+  <div>
+    <label class="block text-sm font-medium text-gray-700">Full name</label>
+    <app-input-field
+      formControlName="name"
+      type="text"
+      placeholder="e.g., Jane Doe"
+      [required]="true"
+      [attr.aria-invalid]="controlInvalid('name')"
+      aria-describedby="nameError"
+    ></app-input-field>
+  </div>
 
-    <div class="grid grid-cols-2 gap-4 mt-3">
-      <!-- Member Name -->
-      <div class="flex flex-col gap-1">
-        <app-input-field
-          label="Member Name"
-          type="text"
-          [leftIcon]=""
-          placeholder="eg. Alek K."
-          [required]="true"
-          class=""
-          [class.border-[#c62828]/60]="errorFor('name')"
-          [class.border-black/5]="!errorFor('name')"
-          formControlName="name"
-        >
-        </app-input-field>
-      </div>
+  <!-- Email -->
+  <div>
+    <label class="block text-sm font-medium text-gray-700">Email</label>
+    <app-input-field
+      formControlName="email"
+      type="email"
+      placeholder="e.g., jane@example.com"
+      [required]="true"
+      [attr.aria-invalid]="controlInvalid('email')"
+      aria-describedby="emailError"
+    ></app-input-field>
+  </div>
 
-      <!-- Email -->
-      <div class="flex flex-col gap-1">
-        <app-input-field
-          label="Email"
-          type="email"
-          [leftIcon]=""
-          placeholder="eg. alek.k@example.com"
-          [required]="true"
-          class=""
-          [class.border-[#c62828]/60]="errorFor('email')"
-          [class.border-black/5]="!errorFor('email')"
-          formControlName="email"
-        >
-        </app-input-field>
-      </div>
-
-      <!-- Role -->
-      <div class="flex flex-col gap-1">
-        <label class="text-xs font-semibold text-[#8a7f75]">
-          Role <span class="text-[#c62828]">*</span>
-        </label>
-        <!-- w-full bg-[#fdfcf9] border text-sm px-3 py-2 rounded-md focus:outline-none focus:border-[#d08873]/50 -->
+  <!-- Role + Requires GitHub Access -->
+  <div class="flex items-center gap-4">
+    <!-- Role 70% -->
+    <div class="w-[70%]">
+      <label class="block text-sm font-medium text-gray-700">
+        Role <span class="text-[#c62828]">*</span>
+      </label>
+      <div class="relative mt-1">
         <select
           formControlName="role_id"
-          class="w-full bg-[#fdfcf9] border text-sm px-3 py-2 rounded-md focus:outline-none focus:border-[#d08873]/50"
-          [class.border-[#c62828]/60]="errorFor('role_id')"
-          [class.border-black/5]="!errorFor('role_id')"
+          class="block w-full appearance-none rounded-md bg-[#fdfcf9] text-sm px-3 py-2 pr-8 shadow-sm focus:outline-none focus:ring-2"
+          [class.border-red-600]="controlInvalid('role_id')"
+          [class.border-gray-200]="!controlInvalid('role_id')"
+          aria-describedby="roleError"
         >
-          <option value="">Select Role</option>
-          @for (role of roles; track role.id) {
-            <option [value]="role.id">{{ role.name }}</option>
-          }
+          <option value="">Select role</option>
+          <option *ngFor="let r of roles; trackBy: trackByRoleId" [value]="r.id">
+            {{ r.name }}
+          </option>
         </select>
-        @if (errorFor('role_id')) {
-          <span class="text-[10px] text-[#c62828]">{{ errorFor('role_id') }}</span>
-        }
       </div>
+      <p
+        *ngIf="controlInvalid('role_id')"
+        id="roleError"
+        class="mt-1 text-[10px] text-[#c62828]"
+        role="alert"
+      >
+        {{ getErrorMessage('role_id') }}
+      </p>
+    </div>
 
-      <!-- GitHub Verification -->
-      <div class="flex flex-col gap-1">
-        <div class="flex items-center gap-2">
-          <app-input-field
-            label="GitHub Username"
-            type="text"
-            [leftIcon]=""
-            placeholder="eg. alexk-dev"
-            [required]="true"
-            class=""
-            [class.border-[#c62828]/60]="errorFor('github_username')"
-            [class.border-black/5]="!errorFor('github_username')"
-            formControlName="github_username"
-          >
-          </app-input-field>
-          <button
-            type="button"
-            class="px-3 py-2 text-xs font-semibold rounded-md border border-[#d08873] text-[#d08873] hover:bg-[#d08873] hover:text-white transition"
-            (click)="verifyGithubUser(data.id, userForm.value.github_username)"
-            [disabled]="data.github_verified"
-          >
-            Verify
-          </button>
-        </div>
-        @if (errorFor('github_username')) {
-          <span class="text-[10px] text-[#c62828]">{{ errorFor('github_username') }}</span>
-        }
+    <!-- Requires GitHub Access 30% -->
+    <div class="w-[30%] pt-6">
+      <div class="flex items-center justify-between">
+        <label class="text-sm font-medium text-gray-700">Requires GitHub Access</label>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" formControlName="requires_github_access" class="sr-only peer" />
+          <div
+            class="w-11 h-6 bg-[#e5e7eb] rounded-full peer peer-checked:bg-primary/50 peer-focus:ring-2 peer-focus:bg-primary transition-colors"
+          ></div>
+          <div
+            class="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow transform peer-checked:translate-x-5 transition-transform"
+          ></div>
+        </label>
       </div>
     </div>
+  </div>
+
+  <!-- GitHub username (visible only if requires_github_access is true) -->
+  <div *ngIf="userForm.get('requires_github_access')?.value" class="flex flex-col gap-2">
+    <label class="text-sm font-medium text-gray-700">GitHub username</label>
+
+    <!-- Row with textbox + button -->
+    <div class="flex flex-row items-center gap-3">
+      <app-input-field
+        formControlName="github_username"
+        type="text"
+        placeholder="e.g., githubUser"
+        [attr.aria-invalid]="controlInvalid('github_username')"
+        aria-describedby="githubError"
+        class="flex-1"
+      ></app-input-field>
+
+      <button
+        class="px-2 py-1 bg-primary text-white text-sm font-medium rounded-md hover:bg-primary/90 transition"
+        (click)="verifyGithubUser(data.id, userForm.get('github_username')?.value)"
+      >
+        Verify GitHub
+      </button>
+    </div>
+
+    <span *ngIf="data.github_verified" class="text-xs text-green-600 mt-1">Verified</span>
+
+    <p
+      *ngIf="controlInvalid('github_username')"
+      id="githubError"
+      class="mt-1 text-[10px] text-[#c62828]"
+      role="alert"
+    >
+      {{ getErrorMessage('github_username') }}
+    </p>
   </div>
 </div>
