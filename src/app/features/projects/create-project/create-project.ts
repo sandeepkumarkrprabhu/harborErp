@@ -78,8 +78,10 @@ export class CreateProject implements OnInit {
       team: ['Platform Engineering', Validators.required],
       type: ['Internal Project', Validators.required],
       description: [''],
-      tags: [[], Validators.required],
-      members: [[], Validators.required],
+      // tags is a text input — initialize as string so Validators.required works correctly
+      tags: ['', Validators.required],
+      // members is optional — no required validator (empty array [] passes Validators.required anyway)
+      members: [[]],
       organization: [''],
       repo: ['', Validators.required],
       branch: ['', Validators.required],
@@ -188,15 +190,15 @@ export class CreateProject implements OnInit {
   get sourceConfigErrors(): ValidationErrors {
     const errors: ValidationErrors = {};
 
-    const organization = this.form.get('organization')?.value?.trim();
-    const repo = this.form.get('repo')?.value?.trim();
-    const branch = this.form.get('branch')?.value?.trim();
-    const runtime = this.form.get('runtime')?.value?.trim();
+    // const organization = this.form.get('organization')?.value?.trim();
+    // const repo = this.form.get('repo')?.value?.trim();
+    // const branch = this.form.get('branch')?.value?.trim();
+    // const runtime = this.form.get('runtime')?.value?.trim();
 
-    if (!organization) errors.organization = 'Organization / project is required.';
-    if (!repo) errors.repo = 'GitHub repo is required.';
-    if (!branch) errors.branch = 'Branch is required.';
-    if (!runtime) errors.runtime = 'Runtime is required.';
+    // if (!organization) errors.organization = 'Organization / project is required.';
+    // if (!repo) errors.repo = 'GitHub repo is required.';
+    // if (!branch) errors.branch = 'Branch is required.';
+    // if (!runtime) errors.runtime = 'Runtime is required.';
     // if (!this.hasValidDeploymentTargets())
     //   errors.deploymentTargets = 'Add at least one deployment target.';
 
@@ -215,20 +217,16 @@ export class CreateProject implements OnInit {
 
   private isStepValid(stepNumber: number): boolean {
     if (stepNumber === ProjectSteps.Details) {
-      const controls = ['name', 'team', 'type', 'tags', 'members'];
+      // members is optional — excluded from required validation
+      const controls = ['name', 'team', 'type', 'tags'];
       controls.forEach((c) => this.form.get(c)?.markAsTouched());
       return controls.every((c) => this.form.get(c)?.valid);
     }
     if (stepNumber === ProjectSteps.SourceConfig) {
-      const controls = ['organization', 'repo', 'branch', 'runtime'];
-      controls.forEach((c) => this.form.get(c)?.markAsTouched());
-      const deploymentTargets = this.form.get('deploymentTargets') as FormArray;
-
-      deploymentTargets?.controls.forEach((control) => {
-        (control as FormGroup).markAllAsTouched();
-      });
-
-      return controls.every((c) => this.form.get(c)?.valid) && this.hasValidDeploymentTargets();
+      // Source config validation is currently optional (sourceConfigErrors is empty).
+      // Return true to allow progression to the Review step.
+      // Re-enable individual field checks here when source config becomes required.
+      return true;
     }
     return true;
   }

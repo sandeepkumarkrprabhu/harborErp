@@ -1,5 +1,5 @@
-import { Component, Input } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, Input, OnInit } from '@angular/core';
+import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Observable, catchError, map, of, tap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 
@@ -19,7 +19,7 @@ import { TeamService } from '../../../core/team/team-service';
   templateUrl: './project-identity.html',
   styleUrls: ['./project-identity.css'],
 })
-export class ProjectIdentity {
+export class ProjectIdentity implements OnInit {
   /** Reactive form group passed from parent */
   @Input({ required: true }) formGroup!: FormGroup;
 
@@ -36,21 +36,14 @@ export class ProjectIdentity {
   userHelper = UserHelper;
 
   constructor(
-    private fb: FormBuilder,
     private userService: UserService,
     private teamService: TeamService,
   ) {}
 
   ngOnInit() {
-    this.formGroup = this.fb.group({
-      name: ['', [Validators.required]],
-      team: [null, [Validators.required]], // will be set dynamically
-      type: ['Internal Project', [Validators.required]], // default value
-      description: [''],
-      tags: ['', [Validators.required]],
-      members: [[]],
-    });
-
+    // Do NOT reinitialize formGroup here — it is provided by the parent (create-project.ts)
+    // via @Input() formGroup. Reinitializing would disconnect the child from the parent form,
+    // causing isStepValid() in the parent to always see an empty/invalid form.
     this.loadUsers();
     this.loadTeams();
   }

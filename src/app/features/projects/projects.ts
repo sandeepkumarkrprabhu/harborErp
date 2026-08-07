@@ -78,14 +78,14 @@ export class Projects implements OnInit {
   private loadProjects() {
     this.projectService.getProjects().subscribe((data) => {
       // log the raw data
-      console.log('Project details from API:', data);
+      //console.log('Project details from API:', data);
 
       // log each project nicely
-      data.forEach((p) => {
-        console.log(
-          `Project: ${p.project_name}, Status: ${p.status}, Repo: ${p.github_org}/${p.github_repo}`,
-        );
-      });
+      // data.forEach((p) => {
+      //   // console.log(
+      //   //   `Project: ${p.project_name}, Status: ${p.status}, Repo: ${p.github_org}/${p.github_repo}`,
+      //   // );
+      //);
 
       // transform and set into signal
       this.projects.set(
