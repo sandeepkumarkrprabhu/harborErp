@@ -1,4 +1,5 @@
 <div>
+  <!-- Create Project Modal -->
   <div *ngIf="showCreateProject">
     <div class="fixed inset-0 flex items-center justify-center w-auto h-screen z-40 bg-black/40">
       <div
@@ -10,6 +11,8 @@
       </div>
     </div>
   </div>
+
+  <!-- Header -->
   <div class="mb-5 flex justify-between items-center select-none">
     <h1 class="text-[22px] font-medium tracking-tight text-[#1a1a1a]">Projects</h1>
 
@@ -25,6 +28,7 @@
   <div
     class="flex flex-col bg-white md:flex-row md:items-center justify-between gap-2 border border-black/5 rounded-md p-1 mb-3 select-none"
   >
+    <!-- Search -->
     <div class="m-4 w-[30%] rounded-md">
       <form [formGroup]="form">
         <app-input-field
@@ -38,32 +42,30 @@
       </form>
     </div>
 
-    <div
-      class="p-2 m-2 border border-gray-200 rounded-lg shadow-sm"
-      *ngIf="filteredProjects$ | async as projects"
-    >
+    <!-- Sort bar -->
+    <div class="p-2 m-2 border border-gray-200 rounded-lg shadow-sm">
       <app-sort-bar
-        [options]="getFilterOptions(projects)"
-        [active]="activeFilter"
+        [options]="getFilterOptions(filteredProjects())"
+        [active]="activeFilter()"
         (filterChange)="onFilterChange($event)"
       ></app-sort-bar>
     </div>
   </div>
 
   <!-- Project list -->
-  <div *ngIf="filteredProjects$ | async as projects">
+  <div>
     <div class="mb-4 border border-gray-200 rounded-lg shadow-sm">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
         <app-project-card
-          *ngFor="let project of getVisibleProjects(projects); trackBy: trackById"
+          *ngFor="let project of getVisibleProjects(filteredProjects()); trackBy: trackById"
           [project]="project"
         >
         </app-project-card>
       </div>
     </div>
 
-    <div class="flex justify-center mt-3" *ngIf="hasMoreProjects(projects)">
-      <!-- use projects -->
+    <!-- Load more -->
+    <div class="flex justify-center mt-3" *ngIf="hasMoreProjects(filteredProjects())">
       <button class="px-3 py-2 bg-white border rounded" (click)="loadMoreProjects()">
         Load more
       </button>

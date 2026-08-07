@@ -1,40 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal, computed, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
-import {
-  debounceTime,
-  distinctUntilChanged,
-  startWith,
-  map,
-  tap,
-  combineLatest,
-  Observable,
-  Subject,
-  switchMap,
-} from 'rxjs';
-import { AsyncPipe } from '@angular/common';
+import { debounceTime, distinctUntilChanged, startWith } from 'rxjs';
 import { SearchIcon } from 'lucide-angular';
+
 import { FilterOption } from '../../Models/FilterOption';
 import { Project } from '../../Models/project';
 import { SortBar } from '../../shared/components/sort-bar/sort-bar';
 import { ProjectCard } from '../../shared/components/project-card/project-card';
 import { InputField } from '../../shared/components/input-field/input-field';
-
 import { CreateProject } from './create-project/create-project';
 import { ProjectService } from '../../core/projects/services/project.service';
 
 @Component({
   selector: 'app-projects',
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    AsyncPipe,
-    InputField,
-    SortBar,
-    ProjectCard,
-    CreateProject,
-  ],
+  imports: [CommonModule, ReactiveFormsModule, InputField, SortBar, ProjectCard, CreateProject],
   templateUrl: './projects.html',
   styleUrls: ['./projects.css'],
 })
@@ -43,13 +24,38 @@ export class Projects implements OnInit {
   readonly SearchIcon = SearchIcon;
 
   form!: FormGroup;
-  displayCount = 9;
-  activeFilter = 'all';
 
-  projects$!: Observable<Project[]>;
-  filteredProjects$!: Observable<Project[]>;
+  // writable signals
+  displayCount = signal(9);
+  activeFilter = signal<'all' | 'active' | 'degraded' | 'archived'>('all');
+  projects: WritableSignal<Project[]> = signal<Project[]>([]);
+  searchTerm = signal('');
 
-  refresh$ = new Subject<void>();
+  // computed signal for filtered projects
+  filteredProjects = computed(() => {
+    let list = this.projects();
+
+    // filter by status
+    if (this.activeFilter() === 'active') {
+      list = list.filter((p) => p.status === 'active');
+    } else if (this.activeFilter() === 'degraded') {
+      list = list.filter((p) => p.status === 'degraded');
+    } else if (this.activeFilter() === 'archived') {
+      list = list.filter((p) => p.status === 'archived');
+    }
+
+    // search
+    const term = this.searchTerm().toLowerCase();
+    if (term) {
+      list = list.filter(
+        (p) =>
+          p.project_name?.toLowerCase().includes(term) ||
+          p.project_description?.toLowerCase().includes(term),
+      );
+    }
+
+    return list;
+  });
 
   constructor(
     private readonly projectService: ProjectService,
@@ -57,67 +63,50 @@ export class Projects implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // initialize form first
     this.form = this.fb.group({ globalSearch: [''] });
 
-    this.projects$ = this.refresh$.pipe(
-      startWith(void 0), // initial load
-      switchMap(() =>
-        this.projectService.getProjects().pipe(
-          map((data: Project[]) =>
-            data.map((p) => ({
-              ...p,
-              source: `${p.github_org}/${p.github_repo}`,
-            })),
-          ),
-        ),
-      ),
-    );
+    // initial load
+    this.loadProjects();
 
-    // search stream (typed as string)
-    const search$: Observable<string> = this.form
+    // connect form control to signal
+    this.form
       .get('globalSearch')!
-      .valueChanges.pipe(startWith(''), debounceTime(300), distinctUntilChanged());
+      .valueChanges.pipe(startWith(''), debounceTime(300), distinctUntilChanged())
+      .subscribe((val) => this.searchTerm.set(val ?? ''));
+  }
 
-    // combine projects + search
-    this.filteredProjects$ = combineLatest([this.projects$, search$]).pipe(
-      map(([projects, searchTerm]) => {
-        let list = projects;
+  private loadProjects() {
+    this.projectService.getProjects().subscribe((data) => {
+      // log the raw data
+      console.log('Project details from API:', data);
 
-        // filter by status
-        if (this.activeFilter === 'active') {
-          list = list.filter((p) => p.status === 'active');
-        } else if (this.activeFilter === 'degraded') {
-          list = list.filter((p) => p.status === 'degraded');
-        } else if (this.activeFilter === 'archived') {
-          list = list.filter((p) => p.status === 'archived');
-        }
+      // log each project nicely
+      data.forEach((p) => {
+        console.log(
+          `Project: ${p.project_name}, Status: ${p.status}, Repo: ${p.github_org}/${p.github_repo}`,
+        );
+      });
 
-        // search
-        const term = (searchTerm ?? '').toString().toLowerCase();
-        if (term) {
-          list = list.filter(
-            (p) =>
-              p.project_name?.toLowerCase().includes(term) ||
-              p.project_description?.toLowerCase().includes(term),
-          );
-        }
-
-        return list;
-      }),
-    );
+      // transform and set into signal
+      this.projects.set(
+        data.map((p) => ({
+          ...p,
+          source: `${p.github_org}/${p.github_repo}`,
+        })),
+      );
+    });
   }
 
   getVisibleProjects(projects: Project[]): Project[] {
-    return projects.slice(0, this.displayCount);
+    return projects.slice(0, this.displayCount());
   }
 
   hasMoreProjects(projects: Project[]): boolean {
-    return projects.length > this.displayCount;
+    return projects.length > this.displayCount();
   }
 
   loadMoreProjects() {
-    this.displayCount += 30;
+    this.displayCount.update((count) => count + 30);
   }
 
   openCreateProject() {
@@ -126,11 +115,11 @@ export class Projects implements OnInit {
 
   closeCreateProject() {
     this.showCreateProject = false;
-    this.refresh$.next(); // trigger reload
+    this.loadProjects(); // refresh projects
   }
 
   onFilterChange(value: string) {
-    this.activeFilter = value;
+    this.activeFilter.set(value as any);
   }
 
   getFilterOptions(projects: Project[]): FilterOption[] {
