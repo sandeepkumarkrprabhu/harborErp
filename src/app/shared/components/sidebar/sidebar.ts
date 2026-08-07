@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { AuthService } from '../../../core/auth/services/auth.service';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import {
   LucideAngularModule,
@@ -14,7 +15,6 @@ import {
 } from 'lucide-angular';
 
 import { TokenStorageService } from '../../../core/auth/services/token-storage';
-import { AuthService } from '../../../core/auth/services/auth.service';
 import { Logger } from '../../../features/utils/logger';
 
 @Component({
@@ -33,7 +33,7 @@ export class Sidebar {
     private readonly authService: AuthService,
     private readonly logger: Logger,
     private readonly router: Router,
-  ) {}
+  ) { }
 
   readonly LogOut = LogOut;
   readonly Menu = Menu;
@@ -42,6 +42,7 @@ export class Sidebar {
 
   ngOnInit(): void {
     this.loadUserDetails();
+    this.configureNavItems();
   }
 
   private loadUserDetails(): void {
@@ -54,7 +55,8 @@ export class Sidebar {
     this.isCollapsed = !this.isCollapsed;
   }
 
-  readonly navItems = [
+  // Define all possible navigation items
+  private readonly allNavItems = [
     { label: 'Dashboard', route: '/dashboard', icon: LayoutDashboard },
     { label: 'Projects', route: '/projects', icon: FolderKanban },
     { label: 'Teams', route: '/teams', icon: UsersRound },
@@ -63,6 +65,27 @@ export class Sidebar {
     { label: 'Settings', route: '/settings', icon: Settings },
     { label: 'Notifications', route: '/notifications', icon: Bell },
   ];
+
+  // Role based allowed menu labels
+  private readonly roleMenuMap: Record<string, string[]> = {
+    admin: ['Dashboard', 'Projects', 'Teams', 'History', 'Users', 'Settings', 'Notifications'],
+    manager: ['Dashboard', 'Projects', 'Teams'],
+  };
+
+  // Filtered navigation items based on current user role
+  readonly navItems = [] as typeof this.allNavItems;
+
+
+
+
+
+  private configureNavItems(): void {
+    // Determine role (case‑insensitive). Fallback to empty array if unknown.
+    const userRole = this.authService.currentUserValue?.roles?.[0] ?? 'Admin';
+    const roleKey = userRole.toLowerCase();
+    const allowedLabels = this.roleMenuMap[roleKey] || [];
+    this.navItems.push(...this.allNavItems.filter(item => allowedLabels.includes(item.label)));
+  }
 
   async logout(): Promise<void> {
     this.logger.info('User logging out...');

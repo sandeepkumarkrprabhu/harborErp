@@ -124,15 +124,22 @@ export class AuthService {
    * Expected endpoint:
    * GET /auth/me // instead of API checking hastoken of tokenStorage
    */
-  refreshUser(): boolean {
-    const hasToken = this.tokenStorage.hasToken();
-
-    if (!hasToken) {
+  refreshUser(): void {
+    if (!this.tokenStorage.hasToken()) {
       this.logout();
+      return;
     }
 
-    return hasToken;
+    this.http.get<AuthUser>(`${this.apiUrl}/auth/me`).pipe(
+      tap(user => this._currentUser.set(user)),
+      catchError(err => {
+        console.error('Failed to refresh user:', err);
+        this.logout();
+        return EMPTY;
+      })
+    ).subscribe();
   }
+
 
   /**
    * Save login response.
@@ -144,7 +151,10 @@ export class AuthService {
 
     this.tokenStorage.setuserName(response.name);
     this.tokenStorage.setuserEmail(response.email);
-    //this._currentUser.set(response.user);
+
+    if (response) {
+      this._currentUser.set(response.user);
+    }
   }
 
   /**
@@ -168,4 +178,10 @@ export class AuthService {
 
     return user.roles?.includes(role) ?? false;
   }
+
+  get currentUserValue(): AuthUser | null {
+    console.log("Logged In user:", this._currentUser());
+    return this._currentUser();
+  }
+
 }
