@@ -4,7 +4,12 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
-import { ProjectDetail, ProjectDetailEnvironment } from '../../Models/Composition';
+import {
+  DashboardKPICard,
+  DashboardRecentActivities,
+  ProjectDetail,
+  ProjectDetailEnvironment,
+} from '../../Models/Composition';
 import { environment } from '../../../environments/environment.development';
 
 @Injectable({
@@ -12,14 +17,15 @@ import { environment } from '../../../environments/environment.development';
 })
 export class CompositionService {
   private readonly baseUrl = environment.apiBaseUrl;
-  private apiUrl = `${this.baseUrl}/composition/project-details`;
+  private baseApiUrl = `${this.baseUrl}/composition`;
+  private projectApiUrl = `${this.baseApiUrl}/composition/project-details`;
   private apiUrlEnv = `${this.baseUrl}/composition/project-environment-details`;
 
   constructor(private http: HttpClient) {}
 
   getProjectById(id: string): Observable<ProjectDetail> {
     return this.http
-      .post<ProjectDetail>(`${this.apiUrl}/${id}`, {
+      .post<ProjectDetail>(`${this.projectApiUrl}/${id}`, {
         page: 1,
         perPage: 10,
       })
@@ -36,5 +42,17 @@ export class CompositionService {
         console.log('Raw API response for project details:', response);
       }),
     );
+  }
+
+  getDashboardKPI(): Observable<DashboardKPICard> {
+    return this.http
+      .get<DashboardKPICard>(`${this.baseApiUrl}/dashboard-kpi`)
+      .pipe(tap((response) => console.log('Raw API response:', response)));
+  }
+
+  getDashboardRecentActivites(): Observable<DashboardRecentActivities[]> {
+    return this.http
+      .get<DashboardRecentActivities[]>(`${this.baseApiUrl}/dashboard-recent-activities`)
+      .pipe(tap((response) => console.log('Raw API response:', response)));
   }
 }

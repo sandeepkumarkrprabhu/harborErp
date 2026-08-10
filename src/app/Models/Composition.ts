@@ -99,3 +99,21 @@ export interface ProjectDetailEnvironment {
   deploymentHistory: DeploymentHistory[];
   pullRequestContext: PullRequestContext;
 }
+
+export interface DashboardKPICard {
+  deployment_frequency_weekly_average: number;
+  deployments_past_24_hours: number;
+  deployments_past_hour: number;
+  healthy_environments: number;
+  total_environments: number;
+  unhealthy_environments: number;
+}
+
+export interface DashboardRecentActivities {
+  author: string;
+  description: string;
+  project: string;
+  timestamp: string;
+  title: string;
+  type: string;
+}

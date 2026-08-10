@@ -1,38 +1,41 @@
-<div class="grid grid-cols-1 gap-3 p-2">
-  @for (activity of activities; track activity.name) {
-    <div class="flex items-center bg-white rounded-lg shadow p-4 hover:shadow-md transition">
-      <!-- Badge with right arrow -->
-      <div class="flex-shrink-0">
+<div class="grid grid-cols-1 gap-3 p-3">
+  @for (activity of activities; track activity.timestamp) {
+    <div class="flex items-start bg-white rounded-lg border border-gray-100 p-3 hover:shadow-sm transition">
+      <!-- Badge with icon based on activity type -->
+      <div class="flex-shrink-0 mr-3">
         <span
-          class="inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold"
+          class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-sm font-semibold"
           [ngClass]="{
-            'bg-orange-100 text-orange-600': activity.status === 'deploying',
-            'bg-green-100 text-green-600': activity.status === 'deployed' || activity.status === 'active',
-            'bg-gray-100 text-gray-600': activity.status === 'idle',
-            'bg-red-100 text-red-600': activity.status === 'error'
+            'bg-blue-50 text-blue-600': activity.type === 'project_updated',
+            'bg-purple-50 text-purple-600': activity.type === 'pr_merged',
+            'bg-green-50 text-green-600': activity.type === 'deployment' && activity.title.toLowerCase().includes('success'),
+            'bg-red-50 text-red-600': activity.type === 'deployment' && (activity.title.toLowerCase().includes('failed') || activity.title.toLowerCase().includes('error')),
+            'bg-orange-50 text-orange-600': activity.type === 'deployment' && !activity.title.toLowerCase().includes('success') && !activity.title.toLowerCase().includes('failed') && !activity.title.toLowerCase().includes('error')
           }"
         >
-          ▶
+          @if (activity.type === 'project_updated') { ⚙️ }
+          @else if (activity.type === 'pr_merged') { 🔀 }
+          @else if (activity.type === 'deployment') { 🚀 }
+          @else { 📝 }
         </span>
       </div>
 
       <!-- Details -->
-      <div class="ml-4 flex-1">
-        <p class="text-sm font-medium text-gray-800">{{ activity.name }}</p>
-        <p class="text-xs">
-          <span
-            [ngClass]="{
-              'text-orange-600': activity.status === 'deploying',
-              'text-green-600': activity.status === 'deployed' || activity.status === 'active',
-              'text-gray-600': activity.status === 'idle',
-              'text-red-600': activity.status === 'error'
-            }"
-          >
-            ● {{ activity.status }}
-          </span>
-          – {{ activity.by }}
-        </p>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center justify-between gap-1 mb-0.5">
+          <p class="text-sm font-semibold text-gray-800 truncate">{{ activity.title }}</p>
+          <span class="text-[10px] text-gray-400 whitespace-nowrap">{{ activity.timestamp | date:'shortTime' }}</span>
+        </div>
+        <p class="text-xs text-gray-500 line-clamp-1 mb-1">{{ activity.description }}</p>
+        <div class="flex items-center justify-between text-[10px] text-gray-400">
+          <span class="font-medium text-gray-500">{{ activity.project }}</span>
+          <span>by {{ activity.author }}</span>
+        </div>
       </div>
+    </div>
+  } @empty {
+    <div class="text-center py-6 text-gray-400 text-sm">
+      No recent activities.
     </div>
   }
 </div>

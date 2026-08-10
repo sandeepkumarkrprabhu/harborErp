@@ -1,5 +1,6 @@
 import { Component, Input, OnChanges, SimpleChanges, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { DashboardRecentActivities } from '../../../Models/Composition';
 
 @Component({
   selector: 'app-activity-list',
@@ -9,7 +10,7 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./activity-list.css']
 })
 export class ActivityList implements OnChanges, OnInit {
-  @Input() activities: { name: string, status: string, by: string }[] = [];
+  @Input() activities: DashboardRecentActivities[] = [];
 
   ngOnInit() {
     console.log('ActivityList initialized with activities:', this.activities);

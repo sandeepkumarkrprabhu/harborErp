@@ -10,8 +10,10 @@ import { Deployment } from '../../Models/Deployment';
 import { environment } from '../../../environments/environment.development';
 
 import { ProjectService } from '../../core/projects/services/project.service';
-import { Observable, map } from 'rxjs';
+import { CompositionService } from '../../core/composition/composition-service';
+import { Observable, map, of } from 'rxjs';
 import { DateUtils } from '../../shared/utility/date-utils';
+import { DashboardKPICard, DashboardRecentActivities } from '../../Models/Composition';
 
 @Component({
   selector: 'app-dashboard',
@@ -25,137 +27,25 @@ export class Dashboard implements OnInit {
   readonly Clock3 = Clock3;
 
   projects$!: Observable<Project[]>;
+  kpiCardDetails$!: Observable<DashboardKPICard>;
+  activities$: Observable<DashboardRecentActivities[]> = of([]);
 
   constructor(
     private projectService: ProjectService,
+    private compositionService: CompositionService,
     private dateUtils: DateUtils,
   ) {}
-
-  // Source of truth
-  metrics = {
-    environments: {
-      total: 15,
-      healthy: 14,
-      unhealthy: 1,
-      details: [
-        { label: 'healthy', value: 14, textColor: 'text-green-600', barColor: 'bg-green-500' },
-        { label: 'unhealthy', value: 1, textColor: 'text-red-600', barColor: 'bg-red-500' },
-      ],
-    },
-    deployments: {
-      inProgress: 2,
-      details: [
-        { label: 'in progress', value: 2, textColor: 'text-orange-600', barColor: 'bg-orange-500' },
-      ],
-    },
-    last24h: {
-      total: 11,
-      succeeded: 10,
-      failed: 1,
-      details: [
-        { label: 'succeeded', value: 10, textColor: 'text-green-600', barColor: 'bg-green-500' },
-        { label: 'failed', value: 1, textColor: 'text-red-600', barColor: 'bg-red-500' },
-      ],
-    },
-    frequency: {
-      today: 8,
-      week: 34,
-      details: [
-        { label: 'today', value: 8, textColor: 'text-blue-600', barColor: 'bg-blue-500' },
-        { label: 'this week', value: 34, textColor: 'text-purple-600', barColor: 'bg-purple-500' },
-      ],
-    },
-  };
 
   // Array for looping in template
   metricTiles: { title: string; value: number; details: any[] }[] = [];
 
-  // projects: Project[] = [
-  //   {
-  //     id: '1',
-  //     project_name: 'harbor-api',
-  //     status: 'active',
-  //     project_description: 'Go backend service for Harbor portal',
-  //     type: 'Microservice',
-  //     source: 'org/harbor-api',
-  //     branch: 'main',
-  //     envs: 4,
-  //     healthy: 4,
-  //     unhealthy: 0,
-  //     updated_at: '2h ago',
-  //     by: 'Alex K.',
-  //     deployments: 12,
-  //     bg: '',
-  //     github_org: '',
-  //     github_repo: '',
-  //     total_environments: '4',
-  //   },
-  //   {
-  //     id: '2',
-  //     project_name: 'harbor-frontend',
-  //     status: 'active',
-  //     project_description: 'Angular frontend application',
-  //     type: 'Infrastructure',
-  //     source: 'org/harbor-frontend',
-  //     branch: 'main',
-  //     envs: 3,
-  //     healthy: 2,
-  //     unhealthy: 1,
-  //     updated_at: '5h ago',
-  //     by: 'Priya R.',
-  //     deployments: 20,
-  //     bg: '',
-  //     github_org: '',
-  //     github_repo: '',
-  //     total_environments: '3',
-  //   },
-  //   {
-  //     id: '3',
-  //     project_name: 'auth-service',
-  //     status: 'active',
-  //     project_description: 'OAuth2 & RBAC microservice',
-  //     type: 'Microservice',
-  //     source: 'org/auth-service',
-  //     branch: 'master',
-  //     envs: 3,
-  //     healthy: 3,
-  //     unhealthy: 0,
-  //     updated_at: '1d ago',
-  //     by: 'Sam T.',
-  //     deployments: 8,
-  //     bg: '',
-  //     github_org: '',
-  //     github_repo: '',
-  //     total_environments: '3',
-  //   },
-  //   {
-  //     id: '4',
-  //     project_name: 'notification-worker',
-  //     status: 'active',
-  //     project_description: 'Slack & email notification worker',
-  //     type: 'Infrastructure',
-  //     source: 'org/notification-worker',
-  //     branch: 'prod',
-  //     envs: 4,
-  //     healthy: 4,
-  //     unhealthy: 0,
-  //     updated_at: '2d ago',
-  //     by: 'Zara M.',
-  //     deployments: 15,
-  //     bg: '',
-  //     github_org: '',
-  //     github_repo: '',
-  //     total_environments: '4',
-  //   },
+  // activities = [
+  //   { name: 'payment-service', status: 'deploying', by: 'Arjun' },
+  //   { name: 'user-authentication', status: 'active', by: 'Maya' },
+  //   { name: 'order-management', status: 'idle', by: 'Liam' },
+  //   { name: 'inventory-tracking', status: 'deployed', by: 'Zara' },
+  //   { name: 'notification-system', status: 'error', by: 'Ethan' },
   // ];
-
-  activities = [
-    { name: 'payment-service', status: 'deploying', by: 'Arjun' },
-    { name: 'user-authentication', status: 'active', by: 'Maya' },
-    { name: 'order-management', status: 'idle', by: 'Liam' },
-    { name: 'inventory-tracking', status: 'deployed', by: 'Zara' },
-    { name: 'notification-system', status: 'error', by: 'Ethan' },
-  ];
 
   ngOnInit(): void {
     // Fetch projects from the service
@@ -170,28 +60,46 @@ export class Dashboard implements OnInit {
 
     console.log('Recent projects:', this.projects$);
 
-    this.metricTiles = [
-      {
-        title: 'Environments',
-        value: this.metrics.environments.total,
-        details: this.metrics.environments.details,
-      },
-      {
-        title: 'Deployments',
-        value: this.metrics.deployments.inProgress,
-        details: this.metrics.deployments.details,
-      },
-      {
-        title: 'Last 24 hours',
-        value: this.metrics.last24h.total,
-        details: this.metrics.last24h.details,
-      },
-      {
-        title: 'Deployment Frequency',
-        value: this.metrics.frequency.today,
-        details: this.metrics.frequency.details,
-      },
-    ];
+    this.activities$ = this.compositionService.getDashboardRecentActivites();
+
+    this.compositionService.getDashboardKPI().subscribe((dashboardKPI) => {
+      this.metricTiles = [
+        {
+          title: 'Environments',
+          value: dashboardKPI.total_environments,
+          details: [
+            {
+              label: 'Healthy',
+              value: dashboardKPI.healthy_environments,
+              barColor: 'bg-green-600',
+            },
+            {
+              label: 'Unhealthy',
+              value: dashboardKPI.unhealthy_environments,
+              barColor: 'bg-red-600',
+            },
+          ],
+        },
+        {
+          title: 'Deployments',
+          value: dashboardKPI.deployments_past_hour, // or past_24_hours depending on your design
+          details: [
+            { label: 'Past 24h', value: dashboardKPI.deployments_past_24_hours },
+            { label: 'Past Hour', value: dashboardKPI.deployments_past_hour },
+          ],
+        },
+        {
+          title: 'Last 24 hours',
+          value: dashboardKPI.deployments_past_24_hours,
+          details: [],
+        },
+        {
+          title: 'Deployment Frequency',
+          value: parseFloat(Number(dashboardKPI.deployment_frequency_weekly_average).toFixed(2)),
+          details: [],
+        },
+      ];
+    });
   }
 
   // get projectsMostDeployments(): Project[] {
