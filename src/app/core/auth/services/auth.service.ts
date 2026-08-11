@@ -126,20 +126,23 @@ export class AuthService {
    */
   refreshUser(): void {
     if (!this.tokenStorage.hasToken()) {
+      console.log('token exists');
       this.logout();
       return;
     }
 
-    this.http.get<AuthUser>(`${this.apiUrl}/auth/me`).pipe(
-      tap(user => this._currentUser.set(user)),
-      catchError(err => {
-        console.error('Failed to refresh user:', err);
-        this.logout();
-        return EMPTY;
-      })
-    ).subscribe();
+    // this.http
+    //   .get<AuthUser>(`${this.apiUrl}/auth/me`)
+    //   .pipe(
+    //     tap((user) => this._currentUser.set(user)),
+    //     catchError((err) => {
+    //       console.error('Failed to refresh user:', err);
+    //       this.logout();
+    //       return EMPTY;
+    //     }),
+    //   )
+    //   .subscribe();
   }
-
 
   /**
    * Save login response.
@@ -180,8 +183,7 @@ export class AuthService {
   }
 
   get currentUserValue(): AuthUser | null {
-    console.log("Logged In user:", this._currentUser());
+    console.log('Logged In user:', this._currentUser());
     return this._currentUser();
   }
-
 }

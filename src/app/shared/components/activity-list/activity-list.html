@@ -1,6 +1,8 @@
 <div class="grid grid-cols-1 gap-3 p-3">
   @for (activity of activities; track activity.timestamp) {
-    <div class="flex items-start bg-white rounded-lg border border-gray-100 p-3 hover:shadow-sm transition">
+    <div
+      class="flex items-start bg-white rounded-lg border border-gray-100 p-3 hover:shadow-sm transition"
+    >
       <!-- Badge with icon based on activity type -->
       <div class="flex-shrink-0 mr-3">
         <span
@@ -8,15 +10,28 @@
           [ngClass]="{
             'bg-blue-50 text-blue-600': activity.type === 'project_updated',
             'bg-purple-50 text-purple-600': activity.type === 'pr_merged',
-            'bg-green-50 text-green-600': activity.type === 'deployment' && activity.title.toLowerCase().includes('success'),
-            'bg-red-50 text-red-600': activity.type === 'deployment' && (activity.title.toLowerCase().includes('failed') || activity.title.toLowerCase().includes('error')),
-            'bg-orange-50 text-orange-600': activity.type === 'deployment' && !activity.title.toLowerCase().includes('success') && !activity.title.toLowerCase().includes('failed') && !activity.title.toLowerCase().includes('error')
+            'bg-green-50 text-green-600':
+              activity.type === 'deployment' && activity.title.toLowerCase().includes('success'),
+            'bg-red-50 text-red-600':
+              activity.type === 'deployment' &&
+              (activity.title.toLowerCase().includes('failed') ||
+                activity.title.toLowerCase().includes('error')),
+            'bg-orange-50 text-orange-600':
+              activity.type === 'deployment' &&
+              !activity.title.toLowerCase().includes('success') &&
+              !activity.title.toLowerCase().includes('failed') &&
+              !activity.title.toLowerCase().includes('error'),
           }"
         >
-          @if (activity.type === 'project_updated') { ⚙️ }
-          @else if (activity.type === 'pr_merged') { 🔀 }
-          @else if (activity.type === 'deployment') { 🚀 }
-          @else { 📝 }
+          @if (activity.type === 'project_updated') {
+            ⚙️
+          } @else if (activity.type === 'pr_merged') {
+            🔀
+          } @else if (activity.type === 'deployment') {
+            🚀
+          } @else {
+            📝
+          }
         </span>
       </div>
 
@@ -24,7 +39,9 @@
       <div class="flex-1 min-w-0">
         <div class="flex items-center justify-between gap-1 mb-0.5">
           <p class="text-sm font-semibold text-gray-800 truncate">{{ activity.title }}</p>
-          <span class="text-[10px] text-gray-400 whitespace-nowrap">{{ activity.timestamp | date:'shortTime' }}</span>
+          <span class="text-[10px] text-gray-400 whitespace-nowrap">
+            {{ activity.timestamp | date: 'medium' }}
+          </span>
         </div>
         <p class="text-xs text-gray-500 line-clamp-1 mb-1">{{ activity.description }}</p>
         <div class="flex items-center justify-between text-[10px] text-gray-400">
@@ -34,8 +51,6 @@
       </div>
     </div>
   } @empty {
-    <div class="text-center py-6 text-gray-400 text-sm">
-      No recent activities.
-    </div>
+    <div class="text-center py-6 text-gray-400 text-sm">No recent activities.</div>
   }
 </div>

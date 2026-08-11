@@ -58,14 +58,16 @@
     </div>
 
     <!-- Right column -->
-    <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
+    <div
+      class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-y-auto md:max-h-[870px] md:overflow-y-auto max-h-none"
+    >
       <h2 class="text-lg font-small mb-4 bg-secondary text-black rounded px-4 py-2">
         <span class="inline-flex items-center gap-2">
-          <lucide-angular class="inline-block" [img]="Clock3" [size]="18"> </lucide-angular>
-
+          <lucide-angular class="inline-block" [img]="Clock3" [size]="18"></lucide-angular>
           <span class="text-lg font-medium"> Recent Activity </span>
         </span>
       </h2>
+
       <app-activity-list [activities]="(activities$ | async) || []"></app-activity-list>
     </div>
   </div>
