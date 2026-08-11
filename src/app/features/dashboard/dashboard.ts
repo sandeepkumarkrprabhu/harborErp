@@ -91,12 +91,14 @@ export class Dashboard implements OnInit {
         {
           title: 'Last 24 hours',
           value: dashboardKPI.deployments_past_24_hours,
-          details: [],
+          details: [
+            { label: 'deployments across all repos', value: 'deployments across all repos' },
+          ],
         },
         {
           title: 'Deployment Frequency',
           value: parseFloat(Number(dashboardKPI.deployment_frequency_weekly_average).toFixed(2)),
-          details: [],
+          details: [{ label: 'weekly average', value: 'weekly average' }],
         },
       ];
     });
