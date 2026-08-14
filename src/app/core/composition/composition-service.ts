@@ -9,6 +9,7 @@ import {
   DashboardRecentActivities,
   ProjectDetail,
   ProjectDetailEnvironment,
+  ProjectDeploymentsGraph,
 } from '../../Models/Composition';
 import { environment } from '../../../environments/environment.development';
 
@@ -54,5 +55,11 @@ export class CompositionService {
     return this.http
       .get<DashboardRecentActivities[]>(`${this.baseApiUrl}/dashboard-recent-activities`)
       .pipe(tap((response) => console.log('Raw API response:', response)));
+  }
+
+  getDashboardProjectDeploymentsGraph(): Observable<ProjectDeploymentsGraph[]> {
+    return this.http
+      .get<ProjectDeploymentsGraph[]>(`${this.baseApiUrl}/dashboard-project-deployments-graph`)
+      .pipe(tap((response) => console.log('Dashboard project deployments graph:', response)));
   }
 }

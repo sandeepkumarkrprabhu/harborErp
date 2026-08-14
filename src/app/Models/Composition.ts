@@ -117,3 +117,12 @@ export interface DashboardRecentActivities {
   title: string;
   type: string;
 }
+
+export interface ProjectDeploymentData {
+  [key: string]: number;
+}
+
+export interface ProjectDeploymentsGraph {
+  data: ProjectDeploymentData;
+  project_name: string;
+}

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FolderGit2, Clock3, LucideAngularModule } from 'lucide-angular';
 
@@ -13,7 +13,11 @@ import { ProjectService } from '../../core/projects/services/project.service';
 import { CompositionService } from '../../core/composition/composition-service';
 import { Observable, map, of } from 'rxjs';
 import { DateUtils } from '../../shared/utility/date-utils';
-import { DashboardKPICard, DashboardRecentActivities } from '../../Models/Composition';
+import {
+  DashboardKPICard,
+  DashboardRecentActivities,
+  ProjectDeploymentsGraph,
+} from '../../Models/Composition';
 
 @Component({
   selector: 'app-dashboard',
@@ -29,6 +33,9 @@ export class Dashboard implements OnInit {
   projects$!: Observable<Project[]>;
   kpiCardDetails$!: Observable<DashboardKPICard>;
   activities$: Observable<DashboardRecentActivities[]> = of([]);
+  projectDeploymentsGraph$!: Observable<ProjectDeploymentsGraph[]>;
+  deploymentChartData: { name: string; value: number }[] = [];
+  maxDeploymentValue: number = 0;
 
   constructor(
     private projectService: ProjectService,
@@ -61,6 +68,13 @@ export class Dashboard implements OnInit {
     console.log('Recent projects:', this.projects$);
 
     this.activities$ = this.compositionService.getDashboardRecentActivites();
+
+    // Fetch deployments graph data
+    this.projectDeploymentsGraph$ = this.compositionService.getDashboardProjectDeploymentsGraph();
+    this.projectDeploymentsGraph$.subscribe((data) => {
+      console.log('Raw deploymentsGraph data:', data);
+      this.transformDeploymentGraphData(data);
+    });
 
     this.compositionService.getDashboardKPI().subscribe((dashboardKPI) => {
       this.metricTiles = [
@@ -100,6 +114,35 @@ export class Dashboard implements OnInit {
         },
       ];
     });
+  }
+
+  // dashboard.ts
+  get yTicks(): number[] {
+    const steps = 5; // number of ticks
+    return Array.from({ length: steps }, (_, i) =>
+      Math.round((i * this.maxDeploymentValue) / (steps - 1)),
+    );
+  }
+
+  /**
+   * Transform the project deployments graph data into chart-friendly format
+   * Sums all deployment counts per project
+   */
+  private transformDeploymentGraphData(data: ProjectDeploymentsGraph[]): void {
+    this.deploymentChartData = data.map((project) => ({
+      name: project.project_name,
+      value: Object.values(project.data).reduce((sum, val) => sum + val, 0),
+    }));
+
+    // Calculate max value for chart scaling
+    this.maxDeploymentValue = Math.max(...this.deploymentChartData.map((d) => d.value), 1);
+
+    console.log('=== Deployment Graph Data ===');
+    console.log('Raw data:', data);
+    console.log('Transformed data:', this.deploymentChartData);
+    console.log('Max deployment value:', this.maxDeploymentValue);
+    console.log('Y-Axis ticks:', this.yTicks);
+    console.log('============================');
   }
 
   // get projectsMostDeployments(): Project[] {
