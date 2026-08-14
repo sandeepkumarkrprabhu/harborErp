@@ -91,9 +91,7 @@ export class Dashboard implements OnInit {
         {
           title: 'Last 24 hours',
           value: dashboardKPI.deployments_past_24_hours,
-          details: [
-            { label: 'deployments across all repos', value: 'deployments across all repos' },
-          ],
+          details: [{ label: 'deployments', value: 'across all repos' }],
         },
         {
           title: 'Deployment Frequency',

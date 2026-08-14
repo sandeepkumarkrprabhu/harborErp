@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { AuthService } from '../../../core/auth/services/auth.service';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import {
@@ -24,7 +24,7 @@ import { Logger } from '../../../features/utils/logger';
   templateUrl: './sidebar.html',
   styleUrls: ['./sidebar.css'],
 })
-export class Sidebar {
+export class Sidebar implements OnInit, OnDestroy {
   username: string | null = null;
   email: string | null = null;
 
@@ -33,16 +33,34 @@ export class Sidebar {
     private readonly authService: AuthService,
     private readonly logger: Logger,
     private readonly router: Router,
-  ) { }
+  ) {}
 
   readonly LogOut = LogOut;
   readonly Menu = Menu;
 
   isCollapsed = false;
+  isSmallScreen = false;
 
   ngOnInit(): void {
     this.loadUserDetails();
     this.configureNavItems();
+    this.checkScreenSize();
+  }
+
+  ngOnDestroy(): void {
+    // Cleanup if needed
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event): void {
+    this.checkScreenSize();
+  }
+
+  private checkScreenSize(): void {
+    this.isSmallScreen = window.innerWidth < 768; // md breakpoint is 768px in Tailwind
+    if (this.isSmallScreen) {
+      this.isCollapsed = true; // Collapse on small screens
+    }
   }
 
   private loadUserDetails(): void {
@@ -75,16 +93,12 @@ export class Sidebar {
   // Filtered navigation items based on current user role
   readonly navItems = [] as typeof this.allNavItems;
 
-
-
-
-
   private configureNavItems(): void {
     // Determine role (case‑insensitive). Fallback to empty array if unknown.
     const userRole = this.authService.currentUserValue?.roles?.[0] ?? 'Admin';
     const roleKey = userRole.toLowerCase();
     const allowedLabels = this.roleMenuMap[roleKey] || [];
-    this.navItems.push(...this.allNavItems.filter(item => allowedLabels.includes(item.label)));
+    this.navItems.push(...this.allNavItems.filter((item) => allowedLabels.includes(item.label)));
   }
 
   async logout(): Promise<void> {

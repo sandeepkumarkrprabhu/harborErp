@@ -6,34 +6,36 @@
   <div class="flex flex-col flex-1 overflow-hidden">
     <!-- Top bar -->
     <header
-      class="h-13 bg-white border-b border-gray-200 flex items-center justify-between px-6 shrink-0"
+      class="h-13 bg-white border-b border-gray-200 flex items-center justify-between px-3 md:px-6 shrink-0 gap-2"
     >
-      <!-- Page title -->
-      <div>
+      <!-- Page title (hidden on small screens) -->
+      <div class="hidden md:block">
         <h1 class="text-base font-semibold text-gray-800">{{ pageTitle }}</h1>
       </div>
 
-      <div class="m-4 w-[30%] bg-gray-100 rounded-md">
+      <!-- Search bar (responsive width) -->
+      <div class="flex-1 md:flex-none md:w-[30%] bg-gray-100 rounded-md">
         <app-input-field
           label=""
           type="text"
           [leftIcon]="SearchIcon"
-          placeholder="Search projects, tasks, deployments,users...."
+          [placeholder]="searchPlaceholder"
           [required]="false"
           formControlName="globalSearch"
         >
         </app-input-field>
       </div>
-      <!-- Right: user info -->
-      <div class="flex items-center gap-3">
-        <div class="text-right">
-          <button
-            class="px-2 py-1 mr-5 bg-primary text-white text-sm font-medium rounded-md hover:bg-primary/90 transition"
-            (click)="toggleQuickActions()"
-          >
-            + Quick Actions
-          </button>
-        </div>
+
+      <!-- Right: Quick Actions -->
+      <div class="flex items-center gap-2 md:gap-3">
+        <button
+          class="inline-flex items-center gap-2 px-2 md:px-3 py-1 bg-primary text-white text-sm font-medium rounded-md hover:bg-primary/90 transition"
+          (click)="toggleQuickActions()"
+          [title]="isSmallScreen ? 'Quick Actions' : ''"
+        >
+          <lucide-icon [img]="Plus" [size]="16"></lucide-icon>
+          <span class="hidden md:inline">Quick Actions</span>
+        </button>
       </div>
     </header>
 

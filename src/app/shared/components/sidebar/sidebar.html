@@ -4,10 +4,14 @@
   [class.w-16]="isCollapsed"
   [class.w-60]="!isCollapsed"
 >
-  <!-- Logo (hidden on mobile, shown on desktop) -->
-  <div class="h-16 hidden md:flex items-center px-6 border-b border-gray-200">
-    <img src="assets/logoName.svg" alt="Harbor" class="h-8" />
-    <button (click)="toggleSidebar()" class="p-2 mr-2 rounded-md hover:bg-gray-50">
+  <!-- Logo & Toggle (shown on desktop, toggle only on mobile) -->
+  <div class="h-16 flex items-center justify-between px-4 md:px-6 border-b border-gray-200">
+    <img src="assets/logoName.svg" alt="Harbor" class="h-8" [class.hidden]="isCollapsed" />
+    <button
+      (click)="toggleSidebar()"
+      class="p-2 rounded-md hover:bg-gray-50"
+      title="Toggle sidebar"
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="16"
@@ -35,6 +39,7 @@
         [routerLink]="item.route"
         routerLinkActive="bg-primary/10 text-primary font-semibold"
         class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition"
+        [title]="isCollapsed ? item.label : ''"
       >
         <lucide-icon [img]="item.icon" [size]="18"></lucide-icon>
         <span [hidden]="isCollapsed">{{ item.label }}</span>
