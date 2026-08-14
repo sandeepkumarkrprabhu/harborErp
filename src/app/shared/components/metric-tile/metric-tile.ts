@@ -16,7 +16,7 @@ export class MetricTile {
   getPercentages() {
     const safeDetails = this.details || [];
     const total = safeDetails.reduce((sum, d) => sum + d.value, 0);
-    console.log('Total Value:', total);
+    //console.log('Total Value:', total);
     return safeDetails.map((d) => ({
       ...d,
       percent: total > 0 ? (d.value / total) * 100 : 0,

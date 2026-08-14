@@ -38,28 +38,31 @@ export class CompositionService {
   }
 
   getProjectByIdEnv(id: string, envId: string): Observable<ProjectDetailEnvironment> {
-    return this.http.get<ProjectDetailEnvironment>(`${this.apiUrlEnv}/${id}/${envId}`, {}).pipe(
-      tap((response) => {
-        console.log('Raw API response for project details:', response);
-      }),
-    );
+    return this.http
+      .get<ProjectDetailEnvironment>(`${this.apiUrlEnv}/${id}/${envId}`, {})
+      .pipe
+      // tap((response) => {
+      //   console.log('Raw API response for project details:', response);
+      // }),
+      ();
   }
 
   getDashboardKPI(): Observable<DashboardKPICard> {
-    return this.http
-      .get<DashboardKPICard>(`${this.baseApiUrl}/dashboard-kpi`)
-      .pipe(tap((response) => console.log('Raw API response:', response)));
+    return this.http.get<DashboardKPICard>(`${this.baseApiUrl}/dashboard-kpi`);
+    // .pipe(tap((response) => console.log('Raw API response:', response)));
   }
 
   getDashboardRecentActivites(): Observable<DashboardRecentActivities[]> {
-    return this.http
-      .get<DashboardRecentActivities[]>(`${this.baseApiUrl}/dashboard-recent-activities`)
-      .pipe(tap((response) => console.log('Raw API response:', response)));
+    return this.http.get<DashboardRecentActivities[]>(
+      `${this.baseApiUrl}/dashboard-recent-activities`,
+    );
+    // .pipe(tap((response) => console.log('Raw API response:', response)));
   }
 
   getDashboardProjectDeploymentsGraph(): Observable<ProjectDeploymentsGraph[]> {
-    return this.http
-      .get<ProjectDeploymentsGraph[]>(`${this.baseApiUrl}/dashboard-project-deployments-graph`)
-      .pipe(tap((response) => console.log('Dashboard project deployments graph:', response)));
+    return this.http.get<ProjectDeploymentsGraph[]>(
+      `${this.baseApiUrl}/dashboard-project-deployments-graph`,
+    );
+    // .pipe(tap((response) => console.log('Dashboard project deployments graph:', response)));
   }
 }

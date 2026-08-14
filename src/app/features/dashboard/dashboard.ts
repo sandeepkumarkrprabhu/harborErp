@@ -6,8 +6,6 @@ import { MetricTile } from '../../shared/components/metric-tile/metric-tile';
 import { ActivityList } from '../../shared/components/activity-list/activity-list';
 import { Project } from '../../Models/project';
 import { ProjectCard } from '../../shared/components/project-card/project-card';
-import { Deployment } from '../../Models/Deployment';
-import { environment } from '../../../environments/environment.development';
 
 import { ProjectService } from '../../core/projects/services/project.service';
 import { CompositionService } from '../../core/composition/composition-service';
@@ -46,14 +44,6 @@ export class Dashboard implements OnInit {
   // Array for looping in template
   metricTiles: { title: string; value: number; details: any[] }[] = [];
 
-  // activities = [
-  //   { name: 'payment-service', status: 'deploying', by: 'Arjun' },
-  //   { name: 'user-authentication', status: 'active', by: 'Maya' },
-  //   { name: 'order-management', status: 'idle', by: 'Liam' },
-  //   { name: 'inventory-tracking', status: 'deployed', by: 'Zara' },
-  //   { name: 'notification-system', status: 'error', by: 'Ethan' },
-  // ];
-
   ngOnInit(): void {
     // Fetch projects from the service
     this.projects$ = this.projectService.getLatestProjects().pipe(
@@ -65,14 +55,14 @@ export class Dashboard implements OnInit {
       ),
     );
 
-    console.log('Recent projects:', this.projects$);
+    //console.log('Recent projects:', this.projects$);
 
     this.activities$ = this.compositionService.getDashboardRecentActivites();
 
     // Fetch deployments graph data
     this.projectDeploymentsGraph$ = this.compositionService.getDashboardProjectDeploymentsGraph();
     this.projectDeploymentsGraph$.subscribe((data) => {
-      console.log('Raw deploymentsGraph data:', data);
+      //console.log('Raw deploymentsGraph data:', data);
       this.transformDeploymentGraphData(data);
     });
 
@@ -135,14 +125,14 @@ export class Dashboard implements OnInit {
     }));
 
     // Calculate max value for chart scaling
-    this.maxDeploymentValue = Math.max(...this.deploymentChartData.map((d) => d.value), 1);
+    this.maxDeploymentValue = Math.max(...this.deploymentChartData.map((d) => d.value), 1) + 10;
 
-    console.log('=== Deployment Graph Data ===');
-    console.log('Raw data:', data);
-    console.log('Transformed data:', this.deploymentChartData);
-    console.log('Max deployment value:', this.maxDeploymentValue);
-    console.log('Y-Axis ticks:', this.yTicks);
-    console.log('============================');
+    // console.log('=== Deployment Graph Data ===');
+    // console.log('Raw data:', data);
+    // console.log('Transformed data:', this.deploymentChartData);
+    // console.log('Max deployment value:', this.maxDeploymentValue);
+    // console.log('Y-Axis ticks:', this.yTicks);
+    // console.log('============================');
   }
 
   // get projectsMostDeployments(): Project[] {
