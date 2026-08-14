@@ -42,36 +42,7 @@
         <h2 class="text-lg font-small mb-4 bg-secondary text-black px-4 py-2 rounded">
           Projects with Most Deployments
         </h2>
-        <!-- <div class="bg-white rounded-lg shadow p-6">
-          <div class="w-full h-64">
-            @if (deploymentChartData && deploymentChartData.length > 0) {
-              <div class="w-full h-full flex flex-col">
-                @for (item of deploymentChartData; track item.name) {
-                  <div
-                    class="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0"
-                  >
-                    <span class="text-sm font-medium text-gray-700 truncate" [title]="item.name">
-                      {{ item.name }}
-                    </span>
-                    <div class="flex items-center gap-3 flex-1 ml-4">
-                      <div
-                        class="h-2 bg-gradient-to-r from-primary to-primary/60 rounded"
-                        [style.width.%]="(item.value / maxDeploymentValue) * 100"
-                      ></div>
-                      <span class="text-sm font-semibold text-gray-800 min-w-12 text-right">
-                        {{ item.value }}
-                      </span>
-                    </div>
-                  </div>
-                }
-              </div>
-            } @else {
-              <div class="flex items-center justify-center h-full text-gray-400">
-                <p>No deployment data available</p>
-              </div>
-            }
-          </div>
-        </div> -->
+
         <div class="bg-white rounded-lg shadow p-6 relative">
           <div class="w-full h-72 flex">
             <!-- Y Axis -->
