@@ -30,10 +30,6 @@
             *ngFor="let project of projects$ | async"
             [project]="project"
           ></app-project-card>
-
-          <!-- @for (project of projects; track project.project_name) {
-            <app-project-card [project]="project"></app-project-card>
-          } -->
         </div>
       </div>
 
