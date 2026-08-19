@@ -19,8 +19,9 @@ export interface LoginResponse {
   message: string;
   access_token: string;
   refresh_token?: string;
-  user: AuthUser; 
+  user: AuthUser;
   name: string;
+  role: string;
   email: string;
   username: string;
 }
@@ -30,7 +31,7 @@ export interface LoginResponse {
 export interface RegisterUserRequest {
   name: string;
   email: string;
-  role_id: string; 
+  role_id: string;
   github_username: string;
   requires_github_access: boolean;
   status: boolean;

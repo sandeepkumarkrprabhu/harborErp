@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, effect } from '@angular/core';
 import { AuthService } from '../../../core/auth/services/auth.service';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import {
@@ -33,7 +33,11 @@ export class Sidebar implements OnInit, OnDestroy {
     private readonly authService: AuthService,
     private readonly logger: Logger,
     private readonly router: Router,
-  ) {}
+  ) { 
+    effect(() => {
+      this.configureNavItems();
+    });
+  }
 
   readonly LogOut = LogOut;
   readonly Menu = Menu;
@@ -43,7 +47,6 @@ export class Sidebar implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadUserDetails();
-    this.configureNavItems();
     this.checkScreenSize();
   }
 
@@ -86,19 +89,26 @@ export class Sidebar implements OnInit, OnDestroy {
 
   // Role based allowed menu labels
   private readonly roleMenuMap: Record<string, string[]> = {
-    admin: ['Dashboard', 'Projects', 'Teams', 'History', 'Users', 'Settings', 'Notifications'],
+    admin: ['Settings', 'Notifications'],
     manager: ['Dashboard', 'Projects', 'Teams'],
+    user: ['Dashboard', 'Projects', 'Teams'],
   };
 
   // Filtered navigation items based on current user role
-  readonly navItems = [] as typeof this.allNavItems;
+  navItems = [] as typeof this.allNavItems;
 
   private configureNavItems(): void {
-    // Determine role (case‑insensitive). Fallback to empty array if unknown.
-    const userRole = this.authService.currentUserValue?.roles?.[0] ?? 'Admin';
+    // We read from the signal directly so the effect tracks it
+    const userRole = this.tokenStorage.userRole() ?? 'user';
+    console.log("sidebar user Role:", userRole);
     const roleKey = userRole.toLowerCase();
-    const allowedLabels = this.roleMenuMap[roleKey] || [];
-    this.navItems.push(...this.allNavItems.filter((item) => allowedLabels.includes(item.label)));
+
+    // Admin users see all menus, otherwise Dashboard, Projects, and Teams
+    const allowedLabels = roleKey === 'admin'
+      ? this.allNavItems.map(item => item.label)
+      : ['Dashboard', 'Projects', 'Teams'];
+
+    this.navItems = this.allNavItems.filter((item) => allowedLabels.includes(item.label));
   }
 
   async logout(): Promise<void> {
@@ -110,3 +120,4 @@ export class Sidebar implements OnInit, OnDestroy {
     this.logger.debug('Navigation success:', success);
   }
 }
+

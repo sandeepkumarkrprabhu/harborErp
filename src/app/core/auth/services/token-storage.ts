@@ -2,6 +2,7 @@ import { Injectable, signal } from '@angular/core';
 
 const ACCESS_TOKEN_KEY = 'harbor_access_token';
 const LOGGED_IN_USERNAME = 'UserName';
+const LOGGED_IN_USERROLE = 'UserRole';
 const LOGGED_IN_EMAIL = 'userEmail'
 const REFRESH_TOKEN_KEY = 'harbor_refresh_token';
 
@@ -13,9 +14,13 @@ export class TokenStorageService {
   private readonly _accessToken = signal<string | null>(
     localStorage.getItem(ACCESS_TOKEN_KEY)
   );
-  
+
   private readonly _userName = signal<string | null>(
     localStorage.getItem(LOGGED_IN_USERNAME)
+  );
+
+  private readonly _userRole = signal<string | null>(
+    localStorage.getItem(LOGGED_IN_USERROLE)
   );
 
   private readonly _userEmail = signal<string | null>(
@@ -24,6 +29,7 @@ export class TokenStorageService {
 
   readonly accessToken = this._accessToken.asReadonly();
   readonly userName = this._userName.asReadonly();
+  readonly userRole = this._userRole.asReadonly();
   readonly userEmail = this._userEmail.asReadonly();
 
   getAccessToken(): string | null {
@@ -50,6 +56,13 @@ export class TokenStorageService {
     localStorage.setItem(LOGGED_IN_USERNAME, userName);
 
     this._userName.set(userName);
+  }
+
+  setuserRole(roleName: string): void {
+    //console.log('Setting tokens:', { accessToken, refreshToken }); // Debug
+    localStorage.setItem(LOGGED_IN_USERROLE, roleName);
+
+    this._userRole.set(roleName);
   }
 
   setuserEmail(userEmail: string): void {

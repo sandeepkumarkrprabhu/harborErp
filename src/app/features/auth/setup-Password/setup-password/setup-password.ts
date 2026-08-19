@@ -1,8 +1,10 @@
 import { Component, inject, signal } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { LucideAngularModule, LockKeyhole } from 'lucide-angular';
 import { Button } from '../../../../shared/components/button/button';
 import { InputField } from '../../../../shared/components/input-field/input-field';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { AuthService } from '../../../../core/auth/services/auth.service';
 
 @Component({
   selector: 'app-setup-password',
@@ -13,6 +15,9 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 })
 export class SetupPassword {
   private readonly fb = inject(FormBuilder);
+  private readonly authService = inject(AuthService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
   setupForm: FormGroup = this.fb.group({
     password: ['', [Validators.required, Validators.minLength(8)]],
@@ -63,8 +68,30 @@ export class SetupPassword {
         return;
       }
 
-      console.log('Form submitted:', { password, pin });
-      // TODO: Call your AuthService or API here
+      const token = this.route.snapshot.queryParamMap.get('token');
+      if (!token) {
+        console.error('Token is missing from URL');
+        return;
+      }
+
+      this.isLoading.set(true);
+
+      this.authService.setupPassword({
+        password,
+        pin,
+        token
+      }).subscribe({
+        next: (response) => {
+          console.log('Password setup successful', response);
+          this.isLoading.set(false);
+          // Redirect to login or next page
+          this.router.navigate(['/']);
+        },
+        error: (error) => {
+          console.error('Failed to setup password', error);
+          this.isLoading.set(false);
+        }
+      });
     }
   }
 }

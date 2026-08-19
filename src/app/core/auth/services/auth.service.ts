@@ -107,7 +107,7 @@ export class AuthService {
    * Body: { github_username: string }
    */
   verifyGithubUser(userId: string, githubUsername: string): Observable<any> {
-    const url = `${this.apiUrl}/api/v1/users/${userId}/reverify-github`;
+    const url = `${this.apiUrl}/users/${userId}/reverify-github`;
     return this.http.post<any>(url, { github_username: githubUsername }).pipe(
       tap((res) => {
         console.log('GitHub verification response:', res);
@@ -117,6 +117,14 @@ export class AuthService {
         return EMPTY;
       }),
     );
+  }
+
+  /**
+   * Setup Password
+   * Endpoint: POST /api/v1/auth/setup-password
+   */
+  setupPassword(payload: { password: string; pin: string; token: string }): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/auth/setup-password`, payload);
   }
 
   /**
@@ -149,11 +157,18 @@ export class AuthService {
    */
   private handleLoginSuccess(response: LoginResponse): void {
     console.log('handleLoginSuccess called with response:', response); // Debugging line
-    //console.log('Access Token:', response.access_token); // Debugging line
-    this.tokenStorage.setTokens(response.access_token, response.refresh_token);
 
+    this.tokenStorage.setTokens(response.access_token, response.refresh_token);
     this.tokenStorage.setuserName(response.name);
     this.tokenStorage.setuserEmail(response.email);
+    this.tokenStorage.setuserRole(response.role)
+
+    // Safely extract the role. It might be in response.role, response.user.role, or response.user.roles array.
+    const anyRes = response as any;
+    const extractedRole = anyRes.role || anyRes.user?.role || anyRes.user?.roles?.[0] || 'user';
+    console.log('Extracted role from login:', extractedRole);
+
+    this.tokenStorage.setuserRole(extractedRole);
 
     if (response) {
       this._currentUser.set(response.user);
